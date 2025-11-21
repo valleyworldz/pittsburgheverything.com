@@ -10,7 +10,9 @@
     "price": "Free",
     "image": "/images/events/food-festival.svg",
     "url": "https://pittsburghfoodfestival.com",
-    "tags": ["food", "festival", "family-friendly", "music"]
+    "tags": ["food", "festival", "family-friendly", "music"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "2",
@@ -23,7 +25,9 @@
     "price": "$75+",
     "image": "/images/events/steelers-game.svg",
     "url": "https://steelers.com",
-    "tags": ["football", "nfl", "sports", "steelers"]
+    "tags": ["football", "nfl", "sports", "steelers"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "3",
@@ -36,7 +40,9 @@
     "price": "Free",
     "image": "/images/events/christmas-tree.svg",
     "url": "https://downtownpittsburgh.com",
-    "tags": ["holiday", "christmas", "family", "shopping"]
+    "tags": ["holiday", "christmas", "family", "shopping"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "4",
@@ -49,7 +55,9 @@
     "price": "$15",
     "image": "/images/events/arts-festival.svg",
     "url": "https://threeriversartsfestival.com",
-    "tags": ["art", "festival", "music", "culture"]
+    "tags": ["art", "festival", "music", "culture"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "5",
@@ -62,7 +70,9 @@
     "price": "$125",
     "image": "/images/events/pittsburgh-marathon.svg",
     "url": "https://pittsburghmarathon.com",
-    "tags": ["running", "marathon", "fitness", "sports"]
+    "tags": ["running", "marathon", "fitness", "sports"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "6",
@@ -75,7 +85,9 @@
     "price": "$35",
     "image": "/images/events/food-festival.svg",
     "url": "https://visitpittsburgh.com/restaurant-week",
-    "tags": ["food", "restaurants", "dining", "special"]
+    "tags": ["food", "restaurants", "dining", "special"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "7",
@@ -88,7 +100,9 @@
     "price": "Free",
     "image": "/images/events/christmas-tree.svg",
     "url": "https://downtownpittsburgh.com/events",
-    "tags": ["holiday", "shopping", "crafts", "family"]
+    "tags": ["holiday", "shopping", "crafts", "family"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   },
   {
     "id": "8",
@@ -101,6 +115,8 @@
     "price": "$12-15",
     "image": "/images/events/arts-festival.svg",
     "url": "https://pittsburghfilmfest.com",
-    "tags": ["film", "movies", "arts", "culture"]
+    "tags": ["film", "movies", "arts", "culture"],
+    "lastUpdated": "2025-01-21",
+    "source": "manual"
   }
 ]

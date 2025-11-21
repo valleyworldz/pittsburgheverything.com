@@ -11,7 +11,7 @@ import ServiceDirectory from '@/components/ServiceDirectory'
 import AIGuideWidget from '@/components/AIGuideWidget'
 import NewsletterSignup from '@/components/NewsletterSignup'
 import Pittsburgh3DBackground from '@/components/Pittsburgh3DBackground'
-import RealTimeDashboard from '@/components/RealTimeDashboard'
+import LiveDataDashboard from '@/components/LiveDataDashboard'
 import { SkeletonCard, useLoading } from '@/components/LoadingProvider'
 
 export default function HomePage() {
@@ -34,8 +34,8 @@ export default function HomePage() {
       icon: TrendingUp,
       content: (
         <>
-          {/* Real-Time Dashboard */}
-          <RealTimeDashboard />
+          {/* Live Data Dashboard */}
+          <LiveDataDashboard location="Pittsburgh" />
 
           {/* Featured Events */}
           <motion.div
@@ -413,7 +413,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <RealTimeDashboard />
+            <LiveDataDashboard location="Pittsburgh" compact={true} />
           </motion.div>
         </div>
       </section>
