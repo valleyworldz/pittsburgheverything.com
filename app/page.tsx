@@ -11,6 +11,7 @@ import ServiceDirectory from '@/components/ServiceDirectory'
 import AIGuideWidget from '@/components/AIGuideWidget'
 import NewsletterSignup from '@/components/NewsletterSignup'
 import Pittsburgh3DBackground from '@/components/Pittsburgh3DBackground'
+import RealTimeDashboard from '@/components/RealTimeDashboard'
 
 export default function HomePage() {
   const quickLinks = [
@@ -73,6 +74,34 @@ export default function HomePage() {
                 </motion.div>
               </Link>
             ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Real-Time Pittsburgh Dashboard */}
+      <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <motion.div
+            className="mb-8 text-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className="text-3xl font-extrabold mb-2 text-pittsburgh-black">
+              Live Pittsburgh Updates
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Real-time weather, Steelers scores, bus arrivals, parking availability, and local news
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <RealTimeDashboard />
           </motion.div>
         </div>
       </section>
