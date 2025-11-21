@@ -5,17 +5,28 @@
 User-agent: *
 Allow: /
 
-# Allow crawling of all public content
-Allow: /events/
-Allow: /restaurants/
-Allow: /neighborhoods/
-Allow: /services/
-Allow: /deals/
-Allow: /things-to-do/
-Allow: /top-100/
-Allow: /blog/
-Allow: /about/
-Allow: /contact/
+# Allow crawling of all public content - High priority for local SEO
+Allow: /locations/                    # NEW: Location pages for local SEO domination
+Allow: /events/                      # Event listings and details
+Allow: /restaurants/                 # Restaurant guides and reviews
+Allow: /neighborhoods/               # Neighborhood information
+Allow: /services/                    # Local services directory
+Allow: /deals/                       # Local deals and promotions
+Allow: /things-to-do/                # Activities and attractions
+Allow: /top-100/                     # Best of lists
+Allow: /about/                       # About page
+Allow: /contact/                     # Contact information
+
+# Special directives for location-based content (critical for local SEO)
+Allow: /locations/downtown-pittsburgh/
+Allow: /locations/oakland-pittsburgh/
+Allow: /locations/shadyside-pittsburgh/
+Allow: /locations/south-side-pittsburgh/
+Allow: /locations/lawrenceville-pittsburgh/
+Allow: /locations/strip-district-pittsburgh/
+Allow: /locations/squirrel-hill-pittsburgh/
+Allow: /locations/cranberry-township/
+Allow: /locations/robinson-township/
 
 # Block admin and private areas
 Disallow: /admin/
