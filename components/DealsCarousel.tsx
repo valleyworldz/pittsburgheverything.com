@@ -200,10 +200,6 @@ export default function DealsCarousel() {
               src={currentDeal.image || '/images/placeholder-deal.svg'}
               alt={currentDeal.title}
               className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.src = '/images/placeholder-deal.svg'
-              }}
             />
 
             {/* Deal Badge */}

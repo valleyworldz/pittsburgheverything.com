@@ -80,10 +80,6 @@ export default function EventGrid({ limit }: EventGridProps) {
               src={event.image || '/images/placeholder-event.svg'}
               alt={event.title}
               className="w-full h-48 object-cover rounded-t-lg"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.src = '/images/placeholder-event.svg'
-              }}
             />
             <div className="absolute top-4 right-4 bg-pittsburgh-gold text-pittsburgh-black px-3 py-1 rounded-full text-sm font-semibold">
               {event.category}

@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { MapPin, Users, TrendingUp, Home, Star, DollarSign, Clock, Car, Bike, Heart } from 'lucide-react'
 import Link from 'next/link'
+import NeighborhoodActionButton from '@/components/NeighborhoodActionButton'
 
 interface NeighborhoodPageProps {
   params: {

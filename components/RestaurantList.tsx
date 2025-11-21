@@ -107,10 +107,6 @@ export default function RestaurantList({ limit }: RestaurantListProps) {
               src={restaurant.image || '/images/placeholder-restaurant.svg'}
               alt={restaurant.name}
               className="w-full h-48 object-cover rounded-t-lg"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                target.src = '/images/placeholder-restaurant.svg'
-              }}
             />
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
               {restaurant.cuisine}

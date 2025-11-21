@@ -448,10 +448,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     src={activity.image}
                     alt={activity.name}
                     className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.src = '/images/placeholder-event.svg'
-                    }}
                   />
                   <div className="absolute top-4 left-4 bg-pittsburgh-gold text-pittsburgh-black px-3 py-1 rounded-full text-sm font-semibold">
                     {activity.category}
@@ -497,12 +493,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
                     <span className="text-lg font-bold text-pittsburgh-gold">
                       {activity.price}
                     </span>
-                    <button
-                      onClick={() => {
-                        alert(`${category.icon} ${activity.name}\n\n📍 Location: ${activity.location}\n⏰ Duration: ${activity.duration}\n💰 Price: ${activity.price}\n⭐ Rating: ${activity.rating}/5\n🏷️ Category: ${activity.category}\n\n🎯 Highlights:\n${activity.highlights.map(h => `• ${h}`).join('\n')}\n\n📝 ${activity.description}`)
-                      }}
-                      className="bg-pittsburgh-gold text-pittsburgh-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors text-sm cursor-pointer"
-                    >
+                    <button className="bg-pittsburgh-gold text-pittsburgh-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors text-sm">
                       Learn More
                     </button>
                   </div>

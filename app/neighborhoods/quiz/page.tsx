@@ -103,7 +103,7 @@ export default function NeighborhoodQuizPage() {
     // Calculate scores
     const newScores = { ...scores }
     Object.entries(answer.score).forEach(([neighborhood, score]) => {
-      newScores[neighborhood] = (newScores[neighborhood] || 0) + score
+      newScores[neighborhood] = (newScores[neighborhood] || 0) + (score as number)
     })
     setScores(newScores)
   }

@@ -178,10 +178,6 @@ export default function NeighborhoodMap({ interactive = true, limit }: Neighborh
                 src={selectedNeighborhood.image || '/images/placeholder-neighborhood.svg'}
                 alt={selectedNeighborhood.name}
                 className="w-full h-48 md:h-full object-cover rounded-l-lg"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement
-                  target.src = '/images/placeholder-neighborhood.svg'
-                }}
               />
             </div>
 
@@ -279,10 +275,6 @@ export default function NeighborhoodMap({ interactive = true, limit }: Neighborh
                   src={neighborhood.image || '/images/placeholder-neighborhood.svg'}
                   alt={neighborhood.name}
                   className="w-full h-48 object-cover rounded-t-lg"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement
-                    target.src = '/images/placeholder-neighborhood.svg'
-                  }}
                 />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
                   {neighborhood.name}
