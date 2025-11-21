@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#efebe9"/>
+  <rect x="50" y="100" width="300" height="150" fill="#8d6e63" rx="10"/>
+  <!-- Coffee cup -->
+  <ellipse cx="150" cy="160" rx="20" ry="15" fill="#ffffff"/>
+  <rect x="130" y="145" width="40" height="30" fill="#ffffff"/>
+  <!-- Steam -->
+  <path d="M 150 135 Q 145 125 150 115 Q 155 125 150 135" stroke="#8d6e63" stroke-width="2" fill="none"/>
+  <!-- Student ID -->
+  <rect x="220" y="140" width="60" height="40" fill="#2196f3"/>
+  <text x="250" y="165" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" font-weight="bold">ID</text>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#5d4037" font-weight="bold">Crazy Mocha</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#6d4c41">Student Coffee Discount</text>
+</svg>

@@ -11,7 +11,7 @@
     "businessId": "bridge-bite",
     "discount": "50% off appetizers",
     "category": "Food & Drink",
-    "image": "/images/deals/bridge-bite-appetizers.jpg",
+    "image": "/images/deals/bridge-bite-appetizers.svg",
     "expiresAt": "2025-12-31",
     "terms": "Weeknights 4-6 PM only. Cannot combine with other offers."
   },
@@ -27,7 +27,7 @@
     "businessId": "steel-city-ink",
     "discount": "10% off first tattoo",
     "category": "Beauty & Wellness",
-    "image": "/images/deals/steel-city-ink.jpg",
+    "image": "/images/deals/steel-city-ink.svg",
     "expiresAt": "2025-08-01",
     "terms": "First visit only. Mention PittsburghEverything."
   },
@@ -43,7 +43,7 @@
     "businessId": "fat-heads",
     "discount": "$5 beers, $8 pizzas",
     "category": "Food & Drink",
-    "image": "/images/deals/fat-heads-happy-hour.jpg",
+    "image": "/images/deals/fat-heads-happy-hour.svg",
     "expiresAt": "2025-12-31",
     "terms": "Daily 4-7pm. Valid at bar only."
   },
@@ -59,7 +59,7 @@
     "businessId": "crazy-mocha",
     "discount": "20% off",
     "category": "Food & Drink",
-    "image": "/images/deals/crazy-mocha-student.jpg",
+    "image": "/images/deals/crazy-mocha-student.svg",
     "expiresAt": "2025-12-31",
     "terms": "Valid student ID required."
   },
@@ -77,7 +77,7 @@
     "originalPrice": 49.99,
     "discountedPrice": 29.99,
     "category": "Auto Services",
-    "image": "/images/deals/oil-change.jpg",
+    "image": "/images/deals/oil-change.svg",
     "expiresAt": "2025-12-31",
     "terms": "Up to 5 quarts of oil. Additional quarts extra. Valid on most vehicles."
   }

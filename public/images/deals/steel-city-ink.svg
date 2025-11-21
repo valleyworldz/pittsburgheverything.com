@@ -1,0 +1,13 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f3e5f5"/>
+  <rect x="50" y="100" width="300" height="150" fill="#9c27b0" rx="10"/>
+  <!-- Tattoo needle -->
+  <rect x="150" y="130" width="5" height="40" fill="#424242"/>
+  <rect x="140" y="130" width="25" height="10" fill="#424242"/>
+  <!-- Ink bottles -->
+  <rect x="200" y="140" width="15" height="25" fill="#2196f3"/>
+  <rect x="225" y="140" width="15" height"25" fill="#4caf50"/>
+  <rect x="250" y="140" width="15" height="25" fill="#ff5722"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#7b1fa2" font-weight="bold">Steel City Ink</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#9c27b0">Tattoo Studio Special</text>
+</svg>

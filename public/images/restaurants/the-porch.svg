@@ -1,0 +1,10 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#e8f5e8"/>
+  <rect x="50" y="120" width="300" height="120" fill="#4caf50" rx="10"/>
+  <rect x="70" y="140" width="80" height="80" fill="#8bc34a"/>
+  <circle cx="200" cy="180" r="15" fill="#ffc107"/>
+  <circle cx="240" cy="180" r="15" fill="#ffc107"/>
+  <rect x="280" y="150" width="50" height="60" fill="#795548"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#2e7d32" font-weight="bold">The Porch</text>
+  <text x="200" y="280" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#388e3c">At Schenley</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f3e5f5"/>
+  <!-- University buildings -->
+  <rect x="60" y="100" width="80" height="100" fill="#7b1fa2"/>
+  <rect x="160" y="120" width="60" height="80" fill="#ba68c8"/>
+  <rect x="240" y="110" width="70" height="90" fill="#7b1fa2"/>
+  <!-- Students -->
+  <circle cx="100" cy="180" r="6" fill="#424242"/>
+  <circle cx="200" cy="180" r="6" fill="#424242"/>
+  <circle cx="280" cy="180" r="6" fill="#424242"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#7b1fa2" font-weight="bold">Oakland</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#9c27b0">University & Medical Center</text>
+</svg>

@@ -27,7 +27,7 @@ export default function RestaurantList({ limit }: RestaurantListProps) {
         phone: '(412) 621-4444',
         website: 'https://primantibros.com',
         neighborhood: 'Oakland',
-        image: '/images/restaurants/primanti-bros.jpg',
+        image: '/images/restaurants/primanti-bros.svg',
         features: ['Sandwiches', 'Late Night', 'Iconic']
       },
       {
@@ -41,7 +41,7 @@ export default function RestaurantList({ limit }: RestaurantListProps) {
         phone: '(412) 687-6724',
         website: 'https://theporchatschenley.com',
         neighborhood: 'Schenley Park',
-        image: '/images/restaurants/the-porch.jpg',
+        image: '/images/restaurants/the-porch.svg',
         features: ['Farm-to-Table', 'Historic', 'Cocktails']
       },
       {
@@ -55,7 +55,7 @@ export default function RestaurantList({ limit }: RestaurantListProps) {
         phone: '(412) 431-7433',
         website: 'https://fatheads.com',
         neighborhood: 'South Side',
-        image: '/images/restaurants/fat-heads.jpg',
+        image: '/images/restaurants/fat-heads.svg',
         features: ['Craft Beer', 'Pizza', 'Sports Bar']
       }
     ]
@@ -104,12 +104,12 @@ export default function RestaurantList({ limit }: RestaurantListProps) {
         <div key={restaurant.id} className="card group cursor-pointer hover:scale-105 transition-transform">
           <div className="relative">
             <img
-              src={restaurant.image || '/images/placeholder-restaurant.jpg'}
+              src={restaurant.image || '/images/placeholder-restaurant.svg'}
               alt={restaurant.name}
               className="w-full h-48 object-cover rounded-t-lg"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
-                target.src = '/images/placeholder-restaurant.jpg'
+                target.src = '/images/placeholder-restaurant.svg'
               }}
             />
             <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">

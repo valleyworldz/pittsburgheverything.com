@@ -163,7 +163,7 @@ export function generateOpenGraphTags(data: {
     'og:title': data.title,
     'og:description': data.description,
     'og:url': data.url,
-    'og:image': data.image || '/images/og-default.jpg',
+    'og:image': data.image || '/images/og-default.svg',
     'og:type': data.type || 'website',
     'og:site_name': 'PittsburghEverything',
   }
@@ -182,7 +182,7 @@ export function generateTwitterCardTags(data: {
     'twitter:card': data.card || 'summary_large_image',
     'twitter:title': data.title,
     'twitter:description': data.description,
-    'twitter:image': data.image || '/images/twitter-default.jpg',
+    'twitter:image': data.image || '/images/twitter-default.svg',
   }
 }
 

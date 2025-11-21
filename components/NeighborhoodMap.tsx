@@ -16,7 +16,7 @@ const pittsburghNeighborhoods = [
     description: 'The heart of Pittsburgh with skyscrapers, businesses, and cultural attractions',
     population: 5000,
     walkScore: 95,
-    image: '/images/neighborhoods/downtown.jpg',
+    image: '/images/neighborhoods/downtown.svg',
     attractions: ['Point State Park', 'Duquesne Incline', 'PPG Paints Arena'],
     medianIncome: 75000
   },
@@ -26,7 +26,7 @@ const pittsburghNeighborhoods = [
     description: 'Home to universities, hospitals, and the famous Cathedral of Learning',
     population: 25000,
     walkScore: 88,
-    image: '/images/neighborhoods/oakland.jpg',
+    image: '/images/neighborhoods/oakland.svg',
     attractions: ['Carnegie Museum', 'Phipps Conservatory', 'Heinz Field'],
     medianIncome: 45000
   },
@@ -36,7 +36,7 @@ const pittsburghNeighborhoods = [
     description: 'Historic flats with trendy shops, restaurants, and nightlife',
     population: 12000,
     walkScore: 82,
-    image: '/images/neighborhoods/south-side.jpg',
+    image: '/images/neighborhoods/south-side.svg',
     attractions: ['South Side Works', 'Carnegie Library', 'Station Square'],
     medianIncome: 65000
   },
@@ -46,7 +46,7 @@ const pittsburghNeighborhoods = [
     description: 'Historic warehouse district now filled with specialty shops and food vendors',
     population: 800,
     walkScore: 90,
-    image: '/images/neighborhoods/strip-district.jpg',
+    image: '/images/neighborhoods/strip-district.svg',
     attractions: ['Whole Foods Market', 'Penn Avenue Fish Company', 'Local craft breweries'],
     medianIncome: 70000
   },
@@ -56,7 +56,7 @@ const pittsburghNeighborhoods = [
     description: 'Artsy neighborhood with galleries, boutiques, and historic architecture',
     population: 8000,
     walkScore: 85,
-    image: '/images/neighborhoods/lawrenceville.jpg',
+    image: '/images/neighborhoods/lawrenceville.svg',
     attractions: ['Lawrenceville Arts & Entertainment District', 'Murry Avenue shops', 'Local theaters'],
     medianIncome: 55000
   },
@@ -66,7 +66,7 @@ const pittsburghNeighborhoods = [
     description: 'Upscale neighborhood with high-end shopping and dining',
     population: 15000,
     walkScore: 78,
-    image: '/images/neighborhoods/shadyside.jpg',
+    image: '/images/neighborhoods/shadyside.svg',
     attractions: ['Walnut Street shopping', 'Rodef Shalom Congregation', 'Frick Park'],
     medianIncome: 85000
   }
@@ -174,12 +174,12 @@ export default function NeighborhoodMap({ interactive = true, limit }: Neighborh
           <div className="md:flex">
             <div className="md:w-1/3">
               <img
-                src={selectedNeighborhood.image || '/images/placeholder-neighborhood.jpg'}
+                src={selectedNeighborhood.image || '/images/placeholder-neighborhood.svg'}
                 alt={selectedNeighborhood.name}
                 className="w-full h-48 md:h-full object-cover rounded-l-lg"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
-                  target.src = '/images/placeholder-neighborhood.jpg'
+                  target.src = '/images/placeholder-neighborhood.svg'
                 }}
               />
             </div>
@@ -265,12 +265,12 @@ export default function NeighborhoodMap({ interactive = true, limit }: Neighborh
             >
               <div className="relative">
                 <img
-                  src={neighborhood.image || '/images/placeholder-neighborhood.jpg'}
+                  src={neighborhood.image || '/images/placeholder-neighborhood.svg'}
                   alt={neighborhood.name}
                   className="w-full h-48 object-cover rounded-t-lg"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement
-                    target.src = '/images/placeholder-neighborhood.jpg'
+                    target.src = '/images/placeholder-neighborhood.svg'
                   }}
                 />
                 <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">

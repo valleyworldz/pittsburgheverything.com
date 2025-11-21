@@ -1,0 +1,13 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#e8f5e8"/>
+  <rect x="50" y="100" width="300" height="150" fill="#4caf50" rx="10"/>
+  <!-- Car -->
+  <rect x="120" y="150" width="60" height="30" fill="#2196f3" rx="5"/>
+  <circle cx="135" cy="185" r="8" fill="#424242"/>
+  <circle cx="165" cy="185" r="8" fill="#424242"/>
+  <!-- Oil can -->
+  <rect x="220" y="140" width="20" height="35" fill="#ff5722"/>
+  <rect x="215" y="135" width="30" height="10" fill="#ff5722"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#2e7d32" font-weight="bold">Oil Change Special</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#388e3c">$19.99 Oil Change</text>
+</svg>

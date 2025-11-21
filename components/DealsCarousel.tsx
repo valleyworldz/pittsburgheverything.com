@@ -21,7 +21,7 @@ export default function DealsCarousel() {
         businessName: 'Primanti Bros.',
         discount: '50% off',
         category: 'Food & Drink',
-        image: '/images/deals/primanti-appetizers.jpg',
+        image: '/images/deals/primanti-appetizers.svg',
         expiresAt: '2024-12-31'
       },
       {
@@ -32,7 +32,7 @@ export default function DealsCarousel() {
         businessName: 'Fat Head\'s Saloon',
         discount: '$5 beers, $8 pizzas',
         category: 'Food & Drink',
-        image: '/images/deals/fat-heads-happy-hour.jpg'
+        image: '/images/deals/fat-heads-happy-hour.svg'
       },
       {
         id: '3',
@@ -42,7 +42,7 @@ export default function DealsCarousel() {
         businessName: 'The Porch at Schenley',
         discount: 'Bottomless mimosas',
         category: 'Food & Drink',
-        image: '/images/deals/the-porch-brunch.jpg',
+        image: '/images/deals/the-porch-brunch.svg',
         expiresAt: '2024-12-31'
       },
       {
@@ -53,7 +53,7 @@ export default function DealsCarousel() {
         businessName: 'Union Grill',
         discount: '20% off',
         category: 'Food & Drink',
-        image: '/images/deals/student-discount.jpg'
+        image: '/images/deals/student-discount.svg'
       }
     ]
 
@@ -190,12 +190,12 @@ export default function DealsCarousel() {
           {/* Deal Image */}
           <div className="relative">
             <img
-              src={currentDeal.image || '/images/placeholder-deal.jpg'}
+              src={currentDeal.image || '/images/placeholder-deal.svg'}
               alt={currentDeal.title}
               className="w-full h-64 md:h-80 object-cover rounded-lg shadow-lg"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
-                target.src = '/images/placeholder-deal.jpg'
+                target.src = '/images/placeholder-deal.svg'
               }}
             />
 

@@ -79,7 +79,7 @@ export default function ReviewSEOHead({
   // Generate Open Graph tags
   const getOpenGraphTags = () => {
     const rating = averageRating.toFixed(1)
-    const image = business.image || '/images/default-business.jpg'
+    const image = business.image || '/images/default-business.svg'
 
     return [
       { property: 'og:title', content: getTitle() },
@@ -100,7 +100,7 @@ export default function ReviewSEOHead({
 
   // Generate Twitter Card tags
   const getTwitterTags = () => {
-    const image = business.image || '/images/default-business.jpg'
+    const image = business.image || '/images/default-business.svg'
 
     return [
       { name: 'twitter:card', content: 'summary_large_image' },

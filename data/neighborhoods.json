@@ -14,7 +14,7 @@
     "description": "Home to universities, hospitals, and world-class museums. The cultural and educational center of Pittsburgh.",
     "population": 8000,
     "medianIncome": 55000,
-    "image": "/images/neighborhoods/lawrenceville.jpg",
+    "image": "/images/neighborhoods/lawrenceville.svg",
     "attractions": [
       "Lawrenceville Arts & Entertainment District",
       "Artery",
@@ -44,7 +44,7 @@
     "description": "Upscale neighborhood with high-end shopping, fine dining, and beautiful residential streets.",
     "population": 15000,
     "medianIncome": 85000,
-    "image": "/images/neighborhoods/shadyside.jpg",
+    "image": "/images/neighborhoods/shadyside.svg",
     "attractions": [
       "Walnut Street shopping",
       "Rodef Shalom Congregation",
@@ -74,7 +74,7 @@
     "description": "Historic flats with trendy shops, restaurants, and nightlife. Pittsburgh's most walkable neighborhood.",
     "population": 12000,
     "medianIncome": 65000,
-    "image": "/images/neighborhoods/south-side.jpg",
+    "image": "/images/neighborhoods/south-side.svg",
     "attractions": [
       "South Side Works",
       "Carnegie Library of Pittsburgh",
@@ -106,7 +106,7 @@
     "description": "The heart of Pittsburgh with skyscrapers, businesses, cultural attractions, and the famous Golden Triangle.",
     "population": 5000,
     "medianIncome": 75000,
-    "image": "/images/neighborhoods/downtown.jpg",
+    "image": "/images/neighborhoods/downtown.svg",
     "attractions": [
       "Point State Park",
       "Duquesne Incline",
@@ -138,7 +138,7 @@
     "description": "Home to universities, hospitals, and world-class museums. The cultural and educational center of Pittsburgh.",
     "population": 25000,
     "medianIncome": 45000,
-    "image": "/images/neighborhoods/oakland.jpg",
+    "image": "/images/neighborhoods/oakland.svg",
     "attractions": [
       "Carnegie Museum of Art",
       "Carnegie Museum of Natural History",
@@ -171,7 +171,7 @@
     "description": "Historic warehouse district now filled with specialty shops, food vendors, and Pittsburgh's best wholesale food markets.",
     "population": 800,
     "medianIncome": 70000,
-    "image": "/images/neighborhoods/strip-district.jpg",
+    "image": "/images/neighborhoods/strip-district.svg",
     "attractions": [
       "Whole Foods Market",
       "Penn Avenue Fish Company",

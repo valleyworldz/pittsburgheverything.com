@@ -1,0 +1,17 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#e3f2fd"/>
+  <!-- Tree -->
+  <polygon points="200,50 170,120 230,120" fill="#4caf50"/>
+  <polygon points="200,80 180,130 220,130" fill="#4caf50"/>
+  <polygon points="200,110 190,140 210,140" fill="#4caf50"/>
+  <!-- Trunk -->
+  <rect x="195" y="140" width="10" height="30" fill="#795548"/>
+  <!-- Star -->
+  <polygon points="200,40 205,55 220,55 210,65 215,80 200,70 185,80 190,65 180,55 195,55" fill="#ffc107"/>
+  <!-- Ornaments -->
+  <circle cx="185" cy="100" r="4" fill="#ff5722"/>
+  <circle cx="215" cy="100" r="4" fill="#2196f3"/>
+  <circle cx="200" cy="125" r="4" fill="#ffc107"/>
+  <text x="200" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#1976d2" font-weight="bold">Christmas Tree Lighting</text>
+  <text x="200" y="210" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#2196f3">Downtown Pittsburgh</text>
+</svg>

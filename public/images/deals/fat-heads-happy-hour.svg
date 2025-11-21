@@ -1,0 +1,11 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#fff3e0"/>
+  <rect x="50" y="100" width="300" height="150" fill="#ff5722" rx="10"/>
+  <circle cx="120" cy="150" r="20" fill="#ffc107"/>
+  <rect x="160" y="130" width="80" height="25" fill="#4caf50"/>
+  <circle cx="280" cy="150" r="15" fill="#795548"/>
+  <rect x="250" y="165" width="60" height="15" fill="#ff5722"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#d84315" font-weight="bold">Happy Hour</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#bf360c">$5 Beers & $8 Pizzas</text>
+  <text x="200" y="290" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#d84315">4-7 PM Daily</text>
+</svg>

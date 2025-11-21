@@ -1,0 +1,12 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#e3f2fd"/>
+  <!-- Skyscrapers -->
+  <rect x="50" y="80" width="30" height="120" fill="#1976d2"/>
+  <rect x="90" y="60" width="35" height="140" fill="#0d47a1"/>
+  <rect x="140" y="100" width="25" height="100" fill="#1976d2"/>
+  <rect x="180" y="70" width="40" height="130" fill="#0d47a1"/>
+  <rect x="240" y="90" width="30" height="110" fill="#1976d2"/>
+  <rect x="290" y="50" width="35" height="150" fill="#0d47a1"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#0d47a1" font-weight="bold">Downtown</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#1976d2">Business District</text>
+</svg>

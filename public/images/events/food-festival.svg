@@ -1,0 +1,21 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#fce4ec"/>
+  <!-- Tables -->
+  <rect x="50" y="180" width="80" height="40" fill="#8d6e63"/>
+  <rect x="150" y="180" width="80" height="40" fill="#8d6e63"/>
+  <rect x="250" y="180" width="80" height="40" fill="#8d6e63"/>
+  <!-- Food items -->
+  <circle cx="90" cy="160" r="15" fill="#ff9800"/>
+  <rect x="75" y="150" width="30" height="10" fill="#795548"/>
+  <circle cx="190" cy="160" r="12" fill="#4caf50"/>
+  <circle cx="290" cy="160" r="10" fill="#ffc107"/>
+  <!-- People -->
+  <circle cx="90" cy="120" r="8" fill="#ff5722"/>
+  <rect x="85" y="128" width="10" height="20" fill="#ff5722"/>
+  <circle cx="190" cy="120" r="8" fill="#2196f3"/>
+  <rect x="185" y="128" width="10" height="20" fill="#2196f3"/>
+  <circle cx="290" cy="120" r="8" fill="#9c27b0"/>
+  <rect x="285" y="128" width="10" height="20" fill="#9c27b0"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#c2185b" font-weight="bold">Food Festival</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#ad1457">Taste of Pittsburgh</text>
+</svg>

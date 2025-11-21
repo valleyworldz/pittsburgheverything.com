@@ -1,0 +1,12 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#fff3e0"/>
+  <!-- Brewery -->
+  <rect x="80" y="120" width="80" height="80" fill="#ff5722"/>
+  <!-- Bar -->
+  <rect x="180" y="130" width="70" height="70" fill="#ff9800"/>
+  <!-- People -->
+  <circle cx="120" cy="180" r="8" fill="#795548"/>
+  <circle cx="220" cy="180" r="8" fill="#795548"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#e65100" font-weight="bold">South Side</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#bf360c">Breweries & Nightlife</text>
+</svg>

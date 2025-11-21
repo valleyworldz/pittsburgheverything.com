@@ -1,0 +1,11 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#e1f5fe"/>
+  <rect x="50" y="100" width="300" height="150" fill="#00bcd4" rx="10"/>
+  <!-- Fish -->
+  <ellipse cx="150" cy="150" rx="20" ry="12" fill="#ffc107"/>
+  <circle cx="135" cy="145" r="3" fill="#000"/>
+  <!-- Waves -->
+  <path d="M 200 160 Q 220 140 240 160 Q 260 180 280 160" stroke="#00bcd4" stroke-width="3" fill="none"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#006064" font-weight="bold">Monterey Bay</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#0097a7">Seafood & Fish Market</text>
+</svg>

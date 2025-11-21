@@ -1,0 +1,8 @@
+<svg width="800" height="400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="400" fill="#1a1a1a"/>
+  <rect x="50" y="50" width="700" height="300" fill="#2a2a2a" rx="15"/>
+  <text x="400" y="150" text-anchor="middle" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" font-weight="bold">PittsburghEverything</text>
+  <text x="400" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#cccccc">Local Reviews & Recommendations</text>
+  <circle cx="400" cy="250" r="20" fill="#e65100"/>
+  <text x="400" y="258" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">★</text>
+</svg>

@@ -25,7 +25,7 @@ export default function EventGrid({ limit }: EventGridProps) {
         location: 'Point State Park',
         category: 'Food & Drink',
         price: 'Free',
-        image: '/images/events/food-festival.jpg'
+        image: '/images/events/food-festival.svg'
       },
       {
         id: '2',
@@ -36,7 +36,7 @@ export default function EventGrid({ limit }: EventGridProps) {
         location: 'Acrisure Stadium',
         category: 'Sports',
         price: '$50+',
-        image: '/images/events/steelers-game.jpg'
+        image: '/images/events/steelers-game.svg'
       },
       {
         id: '3',
@@ -47,7 +47,7 @@ export default function EventGrid({ limit }: EventGridProps) {
         location: 'Market Square',
         category: 'Holiday',
         price: 'Free',
-        image: '/images/events/christmas-tree.jpg'
+        image: '/images/events/christmas-tree.svg'
       }
     ]
 
@@ -77,12 +77,12 @@ export default function EventGrid({ limit }: EventGridProps) {
         <div key={event.id} className="card group cursor-pointer hover:scale-105 transition-transform">
           <div className="relative">
             <img
-              src={event.image || '/images/placeholder-event.jpg'}
+              src={event.image || '/images/placeholder-event.svg'}
               alt={event.title}
               className="w-full h-48 object-cover rounded-t-lg"
               onError={(e) => {
                 const target = e.target as HTMLImageElement
-                target.src = '/images/placeholder-event.jpg'
+                target.src = '/images/placeholder-event.svg'
               }}
             />
             <div className="absolute top-4 right-4 bg-pittsburgh-gold text-pittsburgh-black px-3 py-1 rounded-full text-sm font-semibold">

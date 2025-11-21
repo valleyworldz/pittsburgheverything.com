@@ -10,7 +10,7 @@
     "phone": "(412) 621-4444",
     "website": "https://primantibros.com",
     "neighborhood": "Oakland",
-    "image": "/images/restaurants/primanti-bros.jpg",
+    "image": "/images/restaurants/primanti-bros.svg",
     "features": ["Sandwiches", "Late Night", "Iconic Pittsburgh", "Casual"],
     "hours": {
       "monday": "24 hours",
@@ -33,7 +33,7 @@
     "phone": "(412) 687-6724",
     "website": "https://theporchatschenley.com",
     "neighborhood": "Schenley Park",
-    "image": "/images/restaurants/the-porch.jpg",
+    "image": "/images/restaurants/the-porch.svg",
     "features": ["Farm-to-Table", "Historic Building", "Cocktails", "Romantic"],
     "hours": {
       "monday": "5:00 PM - 10:00 PM",
@@ -56,7 +56,7 @@
     "phone": "(412) 431-7433",
     "website": "https://fatheads.com",
     "neighborhood": "South Side",
-    "image": "/images/restaurants/fat-heads.jpg",
+    "image": "/images/restaurants/fat-heads.svg",
     "features": ["Craft Beer", "Pizza", "Sports Bar", "Late Night"],
     "hours": {
       "monday": "11:00 AM - 2:00 AM",
@@ -79,7 +79,7 @@
     "phone": "(412) 481-4414",
     "website": "https://fishgrotto.com",
     "neighborhood": "Strip District",
-    "image": "/images/restaurants/monterey-bay.jpg",
+    "image": "/images/restaurants/monterey-bay.svg",
     "features": ["Seafood", "Casual", "Historic", "Lunch Specials"],
     "hours": {
       "monday": "11:00 AM - 9:00 PM",
@@ -102,7 +102,7 @@
     "phone": "(412) 521-5656",
     "website": "https://aiellospizza.com",
     "neighborhood": "Oakland",
-    "image": "/images/restaurants/aiellos.jpg",
+    "image": "/images/restaurants/aiellos.svg",
     "features": ["Italian", "Family-Owned", "Traditional", "Pizza"],
     "hours": {
       "monday": "11:00 AM - 10:00 PM",

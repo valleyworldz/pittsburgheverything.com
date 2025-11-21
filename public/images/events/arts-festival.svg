@@ -1,0 +1,14 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f3e5f5"/>
+  <rect x="50" y="100" width="300" height="150" fill="#9c27b0" rx="10"/>
+  <!-- Paint brushes -->
+  <rect x="120" y="130" width="20" height="60" fill="#795548"/>
+  <rect x="140" y="130" width="15" height="50" fill="#4caf50"/>
+  <rect x="160" y="130" width="18" height="55" fill="#2196f3"/>
+  <!-- Canvas -->
+  <rect x="220" y="120" width="80" height="60" fill="#ffffff" stroke="#000" stroke-width="2"/>
+  <circle cx="240" cy="140" r="8" fill="#ff5722"/>
+  <circle cx="270" cy="160" r="6" fill="#4caf50"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#7b1fa2" font-weight="bold">Arts Festival</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#9c27b0">Local Artists & Performances</text>
+</svg>

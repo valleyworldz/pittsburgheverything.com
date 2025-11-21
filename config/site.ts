@@ -6,7 +6,7 @@ export const siteConfig = {
   title: 'PittsburghEverything — Everything Pittsburgh in One Place',
   description: 'Events, food, neighborhoods, services, deals and more. Your complete guide to Pittsburgh.',
   url: 'https://pittsburgheverything.com',
-  ogImage: '/images/og-image.jpg',
+  ogImage: '/images/og-image.svg',
 
   // Contact information
   contact: {

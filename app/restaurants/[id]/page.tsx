@@ -16,7 +16,7 @@ const mockRestaurants: Restaurant[] = [
     phone: '(412) 621-4444',
     website: 'https://primantibros.com',
     neighborhood: 'Oakland',
-    image: '/images/restaurants/primanti-bros.jpg',
+    image: '/images/restaurants/primanti-bros.svg',
     features: ['Sandwiches', 'Late Night', 'Iconic Pittsburgh', 'Casual'],
     hours: {
       monday: '24 hours',
@@ -39,7 +39,7 @@ const mockRestaurants: Restaurant[] = [
     phone: '(412) 687-6724',
     website: 'https://theporchatschenley.com',
     neighborhood: 'Schenley Park',
-    image: '/images/restaurants/the-porch.jpg',
+    image: '/images/restaurants/the-porch.svg',
     features: ['Farm-to-Table', 'Historic Building', 'Cocktails', 'Romantic'],
     hours: {
       monday: '5:00 PM - 10:00 PM',
@@ -62,7 +62,7 @@ const mockRestaurants: Restaurant[] = [
     phone: '(412) 431-7433',
     website: 'https://fatheads.com',
     neighborhood: 'South Side',
-    image: '/images/restaurants/fat-heads.jpg',
+    image: '/images/restaurants/fat-heads.svg',
     features: ['Craft Beer', 'Pizza', 'Sports Bar', 'Late Night'],
     hours: {
       monday: '11:00 AM - 12:00 AM',

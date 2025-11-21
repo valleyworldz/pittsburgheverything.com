@@ -1,0 +1,13 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f3e5f5"/>
+  <!-- Trees -->
+  <rect x="60" y="150" width="10" height="50" fill="#4caf50"/>
+  <circle cx="65" cy="140" r="20" fill="#4caf50"/>
+  <rect x="120" y="150" width="10" height="50" fill="#4caf50"/>
+  <circle cx="125" cy="140" r="20" fill="#4caf50"/>
+  <!-- Shops -->
+  <rect x="200" y="130" width="60" height="70" fill="#9c27b0"/>
+  <rect x="270" y="140" width="50" height="60" fill="#ba68c8"/>
+  <text x="200" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="#7b1fa2" font-weight="bold">Shadyside</text>
+  <text x="200" y="270" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#9c27b0">Upscale Shopping & Dining</text>
+</svg>

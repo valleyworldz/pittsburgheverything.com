@@ -59,7 +59,7 @@ export default function RestaurantDetail({ restaurant }: RestaurantDetailProps) 
         <div className="absolute inset-0 bg-black bg-opacity-40"></div>
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(${restaurant.image || '/images/placeholder-restaurant.jpg'})` }}
+          style={{ backgroundImage: `url(${restaurant.image || '/images/placeholder-restaurant.svg'})` }}
         ></div>
         <div className="relative z-10 container mx-auto px-4 py-16 h-full flex items-end">
           <div className="text-white">
