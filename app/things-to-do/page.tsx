@@ -1,36 +1,9 @@
-import type { Metadata } from 'next'
+'use client'
+
 import { Calendar, MapPin, Clock, Star, Heart, Camera, Coffee, Music, Mountain, TreePine, Building, Waves } from 'lucide-react'
 import Link from 'next/link'
 import Hero from '@/components/Hero'
 import { siteConfig } from '@/config/site'
-
-export const metadata: Metadata = {
-  title: 'Things to Do in Pittsburgh | Activities & Attractions',
-  description: 'Discover the best things to do in Pittsburgh. From cultural attractions and outdoor activities to dining and entertainment, explore everything the Steel City has to offer.',
-  keywords: [
-    'Pittsburgh activities',
-    'things to do Pittsburgh',
-    'Pittsburgh attractions',
-    'Pittsburgh entertainment',
-    'Pittsburgh sightseeing',
-    'Pittsburgh outdoor activities',
-    'Pittsburgh museums',
-    'Pittsburgh sports',
-    'Pittsburgh cultural events'
-  ],
-  openGraph: {
-    title: 'Things to Do in Pittsburgh | Activities & Attractions',
-    description: 'Discover the best things to do in Pittsburgh. From cultural attractions and outdoor activities to dining and entertainment.',
-    images: [
-      {
-        url: '/images/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Things to Do in Pittsburgh',
-      },
-    ],
-  },
-}
 
 const activityCategories = [
   {

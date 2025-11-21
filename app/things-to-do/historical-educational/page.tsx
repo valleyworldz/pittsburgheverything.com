@@ -1,24 +1,7 @@
-import type { Metadata } from 'next'
+'use client'
+
 import { Calendar, MapPin, Clock, Star, Heart, ArrowLeft, BookOpen, GraduationCap, Building2, Landmark } from 'lucide-react'
 import Link from 'next/link'
-
-export const metadata: Metadata = {
-  title: 'Historical & Educational Activities in Pittsburgh | PittsburghEverything',
-  description: 'Explore Pittsburgh\'s rich history and educational attractions. From museums and historical sites to universities and learning experiences.',
-  keywords: 'Pittsburgh history, educational activities, museums, historical sites, universities, learning experiences',
-  openGraph: {
-    title: 'Historical & Educational Activities in Pittsburgh',
-    description: 'Explore Pittsburgh\'s rich history and educational attractions.',
-    images: [
-      {
-        url: '/images/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Historical & Educational Activities',
-      },
-    ],
-  },
-}
 
 export default function HistoricalEducationalPage() {
   const activities = [
@@ -225,10 +208,6 @@ export default function HistoricalEducationalPage() {
                     src={activity.image}
                     alt={activity.name}
                     className="w-full h-48 object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement
-                      target.src = '/images/placeholder-event.svg'
-                    }}
                   />
                   <div className="absolute top-4 left-4 bg-pittsburgh-gold text-pittsburgh-black px-3 py-1 rounded-full text-sm font-semibold">
                     {activity.category}

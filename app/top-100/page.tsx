@@ -1,11 +1,6 @@
-import type { Metadata } from 'next'
-import Top100Table from '@/components/Top100Table'
+'use client'
 
-export const metadata: Metadata = {
-  title: 'Pittsburgh Top 100 | PittsburghEverything',
-  description: 'The definitive ranking of Pittsburgh\'s best restaurants, attractions, events, and experiences. Expert-curated and community-voted.',
-  keywords: 'Pittsburgh top 100, best restaurants, best attractions, rankings, reviews',
-}
+import Top100Table from '@/components/Top100Table'
 
 export default function Top100Page() {
   return (

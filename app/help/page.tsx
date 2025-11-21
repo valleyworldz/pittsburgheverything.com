@@ -1,21 +1,9 @@
+'use client'
+
 import type { Metadata } from 'next'
 import { HelpCircle, Search, MessageSquare, Phone, Mail, MapPin, CreditCard, Shield, Star, Users } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata: Metadata = {
-  title: 'Help Center | PittsburghEverything',
-  description: 'Get help and answers to your questions about PittsburghEverything. Find guides, FAQs, and contact information.',
-  keywords: 'help, FAQ, support, contact, PittsburghEverything help',
-  openGraph: {
-    title: 'Help Center | PittsburghEverything',
-    description: 'Get help and answers to your questions about PittsburghEverything.',
-    images: [
-      {
-        url: '/images/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'Help Center',
-      },
     ],
   },
 }

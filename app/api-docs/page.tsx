@@ -1,21 +1,9 @@
+'use client'
+
 import type { Metadata } from 'next'
 import { Code, Database, Zap, Shield, Book, ExternalLink, Copy, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
-export const metadata: Metadata = {
-  title: 'API Documentation | PittsburghEverything',
-  description: 'Complete API documentation for PittsburghEverything. Access real-time data, business listings, events, and more through our developer-friendly APIs.',
-  keywords: 'API documentation, developer docs, Pittsburgh API, real-time data, business listings API',
-  openGraph: {
-    title: 'API Documentation | PittsburghEverything',
-    description: 'Complete API documentation for PittsburghEverything developer platform.',
-    images: [
-      {
-        url: '/images/og-image.svg',
-        width: 1200,
-        height: 630,
-        alt: 'API Documentation',
-      },
     ],
   },
 }
