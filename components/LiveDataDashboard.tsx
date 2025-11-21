@@ -117,13 +117,26 @@ export default function LiveDataDashboard({ location = 'Pittsburgh', compact = f
     return () => clearInterval(interval)
   }, [location])
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit'
-    }).format(date)
+  const formatDate = (date: Date | string | null | undefined) => {
+    try {
+      if (!date) return 'Date TBD'
+
+      const dateObj = typeof date === 'string' ? new Date(date) : date
+
+      if (isNaN(dateObj.getTime())) {
+        return 'Date TBD'
+      }
+
+      return new Intl.DateTimeFormat('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit'
+      }).format(dateObj)
+    } catch (error) {
+      console.warn('Invalid date format:', date, error)
+      return 'Date TBD'
+    }
   }
 
   const getWeatherIcon = (condition: string) => {

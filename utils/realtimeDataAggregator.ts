@@ -332,20 +332,36 @@ export class LiveNewsAggregator {
     if (!response.ok) return []
 
     const data = await response.json()
-    return data.articles.map((article: any) => ({
-      id: `newsapi-${btoa(article.url).slice(0, 10)}`,
-      title: article.title,
-      summary: article.description,
-      content: article.content,
-      author: article.author || article.source.name,
-      publishedAt: new Date(article.publishedAt),
-      category: this.categorizeArticle(article.title + ' ' + article.description),
-      tags: this.extractTags(article.title + ' ' + article.description),
-      image: article.urlToImage,
-      url: article.url,
-      source: 'post-gazette' as const,
-      location: location
-    }))
+    return data.articles
+      .filter((article: any) => article.publishedAt) // Filter out articles without dates
+      .map((article: any) => {
+        let publishedAt: Date
+        try {
+          publishedAt = new Date(article.publishedAt)
+          // Check if the date is valid
+          if (isNaN(publishedAt.getTime())) {
+            publishedAt = new Date() // Fallback to current date
+          }
+        } catch (error) {
+          console.warn('Invalid publishedAt date for article:', article.title, article.publishedAt)
+          publishedAt = new Date() // Fallback to current date
+        }
+
+        return {
+          id: `newsapi-${btoa(article.url).slice(0, 10)}`,
+          title: article.title,
+          summary: article.description,
+          content: article.content,
+          author: article.author || article.source.name,
+          publishedAt,
+          category: this.categorizeArticle(article.title + ' ' + article.description),
+          tags: this.extractTags(article.title + ' ' + article.description),
+          image: article.urlToImage,
+          url: article.url,
+          source: 'post-gazette' as const,
+          location: location
+        }
+      })
   }
 
   private async fetchRSSFeeds(): Promise<LiveNews[]> {

@@ -19,31 +19,47 @@ interface AnalyticsEvent {
 
 export async function POST(request: NextRequest) {
   try {
-    let eventData: AnalyticsEvent
+    let eventData: Partial<AnalyticsEvent>
 
     // Handle different content types
     const contentType = request.headers.get('content-type')
     if (contentType?.includes('application/json')) {
-      eventData = await request.json()
+      try {
+        eventData = await request.json()
+      } catch (jsonError) {
+        console.warn('Invalid JSON in analytics request:', jsonError)
+        return NextResponse.json(
+          { error: 'Invalid JSON format' },
+          { status: 400 }
+        )
+      }
     } else {
       // Handle form data or other formats
-      const formData = await request.formData()
-      eventData = {
-        event: formData.get('event') as string,
-        userId: formData.get('userId') as string,
-        sessionId: formData.get('sessionId') as string,
-        timestamp: parseInt(formData.get('timestamp') as string) || Date.now(),
-        url: formData.get('url') as string,
-        referrer: formData.get('referrer') as string,
-        userAgent: formData.get('userAgent') as string,
-        data: formData.get('data') ? JSON.parse(formData.get('data') as string) : undefined,
+      try {
+        const formData = await request.formData()
+        eventData = {
+          event: formData.get('event') as string,
+          userId: formData.get('userId') as string,
+          sessionId: formData.get('sessionId') as string,
+          timestamp: parseInt(formData.get('timestamp') as string) || Date.now(),
+          url: formData.get('url') as string,
+          referrer: formData.get('referrer') as string,
+          userAgent: formData.get('userAgent') as string,
+          data: formData.get('data') ? JSON.parse(formData.get('data') as string) : undefined,
+        }
+      } catch (formError) {
+        console.warn('Invalid form data in analytics request:', formError)
+        return NextResponse.json(
+          { error: 'Invalid form data format' },
+          { status: 400 }
+        )
       }
     }
 
     // Validate required fields
-    if (!eventData.event) {
+    if (!eventData.event || typeof eventData.event !== 'string') {
       return NextResponse.json(
-        { error: 'Event type is required' },
+        { error: 'Valid event type is required' },
         { status: 400 }
       )
     }
