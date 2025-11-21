@@ -19,7 +19,26 @@ interface AnalyticsEvent {
 
 export async function POST(request: NextRequest) {
   try {
-    const eventData: AnalyticsEvent = await request.json()
+    let eventData: AnalyticsEvent
+
+    // Handle different content types
+    const contentType = request.headers.get('content-type')
+    if (contentType?.includes('application/json')) {
+      eventData = await request.json()
+    } else {
+      // Handle form data or other formats
+      const formData = await request.formData()
+      eventData = {
+        event: formData.get('event') as string,
+        userId: formData.get('userId') as string,
+        sessionId: formData.get('sessionId') as string,
+        timestamp: parseInt(formData.get('timestamp') as string) || Date.now(),
+        url: formData.get('url') as string,
+        referrer: formData.get('referrer') as string,
+        userAgent: formData.get('userAgent') as string,
+        data: formData.get('data') ? JSON.parse(formData.get('data') as string) : undefined,
+      }
+    }
 
     // Validate required fields
     if (!eventData.event) {
