@@ -91,22 +91,32 @@ export default function Navigation() {
   const { scrollY } = useScroll()
   const lastScrollY = useRef(0)
 
-  // Enhanced scroll detection with hide/show behavior
+  // Optimized scroll detection with throttling
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const direction = latest > lastScrollY.current ? "down" : "up"
+    // Throttle scroll updates to every 16ms (60fps)
+    const now = Date.now()
+    if (now - (lastScrollY.current as any).lastUpdate < 16) return
+
+    const direction = latest > (lastScrollY.current as number) ? "down" : "up"
     const shouldHide = direction === "down" && latest > 100
     const shouldShow = direction === "up" || latest < 10
 
-    if (shouldHide) setIsVisible(false)
-    if (shouldShow) setIsVisible(true)
+    if (shouldHide && isVisible) setIsVisible(false)
+    if (shouldShow && !isVisible) setIsVisible(true)
 
-    setIsScrolled(latest > 10)
-    lastScrollY.current = latest
+    if ((latest > 10) !== isScrolled) setIsScrolled(latest > 10)
+    ;(lastScrollY.current as any) = { value: latest, lastUpdate: now }
   })
 
-  // Enhanced keyboard navigation
+  // Optimized keyboard navigation with debouncing
   useEffect(() => {
+    let lastKeyTime = 0
     const handleKeyDown = (e: KeyboardEvent) => {
+      const now = Date.now()
+      // Debounce key events to 50ms
+      if (now - lastKeyTime < 50) return
+      lastKeyTime = now
+
       // Alt + key shortcuts
       if (e.altKey) {
         const item = navigationItems.find(item => item.shortcut === `Alt+${e.key.toUpperCase()}`)
@@ -126,11 +136,11 @@ export default function Navigation() {
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault()
         setIsSearchOpen(true)
-        setTimeout(() => searchInputRef.current?.focus(), 100)
+        requestAnimationFrame(() => searchInputRef.current?.focus())
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keydown', handleKeyDown, { passive: true })
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [router])
 

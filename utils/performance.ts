@@ -57,49 +57,34 @@ export class PerformanceMonitor {
   private initializeObservers() {
     // Core Web Vitals
     if ('PerformanceObserver' in window) {
-      // Largest Contentful Paint
+      // Combined Web Vitals observer for better performance
       try {
-        const lcpObserver = new PerformanceObserver((list) => {
+        const webVitalsObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries()
-          const lastEntry = entries[entries.length - 1]
-          this.metrics.LCP = lastEntry.startTime
-        })
-        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] })
-        this.observers.push(lcpObserver)
-      } catch (e) {
-        console.warn('LCP observer not supported')
-      }
 
-      // First Input Delay
-      try {
-        const fidObserver = new PerformanceObserver((list) => {
-          const entries = list.getEntries()
           entries.forEach((entry: any) => {
-            this.metrics.FID = entry.processingStart - entry.startTime
-          })
-        })
-        fidObserver.observe({ entryTypes: ['first-input'] })
-        this.observers.push(fidObserver)
-      } catch (e) {
-        console.warn('FID observer not supported')
-      }
-
-      // Cumulative Layout Shift
-      try {
-        const clsObserver = new PerformanceObserver((list) => {
-          let clsValue = 0
-          const entries = list.getEntries()
-          entries.forEach((entry: any) => {
-            if (!entry.hadRecentInput) {
-              clsValue += entry.value
+            switch (entry.entryType) {
+              case 'largest-contentful-paint':
+                this.metrics.LCP = entry.startTime
+                break
+              case 'first-input':
+                this.metrics.FID = entry.processingStart - entry.startTime
+                break
+              case 'layout-shift':
+                if (!entry.hadRecentInput) {
+                  this.metrics.CLS = (this.metrics.CLS || 0) + entry.value
+                }
+                break
             }
           })
-          this.metrics.CLS = clsValue
         })
-        clsObserver.observe({ entryTypes: ['layout-shift'] })
-        this.observers.push(clsObserver)
+
+        webVitalsObserver.observe({
+          entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift']
+        })
+        this.observers.push(webVitalsObserver)
       } catch (e) {
-        console.warn('CLS observer not supported')
+        console.warn('Web Vitals observers not supported')
       }
 
       // Navigation Timing
@@ -167,45 +152,76 @@ export class PerformanceMonitor {
     })
   }
 
-  // Track user interactions
+  // Track user interactions (throttled to prevent performance issues)
+  private lastInteractionTime = 0
   trackInteraction(interactionType: string, element: string, value?: any) {
+    const now = Date.now()
+    // Throttle interactions to once per 100ms to prevent spam
+    if (now - this.lastInteractionTime < 100) return
+
+    this.lastInteractionTime = now
     this.sendToAnalytics('user_interaction', {
       type: interactionType,
       element,
       value,
-      timestamp: Date.now(),
+      timestamp: now,
       page: window.location.pathname
     })
   }
 
-  // Send data to analytics service
+  // Send data to analytics service (optimized)
+  private analyticsQueue: Array<{eventName: string, data: any, timestamp: number}> = []
+  private isSending = false
+
   private sendToAnalytics(eventName: string, data: any) {
-    // In production, send to your analytics service
-    if (typeof window !== 'undefined') {
-      // Vercel Analytics
+    if (typeof window === 'undefined') return
+
+    // Add to queue instead of immediate send
+    this.analyticsQueue.push({ eventName, data, timestamp: Date.now() })
+
+    // Batch send every 5 seconds or when queue gets too large
+    if (this.analyticsQueue.length >= 10) {
+      this.flushAnalytics()
+    } else if (!this.isSending) {
+      setTimeout(() => this.flushAnalytics(), 5000)
+    }
+  }
+
+  private async flushAnalytics() {
+    if (this.isSending || this.analyticsQueue.length === 0) return
+
+    this.isSending = true
+    const batch = [...this.analyticsQueue]
+    this.analyticsQueue = []
+
+    try {
+      // Vercel Analytics (immediate, non-blocking)
       if ((window as any).va) {
-        ;(window as any).va('event', {
-          name: eventName,
-          properties: data
+        batch.forEach(({ eventName, data }) => {
+          ;(window as any).va('event', {
+            name: eventName,
+            properties: data
+          })
         })
       }
 
-      // Custom analytics endpoint
+      // Custom analytics endpoint (batched)
       if (process.env.NODE_ENV === 'production') {
-        fetch('/api/analytics/track', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
+        // Send in background, don't wait
+        navigator.sendBeacon('/api/analytics/track', JSON.stringify({
+          events: batch.map(({ eventName, data, timestamp }) => ({
             event: eventName,
             data,
             userAgent: navigator.userAgent,
             url: window.location.href,
-            timestamp: Date.now()
-          })
-        }).catch(err => console.warn('Analytics send failed:', err))
+            timestamp
+          }))
+        }))
       }
+    } catch (err) {
+      console.warn('Analytics batch send failed:', err)
+    } finally {
+      this.isSending = false
     }
   }
 
@@ -315,31 +331,25 @@ export class UserAnalyticsTracker {
   }
 
   private sendAnalytics(eventType: string, data: any) {
-    // Only run analytics on client side
-    if (typeof window === 'undefined') {
-      return
-    }
+    if (typeof window === 'undefined') return
 
-    // Send to analytics service in production
+    // Use sendBeacon for better performance (fire-and-forget)
     if (process.env.NODE_ENV === 'production') {
-      fetch('/api/analytics/track', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          event: eventType,
-          sessionId: this.sessionId,
-          data,
-          timestamp: Date.now(),
-          url: window.location.href,
-          referrer: document.referrer,
-          userAgent: navigator.userAgent
-        })
-      }).catch(err => console.warn('Analytics tracking failed:', err))
+      const analyticsData = {
+        event: eventType,
+        sessionId: this.sessionId,
+        data,
+        timestamp: Date.now(),
+        url: window.location.href,
+        referrer: document.referrer,
+        userAgent: navigator.userAgent
+      }
+
+      // Use sendBeacon for non-blocking analytics
+      navigator.sendBeacon('/api/analytics/track', JSON.stringify(analyticsData))
     }
 
-    // Also send to console in development
+    // Console logging only in development
     if (process.env.NODE_ENV === 'development') {
       console.log(`Analytics: ${eventType}`, data)
     }
@@ -350,63 +360,43 @@ export class UserAnalyticsTracker {
 let performanceMonitor: PerformanceMonitor | null = null
 let userAnalytics: UserAnalyticsTracker | null = null
 
-// Initialize monitoring
+// Initialize monitoring (optimized)
 export function initializeMonitoring() {
-  if (typeof window !== 'undefined') {
+  if (typeof window === 'undefined') return
+
+  // Only initialize performance monitoring in production to reduce overhead
+  if (process.env.NODE_ENV === 'production') {
     performanceMonitor = new PerformanceMonitor()
-    userAnalytics = new UserAnalyticsTracker()
+  }
 
-    // Start session tracking
-    if (userAnalytics && typeof window !== 'undefined') {
+  // Always initialize user analytics (but with reduced tracking)
+  userAnalytics = new UserAnalyticsTracker()
+
+  // Simplified session tracking - only send on page unload
+  window.addEventListener('beforeunload', () => {
+    if (userAnalytics) {
       const analytics = userAnalytics.getAnalyticsData()
-      const sessionStartData = {
+      const sessionData = {
         sessionId: analytics.sessionId,
-        userId: analytics.userId,
-        startTime: analytics.timeOnPage, // This will be the session start timestamp
-        userAgent: navigator.userAgent,
-        referrer: document.referrer,
-        url: window.location.href
+        endTime: Date.now(),
+        duration: analytics.timeOnPage,
+        pageViews: analytics.pageViews,
+        events: analytics.interactions.length
       }
-
-      // Send session start (non-blocking)
-      fetch('/api/analytics/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(sessionStartData),
-        keepalive: true // Allow request to complete even if page unloads
-      }).catch(err => console.warn('Session start failed:', err))
+      navigator.sendBeacon('/api/analytics/session', JSON.stringify(sessionData))
     }
+  }, { passive: true })
 
-    // Track initial page load
+  // Only log performance metrics in development
+  if (process.env.NODE_ENV === 'development') {
     window.addEventListener('load', () => {
       setTimeout(() => {
         if (performanceMonitor) {
           const metrics = performanceMonitor.getMetrics()
           console.log('Performance metrics:', metrics)
-
-          // Send metrics to analytics
-          if (userAnalytics) {
-            userAnalytics.trackInteraction('page_load', 'document', metrics)
-          }
         }
-      }, 0)
-    })
-
-    // Track navigation
-    window.addEventListener('beforeunload', () => {
-      if (userAnalytics && typeof window !== 'undefined') {
-        const analytics = userAnalytics.getAnalyticsData()
-        // Send session end data
-        const sessionEndData = {
-          sessionId: analytics.sessionId,
-          endTime: Date.now(),
-          duration: analytics.timeOnPage,
-          pageViews: analytics.pageViews,
-          events: analytics.interactions.length
-        }
-        navigator.sendBeacon('/api/analytics/session', JSON.stringify(sessionEndData))
-      }
-    })
+      }, 100)
+    }, { passive: true, once: true })
   }
 }
 
