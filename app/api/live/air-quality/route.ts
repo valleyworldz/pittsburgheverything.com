@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const location = searchParams.get('location') || 'Pittsburgh'
 
     // Get air quality data
-    const airQualityData = await realTimeDataManager.fetchEPAAirQuality(location)
+    const airQualityData = await realTimeDataManager.weather.fetchEPAAirQuality(location)
 
     if (!airQualityData) {
       // Return fallback data

@@ -11,6 +11,7 @@ export interface APIConfig {
   dataTypes: string[]
   lastUsed?: Date
   status: 'active' | 'inactive' | 'error'
+  category?: string
 }
 
 // ===== API CATEGORIES =====
@@ -337,3 +338,36 @@ export const FREE_APIS: Record<string, APIConfig> = {
     category: 'utilities'
   },
 
+}
+
+// Helper functions for API management
+export const ACTIVE_FREE_APIS = Object.entries(FREE_APIS)
+  .filter(([_, config]) => config.enabled)
+  .map(([key, config]) => ({ key, ...config }))
+
+export const PREMIUM_FREE_APIS = Object.entries(FREE_APIS)
+  .filter(([_, config]) => config.freeTier.includes('1000') || config.freeTier.includes('Unlimited'))
+  .map(([key, config]) => ({ key, ...config }))
+
+export function getAPIUsageSummary() {
+  const active = ACTIVE_FREE_APIS.length
+  const total = Object.keys(FREE_APIS).length
+  const premium = PREMIUM_FREE_APIS.length
+
+  return {
+    totalAPIs: total,
+    activeAPIs: active,
+    premiumAPIs: premium,
+    inactiveAPIs: total - active,
+    utilizationRate: total > 0 ? Math.round((active / total) * 100) : 0
+  }
+}
+
+export function getAPIStatus(apiKey: string) {
+  if (FREE_APIS[apiKey]) {
+    FREE_APIS[apiKey].status = 'active'
+    FREE_APIS[apiKey].lastUsed = new Date()
+    return FREE_APIS[apiKey]
+  }
+  return null
+}

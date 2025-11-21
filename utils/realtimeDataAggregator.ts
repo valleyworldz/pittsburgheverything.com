@@ -25,7 +25,7 @@ export interface LiveEvent {
     max: number
     currency: string
   }
-  source: 'eventbrite' | 'facebook' | 'google' | 'ticketmaster' | 'local' | 'espn'
+  source: 'eventbrite' | 'facebook' | 'google' | 'ticketmaster' | 'local' | 'espn' | 'nhl' | 'mlb'
   url?: string
   image?: string
   lastUpdated: Date
@@ -101,7 +101,11 @@ const API_ENDPOINTS = {
   // Sports APIs
   sports: {
     nfl: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl',
-    steelers: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/pit'
+    steelers: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/pit',
+    nhl: 'https://statsapi.web.nhl.com/api/v1',
+    penguins: 'https://statsapi.web.nhl.com/api/v1/teams/5',
+    mlb: 'https://statsapi.mlb.com/api/v1',
+    pirates: 'https://statsapi.mlb.com/api/v1/teams/134'
   },
   // Event APIs
   eventbrite: 'https://www.eventbriteapi.com/v3',
@@ -237,7 +241,7 @@ export class LiveEventsAggregator {
     return []
   }
 
-  private async fetchESPNEvents(location: string): Promise<LiveEvent[]> {
+  async fetchESPNEvents(location: string): Promise<LiveEvent[]> {
     // ESPN provides free public APIs for sports data
     try {
       // Steelers games - using ESPN's public API
@@ -288,7 +292,7 @@ export class LiveEventsAggregator {
     }
   }
 
-  private async fetchNHLEvents(location: string): Promise<LiveEvent[]> {
+  async fetchNHLEvents(location: string): Promise<LiveEvent[]> {
     // NHL API for Penguins games
     try {
       const penguinsResponse = await fetch(`${API_ENDPOINTS.sports.penguins}?expand=team.schedule.next`)
@@ -335,7 +339,7 @@ export class LiveEventsAggregator {
     }
   }
 
-  private async fetchMLBEvents(location: string): Promise<LiveEvent[]> {
+  async fetchMLBEvents(location: string): Promise<LiveEvent[]> {
     // MLB API for Pirates games
     try {
       const piratesResponse = await fetch(`${API_ENDPOINTS.sports.pirates}?season=2024&sportId=1`)
@@ -422,57 +426,7 @@ export class LiveEventsAggregator {
     }
   }
 
-  private async fetchEPAAirQuality(location: string): Promise<any> {
-    // EPA Air Quality API
-    try {
-      // Pittsburgh area air quality
-      const pittsburghBbox = '-80.5,40.2,-79.8,40.6' // Bounding box for Pittsburgh area
 
-      const response = await fetch(`https://www.airnowapi.org/aq/data/?startDate=2024-01-01&endDate=2024-12-31&parameters=OZONE,PM25,PM10,CO,NO2,SO2&BBOX=${pittsburghBbox}&datatype=C&format=application/json&API_KEY=demo`)
-
-      if (!response.ok) return null
-
-      const airQualityData = await response.json()
-
-      return {
-        location: 'Pittsburgh',
-        aqi: airQualityData[0]?.AQI || 'Unknown',
-        pollutants: airQualityData.map((reading: any) => ({
-          parameter: reading.Parameter,
-          value: reading.Value,
-          unit: reading.Unit,
-          category: reading.Category
-        })),
-        lastUpdated: new Date(),
-        source: 'epa'
-      }
-    } catch (error) {
-      console.warn('EPA Air Quality API fetch failed:', error)
-      return null
-    }
-  }
-
-  private async fetchCensusData(): Promise<any> {
-    // US Census Bureau API for demographics
-    try {
-      const response = await fetch('https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=county:003&in=state:42')
-
-      if (!response.ok) return null
-
-      const censusData = await response.json()
-
-      return {
-        location: 'Allegheny County',
-        population: parseInt(censusData[1][1]),
-        medianIncome: parseInt(censusData[1][2]),
-        lastUpdated: new Date(),
-        source: 'census'
-      }
-    } catch (error) {
-      console.warn('Census API fetch failed:', error)
-      return null
-    }
-  }
 
   private transformEventbriteEvent(event: any): LiveEvent {
     return {
@@ -821,6 +775,36 @@ export class LiveWeatherAggregator {
     const index = Math.round(degrees / 22.5) % 16
     return directions[index]
   }
+
+  async fetchEPAAirQuality(location: string): Promise<any> {
+    // EPA Air Quality API
+    try {
+      // Pittsburgh area air quality
+      const pittsburghBbox = '-80.5,40.2,-79.8,40.6' // Bounding box for Pittsburgh area
+
+      const response = await fetch(`https://www.airnowapi.org/aq/data/?startDate=2024-01-01&endDate=2024-12-31&parameters=OZONE,PM25,PM10,CO,NO2,SO2&BBOX=${pittsburghBbox}&datatype=C&format=application/json&API_KEY=demo`)
+
+      if (!response.ok) return null
+
+      const airQualityData = await response.json()
+
+      return {
+        location: 'Pittsburgh',
+        aqi: airQualityData[0]?.AQI || 'Unknown',
+        pollutants: airQualityData.map((reading: any) => ({
+          parameter: reading.Parameter,
+          value: reading.Value,
+          unit: reading.Unit,
+          category: reading.Category
+        })),
+        lastUpdated: new Date(),
+        source: 'epa'
+      }
+    } catch (error) {
+      console.warn('EPA Air Quality API fetch failed:', error)
+      return null
+    }
+  }
 }
 
 // LiveDealsAggregator class
@@ -952,6 +936,28 @@ export class RealTimeDataManager {
     this.deals['cache'].clear()
 
     console.log('All real-time data caches cleared - fresh data will be fetched on next request')
+  }
+
+  async fetchCensusData(): Promise<any> {
+    // US Census Bureau API for demographics
+    try {
+      const response = await fetch('https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=county:003&in=state:42')
+
+      if (!response.ok) return null
+
+      const censusData = await response.json()
+
+      return {
+        location: 'Allegheny County',
+        population: parseInt(censusData[1][1]),
+        medianIncome: parseInt(censusData[1][2]),
+        lastUpdated: new Date(),
+        source: 'census'
+      }
+    } catch (error) {
+      console.warn('Census API fetch failed:', error)
+      return null
+    }
   }
 }
 

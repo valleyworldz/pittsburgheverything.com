@@ -20,17 +20,33 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Group APIs by category
-    const apisByCategory = Object.entries(apisToShow).reduce((acc, [key, config]) => {
+    // Group APIs by category and get health checks
+    const apisByCategory: Record<string, any[]> = {}
+
+    // First, group APIs by category
+    for (const [key, config] of Object.entries(apisToShow)) {
       const category = (config as any).category || 'utilities'
-      if (!acc[category]) acc[category] = []
-      acc[category].push({
+      if (!apisByCategory[category]) apisByCategory[category] = []
+      apisByCategory[category].push({
         key,
-        ...config,
-        healthCheck: await checkAPIHealth(key)
+        ...config
       })
-      return acc
-    }, {} as Record<string, any[]>)
+    }
+
+    // Then, add health checks for each API
+    const healthCheckPromises = []
+    for (const category in apisByCategory) {
+      for (const api of apisByCategory[category]) {
+        healthCheckPromises.push(
+          checkAPIHealth(api.key).then(healthCheck => {
+            api.healthCheck = healthCheck
+          })
+        )
+      }
+    }
+
+    // Wait for all health checks to complete
+    await Promise.all(healthCheckPromises)
 
     const apiStatus = {
       summary: getAPIUsageSummary(),
