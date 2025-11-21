@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Enrich with server data
     const enrichedEvent: AnalyticsEvent & { id: string; receivedAt: Date } = {
-      ...eventData,
+      ...(eventData as AnalyticsEvent), // Cast after validation
       id: `event-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       receivedAt: new Date(),
       ip: request.headers.get('x-forwarded-for') ||
