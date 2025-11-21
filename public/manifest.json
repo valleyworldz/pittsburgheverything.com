@@ -1,19 +1,62 @@
 {
   "name": "PittsburghEverything - Your Complete Pittsburgh Guide",
-  "short_name": "PittsburghEverything",
-  "description": "Everything Pittsburgh in one place - restaurants, events, deals, neighborhoods, and real-time updates",
+  "short_name": "Pittsburgh",
+  "description": "Everything Pittsburgh in one place - restaurants, events, deals, neighborhoods, and real-time updates. Your local guide to the Steel City.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#e65100",
+  "theme_color": "#eab308",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en-US",
-  "categories": ["lifestyle", "food", "events", "travel"],
+  "dir": "ltr",
+  "categories": ["lifestyle", "food", "events", "travel", "business", "local"],
+  "prefer_related_applications": false,
+  "iarc_rating_id": "",
+  "related_applications": [],
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "icons": [
     {
       "src": "/images/og-image.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/og-image.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/og-image.svg",
+      "sizes": "128x128",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/og-image.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/og-image.svg",
+      "sizes": "152x152",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/og-image.svg",
       "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/og-image.svg",
+      "sizes": "384x384",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
@@ -26,9 +69,9 @@
   ],
   "shortcuts": [
     {
-      "name": "Find Restaurants",
+      "name": "🍽️ Find Restaurants",
       "short_name": "Restaurants",
-      "description": "Browse Pittsburgh restaurants",
+      "description": "Browse the best Pittsburgh restaurants",
       "url": "/restaurants",
       "icons": [
         {
@@ -38,9 +81,9 @@
       ]
     },
     {
-      "name": "Events",
+      "name": "🎉 Local Events",
       "short_name": "Events",
-      "description": "Upcoming Pittsburgh events",
+      "description": "Discover upcoming Pittsburgh events",
       "url": "/events",
       "icons": [
         {
@@ -50,13 +93,61 @@
       ]
     },
     {
-      "name": "Deals",
+      "name": "💰 Special Deals",
       "short_name": "Deals",
-      "description": "Current Pittsburgh deals",
+      "description": "Find amazing Pittsburgh deals",
       "url": "/deals",
       "icons": [
         {
           "src": "/images/placeholder-deal.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "🏙️ Neighborhoods",
+      "short_name": "Areas",
+      "description": "Explore Pittsburgh neighborhoods",
+      "url": "/neighborhoods",
+      "icons": [
+        {
+          "src": "/images/og-image.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "⭐ Top 100",
+      "short_name": "Top 100",
+      "description": "Pittsburgh's best of everything",
+      "url": "/top-100",
+      "icons": [
+        {
+          "src": "/images/og-image.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "🗺️ Things to Do",
+      "short_name": "Activities",
+      "description": "Fun things to do in Pittsburgh",
+      "url": "/things-to-do",
+      "icons": [
+        {
+          "src": "/images/og-image.svg",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "📱 Submit Business",
+      "short_name": "List Business",
+      "description": "Add your Pittsburgh business",
+      "url": "/submit-business",
+      "icons": [
+        {
+          "src": "/images/og-image.svg",
           "sizes": "96x96"
         }
       ]
@@ -67,7 +158,55 @@
       "src": "/images/og-image.svg",
       "sizes": "1280x720",
       "type": "image/svg+xml",
-      "label": "PittsburghEverything homepage"
+      "label": "PittsburghEverything homepage - Your complete Pittsburgh guide",
+      "form_factor": "wide"
+    },
+    {
+      "src": "/images/og-image.svg",
+      "sizes": "750x1334",
+      "type": "image/svg+xml",
+      "label": "Mobile view of Pittsburgh restaurant listings",
+      "form_factor": "narrow"
     }
-  ]
+  ],
+  "features": [
+    "Cross Platform",
+    "Fast",
+    "Works Offline"
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "handle_links": "preferred",
+  "protocol_handlers": [
+    {
+      "protocol": "web+pittsburgh",
+      "url": "/handle/%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/import",
+      "accept": {
+        "application/json": [".json"],
+        "text/csv": [".csv"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "files",
+          "accept": ["image/*", "video/*"]
+        }
+      ]
+    }
+  }
 }
