@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Trophy, Star, TrendingUp, Award, Crown } from 'lucide-react'
+import Link from 'next/link'
 import type { Top100Item } from '@/types'
 
 interface Top100TableProps {
@@ -195,6 +196,21 @@ export default function Top100Table({ category = 'All', limit }: Top100TableProp
           <div
             key={`${item.category}-${item.rank}`}
             className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-lg transition-shadow group cursor-pointer"
+            onClick={() => {
+              // Navigate based on category
+              const categoryRoutes = {
+                'Restaurants': '/restaurants',
+                'Events': '/events',
+                'Services': '/services',
+                'Attractions': '/things-to-do',
+                'Bars & Nightlife': '/deals?category=bars',
+                'Shopping': '/deals?category=shopping',
+                'Parks & Outdoors': '/things-to-do?category=outdoors'
+              }
+
+              const route = categoryRoutes[item.category as keyof typeof categoryRoutes] || '/'
+              window.location.href = route
+            }}
           >
             <div className="flex items-start gap-6">
               {/* Rank */}
@@ -255,9 +271,9 @@ export default function Top100Table({ category = 'All', limit }: Top100TableProp
       {/* Load More */}
       {limit && filteredItems.length > limit && (
         <div className="text-center">
-          <button className="btn-secondary">
+          <Link href="/top-100" className="btn-secondary">
             View Full Top 100 List
-          </button>
+          </Link>
         </div>
       )}
 

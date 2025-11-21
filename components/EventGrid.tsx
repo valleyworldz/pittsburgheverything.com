@@ -120,7 +120,23 @@ export default function EventGrid({ limit }: EventGridProps) {
               <span className="text-pittsburgh-gold font-semibold">
                 {event.price}
               </span>
-              <button className="text-pittsburgh-gold hover:text-pittsburgh-black font-medium transition-colors">
+              <button
+                onClick={() => {
+                  // For demo purposes, open a modal or navigate to external event
+                  // In production, this would link to event details or external booking
+                  if (event.id === '1') {
+                    window.open('https://pittsburghfoodfestival.com', '_blank')
+                  } else if (event.id === '2') {
+                    window.open('https://www.steelers.com', '_blank')
+                  } else if (event.id === '3') {
+                    window.open('https://pittsburghholidaymarket.com', '_blank')
+                  } else {
+                    // For other events, show an alert (in production, this would be a modal)
+                    alert(`Event: ${event.title}\nDate: ${new Date(event.date).toLocaleDateString()}\nLocation: ${event.location}\nPrice: ${event.price}\n\nThis would normally open event details or booking page.`)
+                  }
+                }}
+                className="text-pittsburgh-gold hover:text-pittsburgh-black font-medium transition-colors cursor-pointer"
+              >
                 Learn More →
               </button>
             </div>

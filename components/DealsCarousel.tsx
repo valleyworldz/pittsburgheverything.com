@@ -182,7 +182,14 @@ export default function DealsCarousel() {
               )}
             </div>
 
-            <button className="btn-primary">
+            <button
+              onClick={() => {
+                // For demo purposes, show deal details and claim process
+                // In production, this would integrate with a deal claiming system
+                alert(`🎉 Deal Claimed!\n\n${currentDeal.title}\n\nDiscount: ${currentDeal.discount}\nBusiness: ${currentDeal.businessName}\n\nA confirmation has been sent to your email. Show this deal at the business to redeem!`)
+              }}
+              className="btn-primary cursor-pointer"
+            >
               Claim This Deal
             </button>
           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Star, MapPin, Phone, Globe } from 'lucide-react'
+import Link from 'next/link'
 import type { Business } from '@/types'
 
 interface ServiceDirectoryProps {
@@ -260,10 +261,28 @@ export default function ServiceDirectory({ category, limit }: ServiceDirectoryPr
                     )}
                   </div>
                   <div className="flex gap-2">
-                    <button className="text-pittsburgh-gold hover:text-pittsburgh-black font-medium transition-colors text-sm">
+                    <button
+                      onClick={() => {
+                        // Show service details modal or navigate to service page
+                        alert(`Service Details:\n\n${service.name}\n${service.description}\n\nCategory: ${service.category}\nAddress: ${service.address}\nPhone: ${service.phone || 'Not provided'}\nWebsite: ${service.website || 'Not provided'}\n\nFeatures: ${service.features?.join(', ') || 'None listed'}`)
+                      }}
+                      className="text-pittsburgh-gold hover:text-pittsburgh-black font-medium transition-colors text-sm cursor-pointer"
+                    >
                       View Details
                     </button>
-                    <button className="btn-outline text-sm px-4 py-2">
+                    <button
+                      onClick={() => {
+                        // Contact service - open phone or email
+                        if (service.phone) {
+                          window.location.href = `tel:${service.phone}`
+                        } else if (service.email) {
+                          window.location.href = `mailto:${service.email}?subject=Inquiry about ${service.name}`
+                        } else {
+                          alert(`Contact Information for ${service.name}:\n\nPhone: ${service.phone || 'Not provided'}\nEmail: ${service.email || 'Not provided'}\nAddress: ${service.address}`)
+                        }
+                      }}
+                      className="btn-outline text-sm px-4 py-2 cursor-pointer"
+                    >
                       Contact
                     </button>
                   </div>
@@ -276,9 +295,12 @@ export default function ServiceDirectory({ category, limit }: ServiceDirectoryPr
 
       {limit && filteredServices.length > limit && (
         <div className="text-center">
-          <button className="btn-secondary">
+          <Link
+            href={`/services?category=${selectedCategory}&search=${encodeURIComponent(searchQuery)}`}
+            className="btn-secondary"
+          >
             View All Services ({filteredServices.length})
-          </button>
+          </Link>
         </div>
       )}
     </div>

@@ -360,7 +360,12 @@ export default function ThingsToDoPage() {
                         <span className="text-lg font-bold text-pittsburgh-gold">
                           {activity.price}
                         </span>
-                        <button className="bg-pittsburgh-gold text-pittsburgh-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors text-sm">
+                        <button
+                          onClick={() => {
+                            alert(`🏛️ ${activity.name}\n\n📍 Location: ${activity.location}\n⏰ Duration: ${activity.duration}\n💰 Price: ${activity.price}\n⭐ Rating: ${activity.rating}/5\n\n🎯 Highlights:\n${activity.highlights.map(h => `• ${h}`).join('\n')}\n\n${activity.description}`)
+                          }}
+                          className="bg-pittsburgh-gold text-pittsburgh-black px-4 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition-colors text-sm cursor-pointer"
+                        >
                           Learn More
                         </button>
                       </div>

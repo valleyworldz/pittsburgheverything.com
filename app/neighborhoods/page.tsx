@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import NeighborhoodMap from '@/components/NeighborhoodMap'
 
 export const metadata: Metadata = {
@@ -42,9 +43,9 @@ export default function NeighborhoodsPage() {
           <p className="mb-6 text-steel-gray max-w-2xl mx-auto">
             Get personalized neighborhood recommendations based on your lifestyle, budget, and preferences.
           </p>
-          <button className="btn-primary">
+          <Link href="/neighborhoods/quiz" className="btn-primary">
             Find My Perfect Neighborhood
-          </button>
+          </Link>
         </div>
       </div>
     </div>

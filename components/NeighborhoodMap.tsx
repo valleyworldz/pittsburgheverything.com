@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { MapPin, Users, Home, TrendingUp, Star } from 'lucide-react'
+import Link from 'next/link'
 import type { Neighborhood } from '@/types'
 
 interface NeighborhoodMapProps {
@@ -242,10 +243,20 @@ export default function NeighborhoodMap({ interactive = true, limit }: Neighborh
               )}
 
               <div className="mt-6 flex gap-4">
-                <button className="btn-primary">
+                <Link
+                  href={`/neighborhoods/${selectedNeighborhood.id}`}
+                  className="btn-primary"
+                >
                   Explore {selectedNeighborhood.name}
-                </button>
-                <button className="btn-outline">
+                </Link>
+                <button
+                  onClick={() => {
+                    // Open Google Maps with neighborhood location
+                    const query = encodeURIComponent(`${selectedNeighborhood.name}, Pittsburgh, PA`)
+                    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank')
+                  }}
+                  className="btn-outline"
+                >
                   View on Map
                 </button>
               </div>
