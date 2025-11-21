@@ -56,8 +56,22 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Log incoming request for debugging
+    console.log('Analytics request received:', {
+      hasEvent: !!eventData.event,
+      eventType: typeof eventData.event,
+      eventValue: eventData.event,
+      hasSessionId: !!eventData.sessionId,
+      hasTimestamp: !!eventData.timestamp,
+      fullBody: eventData
+    })
+
     // Validate required fields
     if (!eventData.event || typeof eventData.event !== 'string') {
+      console.error('Analytics validation failed: invalid event', {
+        event: eventData.event,
+        type: typeof eventData.event
+      })
       return NextResponse.json(
         { error: 'Valid event type is required' },
         { status: 400 }

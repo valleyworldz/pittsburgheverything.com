@@ -315,7 +315,12 @@ export class UserAnalyticsTracker {
   }
 
   private sendAnalytics(eventType: string, data: any) {
-    // Send to analytics service
+    // Only run analytics on client side
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    // Send to analytics service in production
     if (process.env.NODE_ENV === 'production') {
       fetch('/api/analytics/track', {
         method: 'POST',
@@ -323,10 +328,13 @@ export class UserAnalyticsTracker {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          event: eventType,
           sessionId: this.sessionId,
-          eventType,
           data,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          url: window.location.href,
+          referrer: document.referrer,
+          userAgent: navigator.userAgent
         })
       }).catch(err => console.warn('Analytics tracking failed:', err))
     }
@@ -349,7 +357,7 @@ export function initializeMonitoring() {
     userAnalytics = new UserAnalyticsTracker()
 
     // Start session tracking
-    if (userAnalytics) {
+    if (userAnalytics && typeof window !== 'undefined') {
       const analytics = userAnalytics.getAnalyticsData()
       const sessionStartData = {
         sessionId: analytics.sessionId,
@@ -386,7 +394,7 @@ export function initializeMonitoring() {
 
     // Track navigation
     window.addEventListener('beforeunload', () => {
-      if (userAnalytics) {
+      if (userAnalytics && typeof window !== 'undefined') {
         const analytics = userAnalytics.getAnalyticsData()
         // Send session end data
         const sessionEndData = {
