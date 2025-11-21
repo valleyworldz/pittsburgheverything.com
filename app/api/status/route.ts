@@ -1,6 +1,6 @@
 // API Status Dashboard - Shows all available APIs and their current status
 import { NextRequest, NextResponse } from 'next/server'
-import { FREE_APIS, ACTIVE_FREE_APIS, PREMIUM_FREE_APIS, getAPIUsageSummary } from '@/config/apis'
+import { FREE_APIS, ACTIVE_FREE_APIS, PREMIUM_FREE_APIS, API_CATEGORIES, getAPIUsageSummary } from '@/config/apis'
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,23 +20,30 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const apiStatus = {
-      summary: getAPIUsageSummary(),
-      apis: Object.entries(apisToShow).map(([key, config]) => ({
+    // Group APIs by category
+    const apisByCategory = Object.entries(apisToShow).reduce((acc, [key, config]) => {
+      const category = (config as any).category || 'utilities'
+      if (!acc[category]) acc[category] = []
+      acc[category].push({
         key,
         ...config,
-        // Add live status check
         healthCheck: await checkAPIHealth(key)
+      })
+      return acc
+    }, {} as Record<string, any[]>)
+
+    const apiStatus = {
+      summary: getAPIUsageSummary(),
+      categories: API_CATEGORIES,
+      apisByCategory,
+      totalAPIs: Object.keys(apisToShow).length,
+      activeAPIs: Object.values(apisToShow).filter(api => api.enabled).length,
+      categoryStats: Object.entries(API_CATEGORIES).map(([key, name]) => ({
+        key,
+        name,
+        count: apisByCategory[key]?.length || 0,
+        active: apisByCategory[key]?.filter((api: any) => api.enabled).length || 0
       })),
-      categories: {
-        weather: ['openWeatherMap', 'nationalWeatherService'],
-        sports: ['espn', 'nhl', 'mlb'],
-        transit: ['portAuthority', 'transitland', 'amtrak'],
-        news: ['newsApi'],
-        government: ['pittsburghOpenData', 'alleghenyCountyOpenData', 'census', 'epa', 'cdc', 'treasury', 'bls'],
-        culture: ['loc', 'smithsonian', 'recreationGov'],
-        utilities: ['icanhazdadjoke', 'qrCodeMonkey', 'jsonplaceholder']
-      },
       lastUpdated: new Date().toISOString()
     }
 
