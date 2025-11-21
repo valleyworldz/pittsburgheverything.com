@@ -192,3 +192,122 @@ export type PriceRange = '$' | '$$' | '$$$' | '$$$$'
 export type Rating = 1 | 2 | 3 | 4 | 5
 
 export type BusinessStatus = 'active' | 'inactive' | 'pending' | 'suspended'
+
+// Outreach System Types
+
+export interface BusinessOutreach {
+  id: string
+  businessName: string
+  category: string
+  email: string
+  phone?: string
+  address?: string
+  contactPerson?: string
+  notes?: string
+  outreachStatus: 'not_contacted' | 'contacted' | 'responded' | 'signed_up' | 'declined'
+  priority: 'high' | 'medium' | 'low'
+  firstContactDate?: string
+  lastContactDate?: string
+  followUpCount: number
+  nextFollowUpDate?: string
+  response?: string
+}
+
+// Review System Types
+
+export interface Review {
+  id: string
+  businessId: string
+  businessName: string
+  businessCategory: string
+  businessNeighborhood: string
+  userId?: string // Optional for anonymous reviews
+  userName: string
+  userEmail?: string
+  rating: Rating
+  title: string
+  content: string
+  pros?: string[]
+  cons?: string[]
+  verified: boolean
+  verifiedMethod?: 'email' | 'phone' | 'purchase' | 'in-person'
+  helpful: number
+  notHelpful: number
+  images?: string[]
+  response?: ReviewResponse
+  createdAt: string
+  updatedAt: string
+  status: 'pending' | 'approved' | 'rejected' | 'flagged'
+}
+
+export interface ReviewResponse {
+  id: string
+  businessId: string
+  reviewId: string
+  content: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface ReviewStats {
+  businessId: string
+  totalReviews: number
+  averageRating: number
+  ratingDistribution: {
+    1: number
+    2: number
+    3: number
+    4: number
+    5: number
+  }
+  recommendedPercentage: number
+  verifiedReviews: number
+  responseRate: number
+  lastReviewDate?: string
+  updatedAt: string
+}
+
+export interface ReviewSubmission {
+  businessId: string
+  userName: string
+  userEmail?: string
+  rating: Rating
+  title: string
+  content: string
+  pros?: string[]
+  cons?: string[]
+  images?: File[]
+  verificationToken?: string
+}
+
+export interface ReviewFilters {
+  businessId?: string
+  category?: string
+  neighborhood?: string
+  rating?: Rating
+  verified?: boolean
+  sortBy?: 'newest' | 'oldest' | 'highest' | 'lowest' | 'helpful'
+  limit?: number
+  offset?: number
+}
+
+export interface ReviewAnalytics {
+  businessId: string
+  period: 'week' | 'month' | 'quarter' | 'year'
+  startDate: string
+  endDate: string
+  metrics: {
+    totalReviews: number
+    averageRating: number
+    ratingTrend: number[]
+    reviewVolumeTrend: number[]
+    responseRate: number
+    verifiedRate: number
+  }
+  insights: {
+    topKeywords: Array<{ word: string, count: number }>
+    sentimentScore: number
+    improvementAreas: string[]
+    strengths: string[]
+  }
+}

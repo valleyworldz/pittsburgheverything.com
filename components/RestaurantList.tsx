@@ -169,14 +169,19 @@ export default function RestaurantList({ limit }: RestaurantListProps) {
                     href={restaurant.website}
                     className="text-pittsburgh-gold hover:text-pittsburgh-black transition-colors"
                     onClick={(e) => e.stopPropagation()}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Globe className="w-4 h-4" />
                   </a>
                 )}
               </div>
-              <button className="text-pittsburgh-gold hover:text-pittsburgh-black font-medium transition-colors text-sm">
-                View Details →
-              </button>
+              <a
+                href={`/restaurants/${restaurant.id}`}
+                className="text-pittsburgh-gold hover:text-pittsburgh-black font-medium transition-colors text-sm"
+              >
+                View Details & Reviews →
+              </a>
             </div>
           </div>
         </div>
