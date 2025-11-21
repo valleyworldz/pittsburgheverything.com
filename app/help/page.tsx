@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import { HelpCircle, Search, MessageSquare, Phone, Mail, MapPin, CreditCard, Shield, Star, Users } from 'lucide-react'
 import Link from 'next/link'
 

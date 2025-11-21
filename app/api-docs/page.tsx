@@ -183,13 +183,6 @@ export default function ApiDocsPage() {
               <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white">GET Weather Data</span>
-                  <button
-                    onClick={() => copyToClipboard(`curl -X GET "https://pittsburgheverything.com/api/live/weather" \\
-  -H "Authorization: Bearer YOUR_API_KEY"`)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
                 </div>
                 {`curl -X GET "https://pittsburgheverything.com/api/live/weather" \\
   -H "Authorization: Bearer YOUR_API_KEY"`}
@@ -198,18 +191,6 @@ export default function ApiDocsPage() {
               <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm mt-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-white">Response</span>
-                  <button
-                    onClick={() => copyToClipboard(`{
-  "location": "Pittsburgh, PA",
-  "temperature": 72,
-  "description": "partly cloudy",
-  "humidity": 65,
-  "windSpeed": 8
-}`)}
-                    className="text-gray-400 hover:text-white"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
                 </div>
                 {`{
   "location": "Pittsburgh, PA",
@@ -262,12 +243,6 @@ export default function ApiDocsPage() {
                               {endpoint.path}
                             </code>
                           </div>
-                          <button
-                            onClick={() => copyToClipboard(endpoint.path)}
-                            className="text-gray-400 hover:text-gray-600"
-                          >
-                            <Copy className="w-4 h-4" />
-                          </button>
                         </div>
                         <p className="text-gray-600 text-sm">{endpoint.description}</p>
                       </div>
