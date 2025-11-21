@@ -1,12 +1,7 @@
 'use client'
 
-import type { Metadata } from 'next'
 import { Code, Database, Zap, Shield, Book, ExternalLink, Copy, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-
-    ],
-  },
-}
 
 export default function ApiDocsPage() {
   const apiEndpoints = [
