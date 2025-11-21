@@ -1,0 +1,96 @@
+# Robots.txt for PittsburghEverything.com
+# Allow all web crawlers access to public content
+# Block access to private/admin areas and API endpoints
+
+User-agent: *
+Allow: /
+
+# Allow crawling of all public content
+Allow: /events/
+Allow: /restaurants/
+Allow: /neighborhoods/
+Allow: /services/
+Allow: /deals/
+Allow: /things-to-do/
+Allow: /top-100/
+Allow: /blog/
+Allow: /about/
+Allow: /contact/
+
+# Block admin and private areas
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /analytics/
+Disallow: /api/private/
+Disallow: /api/admin/
+
+# Block search and filter URLs with parameters (to avoid duplicate content)
+Disallow: /*?*search=*
+Disallow: /*?*filter=*
+Disallow: /*?*sort=*
+
+# Block development and staging areas
+Disallow: /_next/
+Disallow: /api/debug/
+Disallow: /staging/
+
+# Allow access to sitemap
+Allow: /sitemap.xml
+
+# Crawl delay (be nice to our server)
+Crawl-delay: 1
+
+# Sitemap location
+Sitemap: https://pittsburgheverything.com/sitemap.xml
+
+# Specific rules for major search engines
+
+# Googlebot
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Slurp (Yahoo)
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+# DuckDuckBot
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# Baiduspider
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 1
+
+# YandexBot
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 1
+
+# Facebook Crawler (for social sharing)
+User-agent: facebookexternalhit
+Allow: /
+Crawl-delay: 1
+
+# Twitter Crawler
+User-agent: Twitterbot
+Allow: /
+Crawl-delay: 1
+
+# LinkedIn Crawler
+User-agent: LinkedInBot
+Allow: /
+Crawl-delay: 1
+
+# WhatsApp Crawler
+User-agent: WhatsApp
+Allow: /
+Crawl-delay: 1
