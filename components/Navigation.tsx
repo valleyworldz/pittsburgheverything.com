@@ -15,7 +15,6 @@ const navigationItems = [
   { href: '/deals', label: 'Deals', icon: '💰' },
   { href: '/things-to-do', label: 'Things to Do', icon: '🎭' },
   { href: '/top-100', label: 'Top 100', icon: '⭐' },
-  { href: '/apis', label: 'APIs', icon: '🔌' },
 ]
 
 export default function Navigation() {

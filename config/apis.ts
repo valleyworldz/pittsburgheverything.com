@@ -42,30 +42,6 @@ export const FREE_APIS: Record<string, APIConfig> = {
     category: 'weather'
   },
 
-  nationalWeatherService: {
-    name: 'National Weather Service',
-    description: 'Official US weather data with detailed forecasts',
-    url: 'https://api.weather.gov',
-    freeTier: 'Unlimited public access',
-    rateLimit: 'None specified',
-    enabled: false,
-    dataTypes: ['detailed forecasts', 'weather alerts', 'radar data', 'observations'],
-    status: 'inactive',
-    category: 'weather'
-  },
-
-  epa: {
-    name: 'EPA Air Quality API',
-    description: 'Air quality data and environmental information',
-    url: 'https://aqs.epa.gov/data/api',
-    freeTier: 'Unlimited access',
-    rateLimit: 'None specified',
-    enabled: false,
-    dataTypes: ['air quality', 'pollution data', 'environmental alerts'],
-    status: 'inactive',
-    category: 'weather'
-  },
-
   // ===== SPORTS & ENTERTAINMENT =====
   espn: {
     name: 'ESPN API',
