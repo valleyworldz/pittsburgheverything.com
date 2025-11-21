@@ -3,7 +3,19 @@ import { NextRequest, NextResponse } from 'next/server'
 // Session tracking endpoint for analytics
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    let body: any
+
+    // Handle JSON parsing errors
+    try {
+      body = await request.json()
+    } catch (jsonError) {
+      console.warn('Invalid JSON in session POST:', jsonError)
+      return NextResponse.json(
+        { error: 'Invalid JSON format' },
+        { status: 400 }
+      )
+    }
+
     const { sessionId, userId, startTime, userAgent, referrer, url } = body
 
     // Validate required fields
@@ -49,7 +61,19 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json()
+    let body: any
+
+    // Handle JSON parsing errors
+    try {
+      body = await request.json()
+    } catch (jsonError) {
+      console.warn('Invalid JSON in session PUT:', jsonError)
+      return NextResponse.json(
+        { error: 'Invalid JSON format' },
+        { status: 400 }
+      )
+    }
+
     const { sessionId, endTime, duration, pageViews, events } = body
 
     if (!sessionId || !endTime) {

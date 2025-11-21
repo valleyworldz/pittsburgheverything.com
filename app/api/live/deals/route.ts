@@ -17,27 +17,58 @@ export async function GET(request: NextRequest) {
     // Combine with static deals data
     const staticDeals = dealsData
       .filter(deal => {
-        const validUntil = new Date(deal.expiresAt || deal.validThrough)
-        return validUntil >= new Date() // Only current deals
+        try {
+          const validUntil = new Date(deal.expiresAt || deal.validThrough)
+          return !isNaN(validUntil.getTime()) && validUntil >= new Date() // Only current deals with valid dates
+        } catch (error) {
+          console.warn(`Invalid date for deal ${deal.id}:`, deal.expiresAt, deal.validThrough)
+          return false
+        }
       })
       .filter(deal => !category || deal.category.toLowerCase().includes(category.toLowerCase()))
-      .map(deal => ({
-        id: deal.id,
-        title: deal.title,
-        businessName: deal.businessName,
-        businessId: deal.businessId,
-        description: deal.description,
-        discount: deal.discount,
-        category: deal.category,
-        validFrom: new Date(deal.validThrough ? deal.validThrough : Date.now() - 86400000), // 1 day ago if no start date
-        validUntil: new Date(deal.expiresAt || deal.validThrough),
-        location: deal.neighborhood || location,
-        terms: deal.terms || [],
-        source: 'manual' as const,
-        url: deal.link || undefined,
-        image: deal.image,
-        lastUpdated: new Date()
-      }))
+      .map(deal => {
+        let validFrom: Date
+        let validUntil: Date
+
+        try {
+          validFrom = deal.validThrough
+            ? new Date(deal.validThrough)
+            : new Date(Date.now() - 86400000) // 1 day ago if no start date
+
+          if (isNaN(validFrom.getTime())) {
+            validFrom = new Date(Date.now() - 86400000)
+          }
+
+          validUntil = new Date(deal.expiresAt || deal.validThrough)
+
+          if (isNaN(validUntil.getTime())) {
+            // Fallback to 30 days from now if invalid
+            validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+          }
+        } catch (error) {
+          console.warn(`Date parsing error for deal ${deal.id}:`, error)
+          validFrom = new Date(Date.now() - 86400000)
+          validUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        }
+
+        return {
+          id: deal.id,
+          title: deal.title,
+          businessName: deal.businessName,
+          businessId: deal.businessId,
+          description: deal.description,
+          discount: deal.discount,
+          category: deal.category,
+          validFrom,
+          validUntil,
+          location: deal.neighborhood || location,
+          terms: deal.terms || [],
+          source: 'manual' as const,
+          url: deal.link || undefined,
+          image: deal.image,
+          lastUpdated: new Date()
+        }
+      })
 
     // Combine and deduplicate
     const allDeals = [...liveDeals, ...staticDeals]

@@ -350,7 +350,9 @@ export default function LiveDataDashboard({ location = 'Pittsburgh', compact = f
                     {deal.discount}
                   </div>
                   <div className="text-xs text-gray-500">
-                    Expires: {deal.validUntil.toLocaleDateString()}
+                    Expires: {deal.validUntil && deal.validUntil instanceof Date && !isNaN(deal.validUntil.getTime())
+                      ? deal.validUntil.toLocaleDateString()
+                      : 'Date TBD'}
                   </div>
                 </div>
               ))}
