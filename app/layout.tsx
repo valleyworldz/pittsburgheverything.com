@@ -1,15 +1,13 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import NeuralinkInterface from '@/components/NeuralinkInterface'
-import QuantumRealityWarper from '@/components/QuantumRealityWarper'
-import AugmentedRealityHologram from '@/components/AugmentedRealityHologram'
+import { siteConfig } from '@/config/site'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'PittsburghEverything.com - Revolutionary Review Platform',
-  description: 'Experience the future of local reviews with Neuralink brain-computer interface, quantum reality warping, and augmented reality holograms',
+  title: siteConfig.title,
+  description: siteConfig.description,
 }
 
 export default function RootLayout({
@@ -20,33 +18,35 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NeuralinkInterface
-          enableNeuralink={true}
-          onThoughtDetected={(thought, confidence) => {
-            console.log(`🧠 Thought detected: ${thought} (${confidence * 100}% confidence)`)
-          }}
-          onEmotionDetected={(emotion, intensity) => {
-            console.log(`💭 Emotion detected: ${emotion} (${intensity * 100}% intensity)`)
-          }}
-        >
-          <QuantumRealityWarper
-            intensity={1}
-            autoActivate={false}
-            onRealityShift={(shiftType) => {
-              console.log(`🌌 Reality shift activated: ${shiftType}`)
-            }}
-          >
-            <AugmentedRealityHologram
-              enableAR={true}
-              hologramType="interactive"
-              onHologramInteraction={(interaction, data) => {
-                console.log(`🔮 AR interaction: ${interaction}`, data)
-              }}
-            >
-              {children}
-            </AugmentedRealityHologram>
-          </QuantumRealityWarper>
-        </NeuralinkInterface>
+        <header className="border-b border-gray-200">
+          <nav className="max-w-6xl mx-auto flex items-center justify-between px-4 py-4">
+            <a href="/" className="font-extrabold text-2xl text-yellow-500">
+              Pittsburgh<span className="text-black">Everything</span>
+            </a>
+            <div className="hidden md:flex gap-6 text-sm font-medium">
+              <a href="/events">Events</a>
+              <a href="/restaurants">Restaurants</a>
+              <a href="/services">Services</a>
+              <a href="/neighborhoods">Neighborhoods</a>
+              <a href="/things-to-do">Things to Do</a>
+              <a href="/deals">Deals</a>
+              <a href="/top-100">Top 100</a>
+              <a href="/ai-guide">AI Guide</a>
+            </div>
+          </nav>
+        </header>
+        <main className="flex-1 max-w-6xl mx-auto px-4 py-10">{children}</main>
+        <footer className="border-t border-gray-200 mt-8">
+          <div className="max-w-6xl mx-auto px-4 py-6 text-sm flex flex-col md:flex-row justify-between gap-2">
+            <span>© {new Date().getFullYear()} PittsburghEverything.</span>
+            <div className="flex gap-4">
+              <a href="/about">About</a>
+              <a href="/contact">Contact</a>
+              <a href="/submit-business">Submit Business</a>
+              <a href="/dashboard">Dashboard</a>
+            </div>
+          </div>
+        </footer>
       </body>
     </html>
   )
