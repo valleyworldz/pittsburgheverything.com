@@ -1,5 +1,3 @@
-'use client'
-
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { Calendar, MapPin, Clock, Star, Heart, ArrowLeft } from 'lucide-react'
