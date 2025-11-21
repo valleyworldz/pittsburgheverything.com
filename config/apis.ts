@@ -14,6 +14,7 @@ export interface APIConfig {
 }
 
 export const FREE_APIS: Record<string, APIConfig> = {
+  // ===== CURRENTLY ACTIVE =====
   openWeatherMap: {
     name: 'OpenWeatherMap',
     description: 'Current weather, forecasts, and air quality data',
@@ -67,6 +68,236 @@ export const FREE_APIS: Record<string, APIConfig> = {
     enabled: true,
     dataTypes: ['headlines', 'articles', 'sources', 'categories'],
     status: 'active'
+  },
+
+  // ===== PITTSBURGH-SPECIFIC FREE APIs =====
+  alleghenyCountyOpenData: {
+    name: 'Allegheny County Open Data',
+    description: 'County-wide data including health, education, and public services',
+    url: 'https://data.alleghenycounty.us',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['health data', 'education stats', 'property data', 'demographics'],
+    status: 'inactive'
+  },
+
+  pittsburghRegionalTransit: {
+    name: 'Pittsburgh Regional Transit',
+    description: 'PRT ConnectCard and transit information',
+    url: 'https://www.rideprt.org',
+    freeTier: 'Public transit data access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['transit routes', 'fares', 'schedules', 'accessibility info'],
+    status: 'inactive'
+  },
+
+  pittsburghParks: {
+    name: 'Pittsburgh Parks & Recreation',
+    description: 'Park facilities, programs, and recreational activities',
+    url: 'https://pittsburghpa.gov/parks',
+    freeTier: 'Public information access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['park locations', 'facilities', 'programs', 'events'],
+    status: 'inactive'
+  },
+
+  // ===== NATIONAL/REGIONAL FREE APIs =====
+  nationalWeatherService: {
+    name: 'National Weather Service',
+    description: 'Official US weather data with detailed forecasts',
+    url: 'https://api.weather.gov',
+    freeTier: 'Unlimited public access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['detailed forecasts', 'weather alerts', 'radar data', 'observations'],
+    status: 'inactive'
+  },
+
+  recreationGov: {
+    name: 'Recreation.gov',
+    description: 'National parks, campgrounds, and outdoor recreation',
+    url: 'https://ridb.recreation.gov',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['campgrounds', 'trails', 'permits', 'facilities'],
+    status: 'inactive'
+  },
+
+  transitland: {
+    name: 'Transitland',
+    description: 'Global public transit data and GTFS feeds',
+    url: 'https://www.transit.land',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['global transit', 'GTFS feeds', 'route planning', 'accessibility'],
+    status: 'inactive'
+  },
+
+  // ===== SPORTS & ENTERTAINMENT =====
+  nhl: {
+    name: 'NHL API',
+    description: 'NHL scores, schedules, and Penguins information',
+    url: 'https://statsapi.web.nhl.com/api/v1',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['nhl scores', 'penguins stats', 'schedules', 'player info'],
+    status: 'inactive'
+  },
+
+  mlb: {
+    name: 'MLB Stats API',
+    description: 'MLB scores, schedules, and Pirates information',
+    url: 'https://statsapi.mlb.com/api/v1',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['mlb scores', 'pirates stats', 'schedules', 'player info'],
+    status: 'inactive'
+  },
+
+  // ===== HEALTH & ENVIRONMENT =====
+  epa: {
+    name: 'EPA Air Quality API',
+    description: 'Air quality data and environmental information',
+    url: 'https://aqs.epa.gov/data/api',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['air quality', 'pollution data', 'environmental alerts'],
+    status: 'inactive'
+  },
+
+  cdc: {
+    name: 'CDC Data API',
+    description: 'Public health data and statistics',
+    url: 'https://data.cdc.gov',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['health stats', 'disease tracking', 'vaccination data'],
+    status: 'inactive'
+  },
+
+  // ===== EDUCATION & CULTURE =====
+  loc: {
+    name: 'Library of Congress API',
+    description: 'Historical documents, photos, and cultural resources',
+    url: 'https://www.loc.gov/apis',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['historical photos', 'documents', 'cultural resources'],
+    status: 'inactive'
+  },
+
+  smithsonian: {
+    name: 'Smithsonian Open Access API',
+    description: 'Museum collections and educational content',
+    url: 'https://api.si.edu/openaccess/api/v1.0',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['museum collections', 'artifacts', 'educational content'],
+    status: 'inactive'
+  },
+
+  // ===== TRAVEL & TRANSPORTATION =====
+  amtrak: {
+    name: 'Amtrak API',
+    description: 'Train schedules and station information',
+    url: 'https://api.amtrak.com',
+    freeTier: 'Limited public access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['train schedules', 'station info', 'routes'],
+    status: 'inactive'
+  },
+
+  // ===== FINANCIAL & BUSINESS =====
+  treasury: {
+    name: 'US Treasury API',
+    description: 'Economic data and government financial information',
+    url: 'https://fiscaldata.treasury.gov/api-documentation',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['economic indicators', 'government spending', 'debt data'],
+    status: 'inactive'
+  },
+
+  bls: {
+    name: 'Bureau of Labor Statistics API',
+    description: 'Employment, unemployment, and economic data',
+    url: 'https://www.bls.gov/developers/api_signature_v2.htm',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['employment data', 'wage info', 'economic indicators'],
+    status: 'inactive'
+  },
+
+  // ===== GOVERNMENT & PUBLIC DATA =====
+  usda: {
+    name: 'USDA API',
+    description: 'Agriculture, food, and rural development data',
+    url: 'https://www.usda.gov/data.json',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['food data', 'agricultural info', 'rural development'],
+    status: 'inactive'
+  },
+
+  census: {
+    name: 'US Census Bureau API',
+    description: 'Demographic and population data',
+    url: 'https://www.census.gov/data/developers/data-sets.html',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['population data', 'demographics', 'housing stats'],
+    status: 'inactive'
+  },
+
+  // ===== UTILITY & INFRASTRUCTURE =====
+  icanhazdadjoke: {
+    name: 'icanhazdadjoke API',
+    description: 'Random dad jokes for fun content',
+    url: 'https://icanhazdadjoke.com/api',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['jokes', 'humor', 'entertainment'],
+    status: 'inactive'
+  },
+
+  qrCodeMonkey: {
+    name: 'QR Code Monkey API',
+    description: 'Generate QR codes for sharing',
+    url: 'https://www.qrcode-monkey.com',
+    freeTier: 'Limited free access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['qr codes', 'sharing', 'utilities'],
+    status: 'inactive'
+  },
+
+  // ===== DEVELOPMENT & TESTING =====
+  jsonplaceholder: {
+    name: 'JSONPlaceholder',
+    description: 'Fake REST API for testing and prototyping',
+    url: 'https://jsonplaceholder.typicode.com',
+    freeTier: 'Unlimited access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['test data', 'prototyping', 'development'],
+    status: 'inactive'
   },
 
   googlePlaces: {
@@ -184,29 +415,76 @@ export function getAPIUsageSummary() {
 
 // API endpoints for different services
 export const API_ENDPOINTS = {
+  // Weather & Environment
   weather: {
     current: 'https://api.openweathermap.org/data/2.5/weather',
     forecast: 'https://api.openweathermap.org/data/2.5/forecast',
-    historical: 'https://api.openweathermap.org/data/2.5/onecall/timemachine'
+    historical: 'https://api.openweathermap.org/data/2.5/onecall/timemachine',
+    nws: 'https://api.weather.gov'
   },
+
+  // Sports & Entertainment
   sports: {
     nfl: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl',
-    steelers: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/pit'
+    steelers: 'https://site.api.espn.com/apis/site/v2/sports/football/nfl/teams/pit',
+    nhl: 'https://statsapi.web.nhl.com/api/v1',
+    penguins: 'https://statsapi.web.nhl.com/api/v1/teams/5',
+    mlb: 'https://statsapi.mlb.com/api/v1',
+    pirates: 'https://statsapi.mlb.com/api/v1/teams/134'
   },
+
+  // Pittsburgh Local Data
+  pittsburghData: {
+    parking: 'https://data.wprdc.org/api/3/action/datastore_search',
+    permits: 'https://data.wprdc.org/api/3/action/datastore_search',
+    crime: 'https://data.wprdc.org/api/3/action/datastore_search',
+    business: 'https://data.wprdc.org/api/3/action/datastore_search',
+    demographics: 'https://data.wprdc.org/api/3/action/datastore_search'
+  },
+
+  alleghenyData: {
+    health: 'https://data.alleghenycounty.us/resource',
+    education: 'https://data.alleghenycounty.us/resource',
+    property: 'https://data.alleghenycounty.us/resource'
+  },
+
+  // Transportation
   transit: {
     busTime: 'https://realtime.portauthority.org/bustime/api/v3',
     predictions: 'https://realtime.portauthority.org/bustime/api/v3/getpredictions',
-    routes: 'https://realtime.portauthority.org/bustime/api/v3/getroutes'
+    routes: 'https://realtime.portauthority.org/bustime/api/v3/getroutes',
+    transitland: 'https://transit.land/api/v1'
   },
+
+  // National Data
+  national: {
+    census: 'https://api.census.gov/data',
+    bls: 'https://api.bls.gov/publicAPI/v2',
+    treasury: 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service',
+    epa: 'https://aqs.epa.gov/data/api',
+    cdc: 'https://data.cdc.gov/resource',
+    usda: 'https://www.usda.gov/data.json'
+  },
+
+  // News & Information
   news: {
     headlines: 'https://newsapi.org/v2/top-headlines',
     everything: 'https://newsapi.org/v2/everything',
     sources: 'https://newsapi.org/v2/sources'
   },
-  pittsburghData: {
-    parking: 'https://data.wprdc.org/api/3/action/datastore_search',
-    permits: 'https://data.wprdc.org/api/3/action/datastore_search',
-    crime: 'https://data.wprdc.org/api/3/action/datastore_search'
+
+  // Culture & Education
+  culture: {
+    loc: 'https://www.loc.gov/search',
+    smithsonian: 'https://api.si.edu/openaccess/api/v1.0',
+    recreation: 'https://ridb.recreation.gov/api/v1'
+  },
+
+  // Fun & Utility
+  fun: {
+    jokes: 'https://icanhazdadjoke.com/api',
+    qr: 'https://api.qrcode-monkey.com',
+    test: 'https://jsonplaceholder.typicode.com'
   }
 } as const
 

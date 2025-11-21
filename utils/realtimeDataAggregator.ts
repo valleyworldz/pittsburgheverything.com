@@ -158,6 +158,22 @@ export class LiveEventsAggregator {
       console.warn('ESPN API error:', error)
     }
 
+    try {
+      // NHL API - Penguins games
+      const nhlEvents = await this.fetchNHLEvents(location)
+      events.push(...nhlEvents)
+    } catch (error) {
+      console.warn('NHL API error:', error)
+    }
+
+    try {
+      // MLB API - Pirates games
+      const mlbEvents = await this.fetchMLBEvents(location)
+      events.push(...mlbEvents)
+    } catch (error) {
+      console.warn('MLB API error:', error)
+    }
+
     // Sort by date and deduplicate
     const uniqueEvents = this.deduplicateEvents(events)
       .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
@@ -269,6 +285,192 @@ export class LiveEventsAggregator {
     } catch (error) {
       console.warn('ESPN API fetch failed:', error)
       return []
+    }
+  }
+
+  private async fetchNHLEvents(location: string): Promise<LiveEvent[]> {
+    // NHL API for Penguins games
+    try {
+      const penguinsResponse = await fetch(`${API_ENDPOINTS.sports.penguins}?expand=team.schedule.next`)
+      if (!penguinsResponse.ok) return []
+
+      const penguinsData = await penguinsResponse.json()
+      const events: LiveEvent[] = []
+
+      if (penguinsData.teams && penguinsData.teams[0]?.nextGameSchedule?.dates) {
+        penguinsData.teams[0].nextGameSchedule.dates.slice(0, 5).forEach((dateInfo: any) => {
+          dateInfo.games.forEach((game: any) => {
+            const startDate = new Date(game.gameDate)
+
+            if (startDate > new Date()) {
+              const homeTeam = game.teams.home.team.name
+              const awayTeam = game.teams.away.team.name
+              const isHome = homeTeam.includes('Penguins')
+
+              events.push({
+                id: `nhl-${game.gamePk}`,
+                title: `${awayTeam} at ${homeTeam}`,
+                description: `NHL game at PPG Paints Arena. ${isHome ? 'Penguins home game!' : 'Penguins away game.'}`,
+                startDate,
+                location: {
+                  name: isHome ? 'PPG Paints Arena' : game.venue.name,
+                  address: isHome ? '1001 5th Ave, Pittsburgh, PA' : game.venue.city
+                },
+                category: 'Sports',
+                price: { min: 30, max: 300, currency: 'USD' },
+                source: 'nhl',
+                url: `https://www.nhl.com/gamecenter/${game.gamePk}`,
+                lastUpdated: new Date(),
+                verified: true
+              })
+            }
+          })
+        })
+      }
+
+      return events
+    } catch (error) {
+      console.warn('NHL API fetch failed:', error)
+      return []
+    }
+  }
+
+  private async fetchMLBEvents(location: string): Promise<LiveEvent[]> {
+    // MLB API for Pirates games
+    try {
+      const piratesResponse = await fetch(`${API_ENDPOINTS.sports.pirates}?season=2024&sportId=1`)
+      if (!piratesResponse.ok) return []
+
+      const piratesData = await piratesResponse.json()
+      const events: LiveEvent[] = []
+
+      if (piratesData.teams && piratesData.teams[0]?.nextGameSchedule?.dates) {
+        piratesData.teams[0].nextGameSchedule.dates.slice(0, 5).forEach((dateInfo: any) => {
+          dateInfo.games.forEach((game: any) => {
+            const startDate = new Date(game.gameDate)
+
+            if (startDate > new Date()) {
+              const homeTeam = game.teams.home.team.name
+              const awayTeam = game.teams.away.team.name
+              const isHome = homeTeam.includes('Pirates')
+
+              events.push({
+                id: `mlb-${game.gamePk}`,
+                title: `${awayTeam} at ${homeTeam}`,
+                description: `MLB game at ${isHome ? 'PNC Park' : game.venue.name}. ${isHome ? 'Pirates home game!' : 'Pirates away game.'}`,
+                startDate,
+                location: {
+                  name: isHome ? 'PNC Park' : game.venue.name,
+                  address: isHome ? '115 Federal St, Pittsburgh, PA' : game.venue.city
+                },
+                category: 'Sports',
+                price: { min: 15, max: 150, currency: 'USD' },
+                source: 'mlb',
+                url: `https://www.mlb.com/gameday/${game.gamePk}`,
+                lastUpdated: new Date(),
+                verified: true
+              })
+            }
+          })
+        })
+      }
+
+      return events
+    } catch (error) {
+      console.warn('MLB API fetch failed:', error)
+      return []
+    }
+  }
+
+  private async fetchNationalWeatherService(location: string): Promise<any> {
+    // National Weather Service API for detailed forecasts
+    try {
+      // First get the forecast office and grid data
+      const pittsburghLat = 40.4406
+      const pittsburghLng = -79.9959
+
+      // Get forecast data
+      const forecastResponse = await fetch(`https://api.weather.gov/points/${pittsburghLat},${pittsburghLng}`)
+      if (!forecastResponse.ok) return null
+
+      const pointData = await forecastResponse.json()
+      const forecastUrl = pointData.properties.forecast
+
+      const detailedForecastResponse = await fetch(forecastUrl)
+      if (!detailedForecastResponse.ok) return null
+
+      const forecastData = await detailedForecastResponse.json()
+
+      return {
+        location: 'Pittsburgh',
+        source: 'nws',
+        forecast: forecastData.properties.periods.map((period: any) => ({
+          date: new Date(period.startTime),
+          high: period.temperature,
+          low: period.temperature, // NWS provides high/low in separate periods
+          conditions: period.shortForecast,
+          icon: period.icon,
+          precipitation: period.probabilityOfPrecipitation?.value || 0,
+          detailedForecast: period.detailedForecast
+        })),
+        alerts: [], // Could fetch alerts separately
+        lastUpdated: new Date()
+      }
+    } catch (error) {
+      console.warn('NWS API fetch failed:', error)
+      return null
+    }
+  }
+
+  private async fetchEPAAirQuality(location: string): Promise<any> {
+    // EPA Air Quality API
+    try {
+      // Pittsburgh area air quality
+      const pittsburghBbox = '-80.5,40.2,-79.8,40.6' // Bounding box for Pittsburgh area
+
+      const response = await fetch(`https://www.airnowapi.org/aq/data/?startDate=2024-01-01&endDate=2024-12-31&parameters=OZONE,PM25,PM10,CO,NO2,SO2&BBOX=${pittsburghBbox}&datatype=C&format=application/json&API_KEY=demo`)
+
+      if (!response.ok) return null
+
+      const airQualityData = await response.json()
+
+      return {
+        location: 'Pittsburgh',
+        aqi: airQualityData[0]?.AQI || 'Unknown',
+        pollutants: airQualityData.map((reading: any) => ({
+          parameter: reading.Parameter,
+          value: reading.Value,
+          unit: reading.Unit,
+          category: reading.Category
+        })),
+        lastUpdated: new Date(),
+        source: 'epa'
+      }
+    } catch (error) {
+      console.warn('EPA Air Quality API fetch failed:', error)
+      return null
+    }
+  }
+
+  private async fetchCensusData(): Promise<any> {
+    // US Census Bureau API for demographics
+    try {
+      const response = await fetch('https://api.census.gov/data/2020/acs/acs5?get=NAME,B01003_001E,B19013_001E&for=county:003&in=state:42')
+
+      if (!response.ok) return null
+
+      const censusData = await response.json()
+
+      return {
+        location: 'Allegheny County',
+        population: parseInt(censusData[1][1]),
+        medianIncome: parseInt(censusData[1][2]),
+        lastUpdated: new Date(),
+        source: 'census'
+      }
+    } catch (error) {
+      console.warn('Census API fetch failed:', error)
+      return null
     }
   }
 

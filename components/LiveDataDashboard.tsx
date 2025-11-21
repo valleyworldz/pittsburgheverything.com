@@ -72,31 +72,76 @@ export default function LiveDataDashboard({ location = 'Pittsburgh', compact = f
       setLoading(true)
       setError(null)
 
-      const [eventsRes, newsRes, weatherRes, dealsRes] = await Promise.allSettled([
+      const requests = [
         fetch(`/api/live/events?location=${encodeURIComponent(location)}&limit=${compact ? 5 : 10}`),
         fetch(`/api/live/news?location=${encodeURIComponent(location)}&limit=${compact ? 3 : 6}`),
         fetch(`/api/live/weather?location=${encodeURIComponent(location)}`),
         fetch(`/api/live/deals?location=${encodeURIComponent(location)}&limit=${compact ? 4 : 8}`)
-      ])
+      ]
 
-      if (eventsRes.status === 'fulfilled' && eventsRes.value.ok) {
-        const data = await eventsRes.value.json()
+      // Add optional APIs that may not always be available
+      try {
+        requests.push(fetch(`/api/live/sports?league=all&limit=${compact ? 3 : 5}`))
+      } catch (e) {
+        console.warn('Sports API not available')
+      }
+
+      try {
+        requests.push(fetch(`/api/live/air-quality?location=${encodeURIComponent(location)}`))
+      } catch (e) {
+        console.warn('Air quality API not available')
+      }
+
+      const results = await Promise.allSettled(requests)
+
+      // Process core APIs
+      if (results[0]?.status === 'fulfilled' && results[0].value.ok) {
+        const data = await results[0].value.json()
         setEvents(data.events || [])
       }
 
-      if (newsRes.status === 'fulfilled' && newsRes.value.ok) {
-        const data = await newsRes.value.json()
+      if (results[1]?.status === 'fulfilled' && results[1].value.ok) {
+        const data = await results[1].value.json()
         setNews(data.news || [])
       }
 
-      if (weatherRes.status === 'fulfilled' && weatherRes.value.ok) {
-        const data = await weatherRes.value.json()
+      if (results[2]?.status === 'fulfilled' && results[2].value.ok) {
+        const data = await results[2].value.json()
         setWeather(data.weather)
       }
 
-      if (dealsRes.status === 'fulfilled' && dealsRes.value.ok) {
-        const data = await dealsRes.value.json()
+      if (results[3]?.status === 'fulfilled' && results[3].value.ok) {
+        const data = await results[3].value.json()
         setDeals(data.deals || [])
+      }
+
+      // Process optional APIs if available
+      if (results[4]?.status === 'fulfilled' && results[4].value.ok) {
+        try {
+          const sportsData = await results[4].value.json()
+          // Add sports events to regular events
+          if (sportsData.sports) {
+            const sportsEvents: LiveEvent[] = []
+            Object.values(sportsData.sports).forEach((league: any) => {
+              if (league.events) {
+                sportsEvents.push(...league.events.slice(0, 2)) // Limit per league
+              }
+            })
+            setEvents(prev => [...prev, ...sportsEvents])
+          }
+        } catch (e) {
+          console.warn('Sports data processing failed:', e)
+        }
+      }
+
+      if (results[5]?.status === 'fulfilled' && results[5].value.ok) {
+        try {
+          const airQualityData = await results[5].value.json()
+          // Could add air quality info to weather or display separately
+          console.log('Air quality data:', airQualityData)
+        } catch (e) {
+          console.warn('Air quality data processing failed:', e)
+        }
       }
 
       setLastUpdated(new Date())
