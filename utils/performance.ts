@@ -151,7 +151,7 @@ export class PerformanceMonitor {
 
   // Track custom metrics
   trackMetric(name: keyof PerformanceMetrics, value: number) {
-    this.metrics[name] = value
+    ;(this.metrics as any)[name] = value
   }
 
   // Track API response time

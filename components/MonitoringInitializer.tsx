@@ -12,19 +12,8 @@ export default function MonitoringInitializer() {
     // Initialize accessibility features
     const cleanup = initializeAccessibility()
 
-    // Set up Web Vitals reporting
-    if (typeof window !== 'undefined') {
-      // Import web-vitals dynamically
-      import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-        getCLS(reportWebVitals)
-        getFID(reportWebVitals)
-        getFCP(reportWebVitals)
-        getLCP(reportWebVitals)
-        getTTFB(reportWebVitals)
-      }).catch(err => {
-        console.warn('Web Vitals not available:', err)
-      })
-    }
+    // Web Vitals will be set up by Next.js automatically
+    // No need for manual initialization
 
     // Cleanup on unmount
     return cleanup

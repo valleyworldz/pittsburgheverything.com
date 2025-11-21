@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       url,
       timestamp: new Date(timestamp),
       ip: request.ip || 'unknown',
-      userAgent: request.headers.get('user-agent')
+      requestUserAgent: request.headers.get('user-agent')
     })
 
     // Example: Send to external analytics service

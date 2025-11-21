@@ -10,8 +10,7 @@ import Footer from '@/components/Footer'
 import SkipToContent from '@/components/SkipToContent'
 import LoadingProvider from '@/components/LoadingProvider'
 import ErrorBoundary from '@/components/ErrorBoundary'
-import { initializeMonitoring, reportWebVitals } from '@/utils/performance'
-import { initializeAccessibility } from '@/utils/accessibility'
+import MonitoringInitializer from '@/components/MonitoringInitializer'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,7 +25,7 @@ export const metadata: Metadata = {
     template: '%s | PittsburghEverything'
   },
   description: siteConfig.description,
-  keywords: siteConfig.seo.keywords,
+  keywords: [...siteConfig.seo.keywords],
   authors: [{ name: 'PittsburghEverything Team' }],
   creator: 'PittsburghEverything',
   publisher: 'PittsburghEverything',
@@ -71,8 +70,6 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-site-verification',
-    yandex: 'your-yandex-verification',
-    bing: 'your-bing-verification',
   },
 }
 

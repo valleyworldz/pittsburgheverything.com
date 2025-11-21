@@ -82,7 +82,7 @@ export function auditAccessibility(): AccessibilityReport {
                     input.getAttribute('aria-label') ||
                     input.getAttribute('aria-labelledby')
 
-    if (!hasLabel && input.type !== 'submit' && input.type !== 'button' && input.type !== 'hidden') {
+    if (!hasLabel && (input as HTMLInputElement).type !== 'submit' && (input as HTMLInputElement).type !== 'button' && (input as HTMLInputElement).type !== 'hidden') {
       issues.push({
         severity: 'error',
         message: 'Form input missing label',
@@ -143,7 +143,7 @@ export function auditAccessibility(): AccessibilityReport {
 
     if (color && backgroundColor && backgroundColor !== 'rgba(0, 0, 0, 0)') {
       const contrast = getContrastRatio(color, backgroundColor)
-      const minContrast = element.tagName.match(/^H[1-6]$/) || style.fontWeight >= 700 ? 3 : 4.5
+      const minContrast = element.tagName.match(/^H[1-6]$/) || parseInt(style.fontWeight) >= 700 ? 3 : 4.5
 
       if (contrast < minContrast) {
         issues.push({
