@@ -1,0 +1,189 @@
+[
+  {
+    "id": "nh-1",
+    "name": "Lawrenceville",
+    "summary": "Trendy, walkable neighborhood with bars, restaurants, galleries, and riverfront views.",
+    "vibe": ["young professionals", "nightlife", "artsy"],
+    "avgRent": "$1,300–$2,000",
+    "walkScore": 85,
+    "highlights": [
+      "Butler Street dining & bars",
+      "Riverfront trail access",
+      "Art galleries & boutiques"
+    ],
+    "description": "Home to universities, hospitals, and world-class museums. The cultural and educational center of Pittsburgh.",
+    "population": 8000,
+    "medianIncome": 55000,
+    "image": "/images/neighborhoods/lawrenceville.jpg",
+    "attractions": [
+      "Lawrenceville Arts & Entertainment District",
+      "Artery",
+      "The ToonSeum",
+      "Randyland",
+      "Local galleries",
+      "Butcher shops and specialty food stores"
+    ],
+    "demographics": {
+      "medianAge": 33,
+      "educationLevel": "Bachelor's Degree",
+      "housingType": "Historic Homes & Lofts"
+    }
+  },
+  {
+    "id": "nh-2",
+    "name": "Shadyside",
+    "summary": "Classic, leafy streets with a mix of upscale shops, cafes, and historic homes.",
+    "vibe": ["students", "families", "shopping"],
+    "avgRent": "$1,200–$2,200",
+    "walkScore": 88,
+    "highlights": [
+      "Walnut Street shopping",
+      "Cafes and brunch spots",
+      "Close to universities and hospitals"
+    ],
+    "description": "Upscale neighborhood with high-end shopping, fine dining, and beautiful residential streets.",
+    "population": 15000,
+    "medianIncome": 85000,
+    "image": "/images/neighborhoods/shadyside.jpg",
+    "attractions": [
+      "Walnut Street shopping",
+      "Rodef Shalom Congregation",
+      "Frick Park",
+      "Phipps Plaza",
+      "Shadyside Hospital",
+      "High-end boutiques"
+    ],
+    "demographics": {
+      "medianAge": 40,
+      "educationLevel": "Graduate Degree",
+      "housingType": "Single Family Homes"
+    }
+  },
+  {
+    "id": "nh-3",
+    "name": "South Side",
+    "summary": "Lively nightlife corridor with bars, music venues, and access to the river and trails.",
+    "vibe": ["nightlife", "music", "younger crowd"],
+    "avgRent": "$1,000–$1,800",
+    "walkScore": 90,
+    "highlights": [
+      "East Carson Street nightlife",
+      "Riverfront trail",
+      "Mix of old row homes and lofts"
+    ],
+    "description": "Historic flats with trendy shops, restaurants, and nightlife. Pittsburgh's most walkable neighborhood.",
+    "population": 12000,
+    "medianIncome": 65000,
+    "image": "/images/neighborhoods/south-side.jpg",
+    "attractions": [
+      "South Side Works",
+      "Carnegie Library of Pittsburgh",
+      "Station Square",
+      "Birmingham Bridge",
+      "South Side Park",
+      "Local craft breweries"
+    ],
+    "demographics": {
+      "medianAge": 35,
+      "educationLevel": "Bachelor's Degree",
+      "housingType": "Historic Row Houses"
+    }
+  },
+  {
+    "id": "nh-4",
+    "name": "Downtown Pittsburgh",
+    "summary": "The heart of Pittsburgh with skyscrapers, businesses, cultural attractions, and the famous Golden Triangle.",
+    "vibe": ["business", "cultural", "urban"],
+    "avgRent": "$1,500–$2,500",
+    "walkScore": 95,
+    "highlights": [
+      "Point State Park",
+      "Duquesne Incline",
+      "PPG Paints Arena",
+      "Market Square",
+      "Andy Warhol Museum"
+    ],
+    "description": "The heart of Pittsburgh with skyscrapers, businesses, cultural attractions, and the famous Golden Triangle.",
+    "population": 5000,
+    "medianIncome": 75000,
+    "image": "/images/neighborhoods/downtown.jpg",
+    "attractions": [
+      "Point State Park",
+      "Duquesne Incline",
+      "PPG Paints Arena",
+      "David L. Lawrence Convention Center",
+      "Market Square",
+      "Andy Warhol Museum"
+    ],
+    "demographics": {
+      "medianAge": 32,
+      "educationLevel": "Bachelor's Degree",
+      "housingType": "High-Rise Condos"
+    }
+  },
+  {
+    "id": "nh-5",
+    "name": "Oakland",
+    "summary": "Home to universities, hospitals, and world-class museums. The cultural and educational center of Pittsburgh.",
+    "vibe": ["students", "cultural", "educational"],
+    "avgRent": "$800–$1,500",
+    "walkScore": 88,
+    "highlights": [
+      "Carnegie Museum of Art",
+      "Carnegie Museum of Natural History",
+      "Phipps Conservatory",
+      "University of Pittsburgh",
+      "Carnegie Mellon University"
+    ],
+    "description": "Home to universities, hospitals, and world-class museums. The cultural and educational center of Pittsburgh.",
+    "population": 25000,
+    "medianIncome": 45000,
+    "image": "/images/neighborhoods/oakland.jpg",
+    "attractions": [
+      "Carnegie Museum of Art",
+      "Carnegie Museum of Natural History",
+      "Phipps Conservatory",
+      "University of Pittsburgh",
+      "Carnegie Mellon University",
+      "Heinz Field",
+      "PNC Park"
+    ],
+    "demographics": {
+      "medianAge": 22,
+      "educationLevel": "Graduate Degree",
+      "housingType": "Student Housing & Apartments"
+    }
+  },
+  {
+    "id": "nh-6",
+    "name": "Strip District",
+    "summary": "Historic warehouse district now filled with specialty shops, food vendors, and Pittsburgh's best wholesale food markets.",
+    "vibe": ["foodie", "historic", "shopping"],
+    "avgRent": "$1,200–$2,000",
+    "walkScore": 90,
+    "highlights": [
+      "Whole Foods Market",
+      "Penn Avenue Fish Company",
+      "The Spice Island Tea House",
+      "Local coffee roasters",
+      "Antique shops"
+    ],
+    "description": "Historic warehouse district now filled with specialty shops, food vendors, and Pittsburgh's best wholesale food markets.",
+    "population": 800,
+    "medianIncome": 70000,
+    "image": "/images/neighborhoods/strip-district.jpg",
+    "attractions": [
+      "Whole Foods Market",
+      "Penn Avenue Fish Company",
+      "The Spice Island Tea House",
+      "Local coffee roasters",
+      "Antique shops",
+      "Italian food warehouses"
+    ],
+    "demographics": {
+      "medianAge": 38,
+      "educationLevel": "Bachelor's Degree",
+      "housingType": "Converted Warehouses"
+    }
+  }
+]

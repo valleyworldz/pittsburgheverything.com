@@ -1,0 +1,43 @@
+name: PittsburghEverything Automation
+
+on:
+  schedule:
+    - cron: "0 5 * * *" # every day at 05:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  run-automation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run event + restaurant ingest
+        run: |
+          node scripts/scrape-events.js || node scripts/scrape-events.ts
+          node scripts/scrape-restaurants.js || node scripts/scrape-restaurants.ts
+
+      - name: Generate AI summaries
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          node scripts/gen-ai-summaries.js || node scripts/gen-ai-summaries.ts
+
+      - name: Generate SEO drafts
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          node scripts/seo-generator.js || node scripts/seo-generator.ts
+
+      - name: Generate newsletter draft
+        run: |
+          node scripts/auto-newsletter.js || node scripts/auto-newsletter.ts

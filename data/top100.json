@@ -1,0 +1,92 @@
+[
+  {
+    "rank": 1,
+    "name": "Primanti Bros.",
+    "category": "Restaurants",
+    "description": "Iconic Pittsburgh sandwich shop with fries and coleslaw in every sandwich",
+    "rating": 4.8,
+    "address": "3803 Forbes Ave, Oakland",
+    "reason": "Most iconic Pittsburgh food experience"
+  },
+  {
+    "rank": 2,
+    "name": "Phipps Conservatory",
+    "category": "Attractions",
+    "description": "World-class botanical gardens and art installations",
+    "rating": 4.9,
+    "address": "1 Schenley Park, Oakland",
+    "reason": "Most beautiful indoor garden in America"
+  },
+  {
+    "rank": 3,
+    "name": "Carnegie Museum of Art",
+    "category": "Attractions",
+    "description": "Premier art museum with extensive collections",
+    "rating": 4.7,
+    "address": "4400 Forbes Ave, Oakland",
+    "reason": "World-class art collection in Pittsburgh"
+  },
+  {
+    "rank": 4,
+    "name": "Fat Head's Saloon",
+    "category": "Bars & Nightlife",
+    "description": "Craft beer and artisanal pizza in the heart of Pittsburgh",
+    "rating": 4.6,
+    "address": "1805 E Carson St, South Side",
+    "reason": "Best craft beer selection in the city"
+  },
+  {
+    "rank": 5,
+    "name": "The Porch at Schenley",
+    "category": "Restaurants",
+    "description": "Farm-to-table American cuisine in a beautiful setting",
+    "rating": 4.7,
+    "address": "221 Schenley Dr, Oakland",
+    "reason": "Most romantic dining experience"
+  },
+  {
+    "rank": 6,
+    "name": "Point State Park",
+    "category": "Parks & Outdoors",
+    "description": "Historic park at the confluence of three rivers",
+    "rating": 4.5,
+    "address": "601 Commonwealth Pl, Downtown",
+    "reason": "Most historic park in Pittsburgh"
+  },
+  {
+    "rank": 7,
+    "name": "Duquesne Incline",
+    "category": "Attractions",
+    "description": "Historic cable car ride with panoramic city views",
+    "rating": 4.4,
+    "address": "1220 Grandview Ave, Mt. Washington",
+    "reason": "Best view of Pittsburgh skyline"
+  },
+  {
+    "rank": 8,
+    "name": "Strip District",
+    "category": "Shopping",
+    "description": "Historic warehouse district with specialty shops",
+    "rating": 4.3,
+    "address": "Various locations, Strip District",
+    "reason": "Best shopping district in Pittsburgh"
+  },
+  {
+    "rank": 9,
+    "name": "Carnegie Museum of Natural History",
+    "category": "Attractions",
+    "description": "Dinosaur fossils, gems, and interactive exhibits",
+    "rating": 4.6,
+    "address": "4400 Forbes Ave, Oakland",
+    "reason": "Most amazing dinosaur collection"
+  },
+  {
+    "rank": 10,
+    "name": "Heinz Field",
+    "category": "Sports",
+    "description": "Home of the Pittsburgh Steelers and Pitt Panthers",
+    "rating": 4.5,
+    "address": "100 Art Rooney Ave, Oakland",
+    "reason": "Most exciting sports venue in Pittsburgh"
+  }
+]

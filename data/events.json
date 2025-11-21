@@ -1,0 +1,67 @@
+[
+  {
+    "id": "1",
+    "title": "Pittsburgh Food Festival",
+    "description": "Celebrate Pittsburgh's diverse culinary scene with food vendors, live music, and family activities at Point State Park.",
+    "date": "2024-06-15",
+    "time": "12:00 PM - 8:00 PM",
+    "location": "Point State Park, Downtown Pittsburgh",
+    "category": "Food & Drink",
+    "price": "Free",
+    "image": "/images/events/food-festival.jpg",
+    "url": "https://pittsburghfoodfestival.com",
+    "tags": ["food", "festival", "family-friendly", "music"]
+  },
+  {
+    "id": "2",
+    "title": "Pittsburgh Steelers vs. Cleveland Browns",
+    "description": "AFC North rivalry game at Acrisure Stadium. Don't miss this exciting matchup!",
+    "date": "2024-10-20",
+    "time": "1:00 PM",
+    "location": "Acrisure Stadium, Oakland",
+    "category": "Sports",
+    "price": "$75+",
+    "image": "/images/events/steelers-game.jpg",
+    "url": "https://steelers.com",
+    "tags": ["football", "nfl", "sports", "steelers"]
+  },
+  {
+    "id": "3",
+    "title": "Christmas Tree Lighting at Market Square",
+    "description": "Join thousands for Pittsburgh's official Christmas tree lighting ceremony, complete with carolers, hot chocolate, and holiday shopping.",
+    "date": "2024-11-30",
+    "time": "6:00 PM - 9:00 PM",
+    "location": "Market Square, Downtown Pittsburgh",
+    "category": "Holiday",
+    "price": "Free",
+    "image": "/images/events/christmas-tree.jpg",
+    "url": "https://downtownpittsburgh.com",
+    "tags": ["holiday", "christmas", "family", "shopping"]
+  },
+  {
+    "id": "4",
+    "title": "Three Rivers Arts Festival",
+    "description": "Pittsburgh's premier arts festival featuring local and international artists, live performances, and interactive installations.",
+    "date": "2024-06-22",
+    "time": "10:00 AM - 6:00 PM",
+    "location": "Point State Park, Downtown Pittsburgh",
+    "category": "Arts & Culture",
+    "price": "$15",
+    "image": "/images/events/arts-festival.jpg",
+    "url": "https://threeriversartsfestival.com",
+    "tags": ["art", "festival", "music", "culture"]
+  },
+  {
+    "id": "5",
+    "title": "Pittsburgh Marathon",
+    "description": "Run through the streets of Pittsburgh in this scenic 26.2-mile marathon with views of the three rivers and city skyline.",
+    "date": "2024-05-05",
+    "time": "7:00 AM",
+    "location": "Starts at Point State Park",
+    "category": "Sports",
+    "price": "$125",
+    "image": "/images/events/pittsburgh-marathon.jpg",
+    "url": "https://pittsburghmarathon.com",
+    "tags": ["running", "marathon", "fitness", "sports"]
+  }
+]

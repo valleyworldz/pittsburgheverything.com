@@ -1,0 +1,46 @@
+[
+  {
+    "id": "biz-1",
+    "name": "Bridge & Bite",
+    "category": "restaurant",
+    "neighborhood": "Lawrenceville",
+    "plan": "featured",
+    "contactEmail": "owner@example.com",
+    "status": "active",
+    "joinedAt": "2025-06-01",
+    "notes": "Early partner. Wants seasonal promo placements."
+  },
+  {
+    "id": "biz-2",
+    "name": "Steel City Roof & HVAC",
+    "category": "home-services",
+    "neighborhood": "Pittsburgh Region",
+    "plan": "premium",
+    "contactEmail": "leads@steelcityroof.com",
+    "status": "active",
+    "joinedAt": "2025-06-10",
+    "notes": "High-value lead buyer. Prioritize routing."
+  },
+  {
+    "id": "biz-3",
+    "name": "South Side Ink",
+    "category": "tattoo",
+    "neighborhood": "South Side",
+    "plan": "free",
+    "contactEmail": "info@southsideink.com",
+    "status": "trial",
+    "joinedAt": "2025-06-15",
+    "notes": "Trial listing – candidate for upsell."
+  },
+  {
+    "id": "biz-4",
+    "name": "Lawrenceville Arts Collective",
+    "category": "creative",
+    "neighborhood": "Lawrenceville",
+    "plan": "free",
+    "contactEmail": "info@lawrencevillearts.org",
+    "status": "active",
+    "joinedAt": "2025-06-20",
+    "notes": "Community organization. Good for events cross-promotion."
+  }
+]

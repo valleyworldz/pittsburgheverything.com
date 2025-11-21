@@ -1,0 +1,152 @@
+[
+  {
+    "id": "1",
+    "name": "Pittsburgh Family Dentistry",
+    "description": "Comprehensive dental care for the whole family with a focus on preventive care and patient comfort.",
+    "category": "Healthcare",
+    "subcategory": "Dentistry",
+    "address": "123 Main St, Pittsburgh, PA 15201",
+    "phone": "(412) 555-0123",
+    "email": "info@pghfamilydentistry.com",
+    "website": "https://pghfamilydentistry.com",
+    "neighborhood": "Downtown",
+    "rating": 4.8,
+    "priceRange": "$$$",
+    "features": [
+      "Emergency Care",
+      "Insurance Accepted",
+      "Weekend Hours",
+      "Sedation Dentistry",
+      "Cosmetic Dentistry"
+    ],
+    "hours": {
+      "monday": "8:00 AM - 5:00 PM",
+      "tuesday": "8:00 AM - 5:00 PM",
+      "wednesday": "8:00 AM - 5:00 PM",
+      "thursday": "8:00 AM - 5:00 PM",
+      "friday": "8:00 AM - 7:00 PM",
+      "saturday": "9:00 AM - 3:00 PM",
+      "sunday": "Closed"
+    }
+  },
+  {
+    "id": "2",
+    "name": "Smith & Associates Law",
+    "description": "Experienced attorneys serving Pittsburgh for 25+ years. Specializing in business law, estate planning, and litigation.",
+    "category": "Legal",
+    "subcategory": "Business Law",
+    "address": "456 Liberty Ave, Pittsburgh, PA 15222",
+    "phone": "(412) 555-0456",
+    "email": "contact@smithlaw.com",
+    "website": "https://smithlaw.com",
+    "neighborhood": "Downtown",
+    "rating": 4.9,
+    "priceRange": "$$$$",
+    "features": [
+      "Free Consultation",
+      "Estate Planning",
+      "Business Law",
+      "Litigation",
+      "Contract Review"
+    ],
+    "hours": {
+      "monday": "9:00 AM - 5:00 PM",
+      "tuesday": "9:00 AM - 5:00 PM",
+      "wednesday": "9:00 AM - 5:00 PM",
+      "thursday": "9:00 AM - 5:00 PM",
+      "friday": "9:00 AM - 5:00 PM",
+      "saturday": "By Appointment",
+      "sunday": "Closed"
+    }
+  },
+  {
+    "id": "3",
+    "name": "Pittsburgh Plumbing Co.",
+    "description": "24/7 emergency plumbing services with licensed technicians. Serving Pittsburgh metro area for over 20 years.",
+    "category": "Home Services",
+    "subcategory": "Plumbing",
+    "address": "789 Fifth Ave, Pittsburgh, PA 15219",
+    "phone": "(412) 555-0789",
+    "email": "service@pghplumbing.com",
+    "website": "https://pghplumbing.com",
+    "neighborhood": "Strip District",
+    "rating": 4.6,
+    "priceRange": "$$",
+    "features": [
+      "24/7 Service",
+      "Licensed & Insured",
+      "Free Estimates",
+      "Emergency Repairs",
+      "Water Heater Installation"
+    ],
+    "hours": {
+      "monday": "24 hours",
+      "tuesday": "24 hours",
+      "wednesday": "24 hours",
+      "thursday": "24 hours",
+      "friday": "24 hours",
+      "saturday": "24 hours",
+      "sunday": "24 hours"
+    }
+  },
+  {
+    "id": "4",
+    "name": "Steel City Bank",
+    "description": "Community banking with personal service. Full range of banking products and investment services.",
+    "category": "Financial",
+    "subcategory": "Banking",
+    "address": "321 Market St, Pittsburgh, PA 15203",
+    "phone": "(412) 555-0321",
+    "email": "info@steelcitybank.com",
+    "website": "https://steelcitybank.com",
+    "neighborhood": "South Side",
+    "rating": 4.4,
+    "priceRange": "$",
+    "features": [
+      "Online Banking",
+      "Mortgages",
+      "Business Accounts",
+      "Investment Services",
+      "Free Checking"
+    ],
+    "hours": {
+      "monday": "9:00 AM - 5:00 PM",
+      "tuesday": "9:00 AM - 5:00 PM",
+      "wednesday": "9:00 AM - 5:00 PM",
+      "thursday": "9:00 AM - 5:00 PM",
+      "friday": "9:00 AM - 5:00 PM",
+      "saturday": "9:00 AM - 12:00 PM",
+      "sunday": "Closed"
+    }
+  },
+  {
+    "id": "5",
+    "name": "Pittsburgh Fitness Academy",
+    "description": "Full-service gym with personal training, group classes, and state-of-the-art equipment.",
+    "category": "Healthcare",
+    "subcategory": "Fitness",
+    "address": "654 Penn Ave, Pittsburgh, PA 15221",
+    "phone": "(412) 555-0654",
+    "email": "join@pghfitness.com",
+    "website": "https://pghfitness.com",
+    "neighborhood": "East Liberty",
+    "rating": 4.5,
+    "priceRange": "$$",
+    "features": [
+      "Personal Training",
+      "Group Classes",
+      "24/7 Access",
+      "Sauna & Spa",
+      "Nutrition Counseling"
+    ],
+    "hours": {
+      "monday": "5:00 AM - 11:00 PM",
+      "tuesday": "5:00 AM - 11:00 PM",
+      "wednesday": "5:00 AM - 11:00 PM",
+      "thursday": "5:00 AM - 11:00 PM",
+      "friday": "5:00 AM - 10:00 PM",
+      "saturday": "7:00 AM - 8:00 PM",
+      "sunday": "8:00 AM - 6:00 PM"
+    }
+  }
+]
