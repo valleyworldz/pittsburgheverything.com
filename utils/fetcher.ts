@@ -1,6 +1,6 @@
 // API Fetcher Utility with Error Handling and Caching
 
-export interface FetchOptions extends RequestInit {
+export interface FetchOptions extends Omit<RequestInit, 'cache'> {
   timeout?: number
   retries?: number
   cache?: boolean

@@ -50,7 +50,7 @@ export const leadSchema = z.object({
 
   businessInterest: z.string()
     .optional()
-    .max(200, 'Business interest description is too long'),
+    .refine((val) => !val || val.length <= 200, 'Business interest description is too long'),
 })
 
 // Business claim validation schema
@@ -81,7 +81,7 @@ export const businessClaimSchema = z.object({
 
   ownershipProof: z.string()
     .optional()
-    .max(500, 'Ownership proof description is too long'),
+    .refine((val) => !val || val.length <= 500, 'Ownership proof description is too long'),
 })
 
 /**

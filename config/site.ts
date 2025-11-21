@@ -23,13 +23,6 @@ export const siteConfig = {
     linkedin: 'https://linkedin.com/company/pittsburgheverything',
   },
 
-  // Business information
-  business: {
-    name: 'PittsburghEverything LLC',
-    founded: 2024,
-    mission: 'To be the ultimate guide for everything Pittsburgh',
-    values: ['Local Focus', 'Community Driven', 'Authentic Content', 'User Experience'],
-  },
 
   // SEO configuration
   seo: {
@@ -100,7 +93,7 @@ export const siteConfig = {
   },
 
   // Business rules
-  business: {
+  businessRules: {
     claimCooldown: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
     leadResponseTime: 24 * 60 * 60 * 1000, // 24 hours
     premiumPrice: 99.99, // Monthly premium listing price
@@ -146,8 +139,8 @@ export function getContactInfo(): typeof siteConfig.contact {
   return siteConfig.contact
 }
 
-export function getBusinessInfo(): typeof siteConfig.business {
-  return siteConfig.business
+export function getBusinessInfo(): typeof siteConfig.businessRules {
+  return siteConfig.businessRules
 }
 
 // Environment-specific configurations

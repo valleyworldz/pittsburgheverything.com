@@ -42,7 +42,7 @@ class EmailService {
 
     // Only initialize if we have SMTP credentials
     if (process.env.SMTP_USER && process.env.SMTP_PASS) {
-      this.transporter = nodemailer.createTransporter(smtpConfig)
+      this.transporter = nodemailer.createTransport(smtpConfig)
     }
   }
 

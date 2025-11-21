@@ -1,3 +1,21 @@
 {
-  "/page": "app/page.js"
+  "/_not-found/page": "app/_not-found/page.js",
+  "/ai-guide/page": "app/ai-guide/page.js",
+  "/api/businesses/route": "app/api/businesses/route.js",
+  "/api/ai-guide/route": "app/api/ai-guide/route.js",
+  "/api/events/route": "app/api/events/route.js",
+  "/api/leads/route": "app/api/leads/route.js",
+  "/api/neighborhoods/route": "app/api/neighborhoods/route.js",
+  "/api/restaurants/route": "app/api/restaurants/route.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/page": "app/page.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/submit-business/page": "app/submit-business/page.js",
+  "/neighborhoods/page": "app/neighborhoods/page.js",
+  "/deals/page": "app/deals/page.js",
+  "/events/page": "app/events/page.js",
+  "/restaurants/page": "app/restaurants/page.js",
+  "/services/page": "app/services/page.js",
+  "/top-100/page": "app/top-100/page.js",
+  "/things-to-do/pittsburgh-date-night-ideas/page": "app/things-to-do/pittsburgh-date-night-ideas/page.js"
 }

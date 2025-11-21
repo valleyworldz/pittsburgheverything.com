@@ -143,15 +143,21 @@ export function getEndpoint(path: keyof typeof apiConfig.endpoints): string {
 
 export function isIntegrationEnabled(integration: keyof typeof apiConfig.integrations): boolean {
   const config = apiConfig.integrations[integration]
-  return config && config.enabled === true
+
+  // Handle different integration types
+  if (integration === 'email') {
+    return !!(process.env.SMTP_USER || process.env.SENDGRID_API_KEY)
+  }
+
+  return config && 'enabled' in config && config.enabled === true
 }
 
 export function getCacheTtl(endpoint: string): number {
-  return apiConfig.cache.endpoints[endpoint] || apiConfig.cache.defaultTtl
+  return (apiConfig.cache.endpoints as any)[endpoint] || apiConfig.cache.defaultTtl
 }
 
 export function shouldRetry(statusCode: number): boolean {
-  return apiConfig.request.retryableStatusCodes.includes(statusCode)
+  return apiConfig.request.retryableStatusCodes.includes(statusCode as any)
 }
 
 export function getRetryDelay(attempt: number): number {
@@ -161,7 +167,7 @@ export function getRetryDelay(attempt: number): number {
 
 export function isValidApiKey(key: string): boolean {
   // Simple validation - in production, implement proper API key validation
-  return key && key.length > 10
+  return Boolean(key && key.length > 10)
 }
 
 // API client configuration for external services
