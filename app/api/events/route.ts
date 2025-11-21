@@ -3,6 +3,9 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { Event, APIResponse } from '@/types'
 
+// Mark this route as dynamic to allow query parameters
+export const dynamic = 'force-dynamic'
+
 const EVENTS_FILE = join(process.cwd(), 'data', 'events.json')
 
 // Helper function to read events from file
@@ -18,7 +21,7 @@ function readEvents(): Event[] {
 
 export async function GET(request: NextRequest): Promise<NextResponse<APIResponse<Event[]>>> {
   try {
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = request.nextUrl
     const category = searchParams.get('category')
     const limit = searchParams.get('limit')
     const upcoming = searchParams.get('upcoming')

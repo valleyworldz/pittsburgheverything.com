@@ -3,6 +3,9 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { Neighborhood, APIResponse } from '@/types'
 
+// Mark this route as dynamic to allow query parameters
+export const dynamic = 'force-dynamic'
+
 const NEIGHBORHOODS_FILE = join(process.cwd(), 'data', 'neighborhoods.json')
 
 // Helper function to read neighborhoods from file
@@ -18,7 +21,7 @@ function readNeighborhoods(): Neighborhood[] {
 
 export async function GET(request: NextRequest): Promise<NextResponse<APIResponse<Neighborhood[]>>> {
   try {
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = request.nextUrl
     const limit = searchParams.get('limit')
     const sort = searchParams.get('sort') // 'population', 'walkScore', 'name'
 

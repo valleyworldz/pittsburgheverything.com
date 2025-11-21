@@ -3,6 +3,9 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { Restaurant, APIResponse } from '@/types'
 
+// Mark this route as dynamic to allow query parameters
+export const dynamic = 'force-dynamic'
+
 const RESTAURANTS_FILE = join(process.cwd(), 'data', 'restaurants.json')
 
 // Helper function to read restaurants from file
@@ -18,7 +21,7 @@ function readRestaurants(): Restaurant[] {
 
 export async function GET(request: NextRequest): Promise<NextResponse<APIResponse<Restaurant[]>>> {
   try {
-    const { searchParams } = new URL(request.url)
+    const { searchParams } = request.nextUrl
     const cuisine = searchParams.get('cuisine')
     const neighborhood = searchParams.get('neighborhood')
     const priceRange = searchParams.get('priceRange')
