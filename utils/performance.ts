@@ -192,7 +192,7 @@ export class PerformanceMonitor {
 
       // Custom analytics endpoint
       if (process.env.NODE_ENV === 'production') {
-        fetch('/api/analytics', {
+        fetch('/api/analytics/track', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -348,6 +348,27 @@ export function initializeMonitoring() {
     performanceMonitor = new PerformanceMonitor()
     userAnalytics = new UserAnalyticsTracker()
 
+    // Start session tracking
+    if (userAnalytics) {
+      const analytics = userAnalytics.getAnalyticsData()
+      const sessionStartData = {
+        sessionId: analytics.sessionId,
+        userId: analytics.userId,
+        startTime: analytics.timeOnPage, // This will be the session start timestamp
+        userAgent: navigator.userAgent,
+        referrer: document.referrer,
+        url: window.location.href
+      }
+
+      // Send session start (non-blocking)
+      fetch('/api/analytics/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessionStartData),
+        keepalive: true // Allow request to complete even if page unloads
+      }).catch(err => console.warn('Session start failed:', err))
+    }
+
     // Track initial page load
     window.addEventListener('load', () => {
       setTimeout(() => {
@@ -367,8 +388,15 @@ export function initializeMonitoring() {
     window.addEventListener('beforeunload', () => {
       if (userAnalytics) {
         const analytics = userAnalytics.getAnalyticsData()
-        // Send final analytics data
-        navigator.sendBeacon('/api/analytics/session', JSON.stringify(analytics))
+        // Send session end data
+        const sessionEndData = {
+          sessionId: analytics.sessionId,
+          endTime: Date.now(),
+          duration: analytics.timeOnPage,
+          pageViews: analytics.pageViews,
+          events: analytics.interactions.length
+        }
+        navigator.sendBeacon('/api/analytics/session', JSON.stringify(sessionEndData))
       }
     })
   }
