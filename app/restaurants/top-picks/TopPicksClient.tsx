@@ -1,14 +1,18 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { MapPin, Clock, Star, DollarSign, Users, Heart, ExternalLink, Phone, Globe, Award, Utensils, Grid, List, SortAsc, Filter } from 'lucide-react'
 import Link from 'next/link'
 import { getTopPicksRestaurants } from '@/data/pittsburghRestaurants'
 import RestaurantCard from '@/components/restaurants/RestaurantCard'
 import RestaurantFilters, { FilterState } from '@/components/restaurants/RestaurantFilters'
+import RestaurantListSkeleton from '@/components/restaurants/LoadingSkeleton'
+import ErrorState from '@/components/restaurants/ErrorState'
 
 export default function TopPicksClient() {
-  const allRestaurants = getTopPicksRestaurants()
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [allRestaurants, setAllRestaurants] = useState(() => getTopPicksRestaurants())
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [sortBy, setSortBy] = useState<'rating' | 'reviews' | 'name'>('rating')
   const [filters, setFilters] = useState<FilterState>({
@@ -22,6 +26,14 @@ export default function TopPicksClient() {
     amenities: []
   })
   const [favorites, setFavorites] = useState<string[]>([])
+
+  useEffect(() => {
+    // Simulate loading for better UX
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [])
 
   // Apply filters
   const filteredRestaurants = useMemo(() => {
@@ -216,7 +228,15 @@ export default function TopPicksClient() {
       {/* Restaurants Grid/List */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {filteredRestaurants.length === 0 ? (
+          {loading ? (
+            <RestaurantListSkeleton count={6} />
+          ) : error ? (
+            <ErrorState message={error} onRetry={() => {
+              setError(null)
+              setLoading(true)
+              setTimeout(() => setLoading(false), 300)
+            }} />
+          ) : filteredRestaurants.length === 0 ? (
             <div className="text-center py-20">
               <Utensils className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-700 mb-2">No restaurants found</h3>

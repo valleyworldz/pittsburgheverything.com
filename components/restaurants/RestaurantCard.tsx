@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MapPin, Clock, Star, DollarSign, Phone, Globe, ExternalLink, Heart, Share2, Navigation, Calendar, Users, Utensils } from 'lucide-react'
 import Link from 'next/link'
 import type { Restaurant } from '@/data/pittsburghRestaurants'
@@ -21,21 +21,24 @@ export default function RestaurantCard({
   isFavorite = false
 }: RestaurantCardProps) {
   const [imageError, setImageError] = useState(false)
-  const [isOpen, setIsOpen] = useState(true) // Would be calculated from hours
+  const [status, setStatus] = useState(() => {
+    // Use accurate hours parsing
+    const { getRestaurantStatus } = require('@/utils/restaurantUtils')
+    return getRestaurantStatus(restaurant.hours)
+  })
 
-  const getCurrentStatus = () => {
-    const now = new Date()
-    const day = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][now.getDay()]
-    const hours = restaurant.hours[day as keyof typeof restaurant.hours]
+  // Update status every minute
+  useEffect(() => {
+    const { getRestaurantStatus } = require('@/utils/restaurantUtils')
+    const updateStatus = () => {
+      setStatus(getRestaurantStatus(restaurant.hours))
+    }
     
-    if (!hours || hours === 'Closed') return { isOpen: false, status: 'Closed' }
-    if (hours === '24 hours') return { isOpen: true, status: 'Open 24 Hours' }
+    updateStatus()
+    const interval = setInterval(updateStatus, 60000) // Update every minute
     
-    // Simple check - would need proper parsing in production
-    return { isOpen: true, status: `Open until ${hours.split(' - ')[1] || 'late'}` }
-  }
-
-  const status = getCurrentStatus()
+    return () => clearInterval(interval)
+  }, [restaurant.hours])
 
   const handleShare = async () => {
     if (navigator.share) {
