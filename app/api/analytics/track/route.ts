@@ -33,6 +33,18 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
+    } else if (contentType?.includes('text/plain')) {
+      // Handle sendBeacon data (JSON string sent as text/plain)
+      try {
+        const textData = await request.text()
+        eventData = JSON.parse(textData)
+      } catch (textError) {
+        console.warn('Invalid text/plain in analytics request:', textError)
+        return NextResponse.json(
+          { error: 'Invalid text format' },
+          { status: 400 }
+        )
+      }
     } else {
       // Handle form data or other formats
       try {

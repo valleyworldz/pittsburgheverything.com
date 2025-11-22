@@ -5,13 +5,33 @@ export async function POST(request: NextRequest) {
   try {
     let body: any
 
-    // Handle JSON parsing errors
-    try {
-      body = await request.json()
-    } catch (jsonError) {
-      console.warn('Invalid JSON in session POST:', jsonError)
+    // Handle different content types
+    const contentType = request.headers.get('content-type')
+    if (contentType?.includes('application/json')) {
+      try {
+        body = await request.json()
+      } catch (jsonError) {
+        console.warn('Invalid JSON in session POST:', jsonError)
+        return NextResponse.json(
+          { error: 'Invalid JSON format' },
+          { status: 400 }
+        )
+      }
+    } else if (contentType?.includes('text/plain')) {
+      // Handle sendBeacon data (JSON string sent as text/plain)
+      try {
+        const textData = await request.text()
+        body = JSON.parse(textData)
+      } catch (textError) {
+        console.warn('Invalid text/plain in session POST:', textError)
+        return NextResponse.json(
+          { error: 'Invalid text format' },
+          { status: 400 }
+        )
+      }
+    } else {
       return NextResponse.json(
-        { error: 'Invalid JSON format' },
+        { error: 'Unsupported content type' },
         { status: 400 }
       )
     }
@@ -63,13 +83,33 @@ export async function PUT(request: NextRequest) {
   try {
     let body: any
 
-    // Handle JSON parsing errors
-    try {
-      body = await request.json()
-    } catch (jsonError) {
-      console.warn('Invalid JSON in session PUT:', jsonError)
+    // Handle different content types
+    const contentType = request.headers.get('content-type')
+    if (contentType?.includes('application/json')) {
+      try {
+        body = await request.json()
+      } catch (jsonError) {
+        console.warn('Invalid JSON in session PUT:', jsonError)
+        return NextResponse.json(
+          { error: 'Invalid JSON format' },
+          { status: 400 }
+        )
+      }
+    } else if (contentType?.includes('text/plain')) {
+      // Handle sendBeacon data (JSON string sent as text/plain)
+      try {
+        const textData = await request.text()
+        body = JSON.parse(textData)
+      } catch (textError) {
+        console.warn('Invalid text/plain in session PUT:', textError)
+        return NextResponse.json(
+          { error: 'Invalid text format' },
+          { status: 400 }
+        )
+      }
+    } else {
       return NextResponse.json(
-        { error: 'Invalid JSON format' },
+        { error: 'Unsupported content type' },
         { status: 400 }
       )
     }
