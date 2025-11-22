@@ -43,10 +43,9 @@ const footerSections = [
     links: [
       { href: '/privacy', label: 'Privacy Policy' },
       { href: '/terms', label: 'Terms of Service' },
-      { href: '/cookies', label: 'Cookie Policy' },
-      { href: '/accessibility', label: 'Accessibility' },
-      { href: '/sitemap', label: 'Sitemap' },
-      { href: '/api-docs', label: 'API Documentation' },
+    { href: '/cookies', label: 'Cookie Policy' },
+    { href: '/accessibility', label: 'Accessibility' },
+    { href: '/sitemap', label: 'Sitemap' },
     ],
   },
 ]
