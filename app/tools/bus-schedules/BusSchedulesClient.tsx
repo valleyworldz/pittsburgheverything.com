@@ -24,27 +24,31 @@ interface BusSchedulesResponse {
 }
 
 // Popular Pittsburgh bus stops
+// IMPORTANT: These are example locations. Users must enter their ACTUAL stop ID from Port Authority.
+// Stop IDs are typically 4-digit numbers found on bus stop signs or via Port Authority's website.
+// To find your stop ID: Visit https://www.portauthority.org or check the bus stop sign at your location.
 const popularStops = [
-  { id: '1', name: 'Downtown - Grant St & 5th Ave', routes: ['61A', '61B', '61C', '61D', '71A', '71B', '71C', '71D'] },
-  { id: '2', name: 'Oakland - Forbes Ave & Craig St', routes: ['61A', '61B', '61C', '61D', '71A', '71B'] },
-  { id: '3', name: 'Shadyside - Walnut St & Aiken Ave', routes: ['71A', '71B', '71C', '71D'] },
-  { id: '4', name: 'Squirrel Hill - Forbes Ave & Murray Ave', routes: ['61A', '61B', '61C', '61D'] },
-  { id: '5', name: 'Lawrenceville - Butler St & 40th St', routes: ['91', '92', '93'] },
-  { id: '6', name: 'South Side - Carson St & 10th St', routes: ['48', '51', '54'] },
-  { id: '7', name: 'Strip District - Penn Ave & 16th St', routes: ['91', '92', '93'] },
-  { id: '8', name: 'Airport - Terminal', routes: ['28X'] }
+  { id: '', name: 'Find Your Stop ID', routes: [], description: 'Enter your actual stop ID below or find it on Port Authority\'s website' },
+  { id: 'EXAMPLE_1', name: 'Example: Downtown Area', routes: ['61A', '61B', '61C', '61D', '71A', '71B', '71C', '71D'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_2', name: 'Example: Oakland Area', routes: ['61A', '61B', '61C', '61D', '71A', '71B'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_3', name: 'Example: Shadyside Area', routes: ['71A', '71B', '71C', '71D'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_4', name: 'Example: Squirrel Hill Area', routes: ['61A', '61B', '61C', '61D'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_5', name: 'Example: Lawrenceville Area', routes: ['91', '92', '93'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_6', name: 'Example: South Side Area', routes: ['48', '51', '54'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_7', name: 'Example: Strip District Area', routes: ['91', '92', '93'], description: 'Example location - use your actual stop ID' },
+  { id: 'EXAMPLE_8', name: 'Example: Airport Area', routes: ['28X'], description: 'Example location - use your actual stop ID' }
 ]
 
 export default function BusSchedulesClient() {
-  const [selectedStop, setSelectedStop] = useState<string>('1')
+  const [selectedStop, setSelectedStop] = useState<string>('')
   const [selectedRoute, setSelectedRoute] = useState<string>('')
   const [predictions, setPredictions] = useState<BusPrediction[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false) // Don't load until user selects a stop
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [dataSource, setDataSource] = useState<'api' | 'mock' | 'error'>('api')
   const [customStopId, setCustomStopId] = useState('')
-  const [showCustomStop, setShowCustomStop] = useState(false)
+  const [showCustomStop, setShowCustomStop] = useState(true) // Show custom stop input by default
 
   const currentStop = popularStops.find(s => s.id === selectedStop)
 
@@ -77,14 +81,18 @@ export default function BusSchedulesClient() {
     }
   }
 
+  // Load data when stop or route changes (only if stop ID is valid)
   useEffect(() => {
-    if (selectedStop) {
+    if (selectedStop && selectedStop !== '' && !selectedStop.startsWith('EXAMPLE_') && selectedStop !== 'Find Your Stop ID') {
       fetchBusSchedules(selectedStop, selectedRoute || undefined)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStop, selectedRoute])
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
+    if (!selectedStop) return
+
     const interval = setInterval(() => {
       if (selectedStop && !loading) {
         fetchBusSchedules(selectedStop, selectedRoute || undefined)
@@ -92,6 +100,7 @@ export default function BusSchedulesClient() {
     }, 30000)
 
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStop, selectedRoute, loading])
 
   const handleCustomStopSearch = () => {
@@ -169,22 +178,30 @@ export default function BusSchedulesClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Popular Stops
+                Example Locations (for reference only)
               </label>
               <select
                 value={selectedStop}
                 onChange={(e) => {
-                  setSelectedStop(e.target.value)
-                  setShowCustomStop(false)
+                  const value = e.target.value
+                  if (value && !value.startsWith('EXAMPLE_') && value !== '') {
+                    setSelectedStop(value)
+                    setShowCustomStop(false)
+                    setSelectedRoute('') // Reset route filter when stop changes
+                  }
                 }}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
+                <option value="">Select an example or enter your stop ID below</option>
                 {popularStops.map((stop) => (
-                  <option key={stop.id} value={stop.id}>
+                  <option key={stop.id} value={stop.id} disabled={stop.id === '' || stop.id.startsWith('EXAMPLE_')}>
                     {stop.name}
                   </option>
                 ))}
               </select>
+              <p className="text-xs text-gray-500 mt-1">
+                ⚠️ These are examples. You must enter your actual stop ID.
+              </p>
             </div>
 
             {currentStop && currentStop.routes.length > 0 && (
@@ -208,53 +225,78 @@ export default function BusSchedulesClient() {
             )}
           </div>
 
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setShowCustomStop(!showCustomStop)}
-              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-            >
-              {showCustomStop ? 'Hide' : 'Search by Stop ID'}
-            </button>
-            <button
-              onClick={() => fetchBusSchedules(selectedStop, selectedRoute || undefined)}
-              disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
-          </div>
-
-          {showCustomStop && (
-            <div className="mt-4 flex gap-2">
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Enter Your Actual Stop ID *
+            </label>
+            <div className="flex gap-2">
               <input
                 type="text"
-                value={customStopId}
-                onChange={(e) => setCustomStopId(e.target.value)}
-                placeholder="Enter Stop ID (e.g., 1234)"
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={customStopId || selectedStop}
+                onChange={(e) => {
+                  const value = e.target.value
+                  setCustomStopId(value)
+                  if (value && !value.startsWith('EXAMPLE_')) {
+                    setSelectedStop(value)
+                  }
+                }}
+                placeholder="Enter your actual Stop ID (found on bus stop sign or Port Authority website)"
+                className="flex-1 px-4 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 onKeyPress={(e) => e.key === 'Enter' && handleCustomStopSearch()}
               />
               <button
-                onClick={handleCustomStopSearch}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                onClick={() => {
+                  if (customStopId) {
+                    handleCustomStopSearch()
+                  } else if (selectedStop && !selectedStop.startsWith('EXAMPLE_')) {
+                    fetchBusSchedules(selectedStop, selectedRoute || undefined)
+                  }
+                }}
+                disabled={loading || (!customStopId && (!selectedStop || selectedStop.startsWith('EXAMPLE_')))}
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <Search className="w-4 h-4" />
-                Search
+                Get Schedules
               </button>
+              {selectedStop && !selectedStop.startsWith('EXAMPLE_') && (
+                <button
+                  onClick={() => fetchBusSchedules(selectedStop, selectedRoute || undefined)}
+                  disabled={loading}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh
+                </button>
+              )}
             </div>
-          )}
+            <div className="mt-2 flex items-start gap-2 text-xs text-gray-600">
+              <span>💡</span>
+              <div>
+                <p className="font-medium mb-1">How to find your Stop ID:</p>
+                <ul className="list-disc list-inside space-y-0.5 ml-2">
+                  <li>Check the bus stop sign at your location (usually a 4-digit number)</li>
+                  <li>Visit <a href="https://www.portauthority.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Port Authority's website</a> and use their stop finder</li>
+                  <li>Use Port Authority's TrueTime system or mobile app</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Current Stop Info */}
-        {currentStop && (
+        {selectedStop && !selectedStop.startsWith('EXAMPLE_') && selectedStop !== '' && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3">
               <Navigation className="w-5 h-5 text-blue-600" />
               <div>
-                <h3 className="font-semibold text-blue-900">{currentStop.name}</h3>
-                <p className="text-sm text-blue-700">
-                  Stop ID: {currentStop.id} • Routes: {currentStop.routes.join(', ')}
+                <h3 className="font-semibold text-blue-900">Stop ID: {selectedStop}</h3>
+                {currentStop && currentStop.routes.length > 0 && (
+                  <p className="text-sm text-blue-700">
+                    Example Routes: {currentStop.routes.join(', ')}
+                  </p>
+                )}
+                <p className="text-xs text-blue-600 mt-1">
+                  Real-time predictions for this stop ID
                 </p>
               </div>
             </div>
@@ -262,7 +304,21 @@ export default function BusSchedulesClient() {
         )}
 
         {/* Predictions */}
-        {loading && predictions.length === 0 ? (
+        {!selectedStop || selectedStop.startsWith('EXAMPLE_') || selectedStop === '' ? (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-8 text-center">
+            <Bus className="w-12 h-12 text-yellow-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-yellow-900 mb-2">Enter Your Stop ID</h3>
+            <p className="text-yellow-800 mb-4">
+              To get real-time bus schedules, please enter your actual Port Authority stop ID above.
+            </p>
+            <p className="text-sm text-yellow-700">
+              Stop IDs are typically 4-digit numbers found on bus stop signs or via{' '}
+              <a href="https://www.portauthority.org" target="_blank" rel="noopener noreferrer" className="underline font-medium">
+                Port Authority's website
+              </a>.
+            </p>
+          </div>
+        ) : loading && predictions.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <RefreshCw className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
             <p className="text-gray-600">Loading bus schedules...</p>
@@ -365,7 +421,19 @@ export default function BusSchedulesClient() {
             <li className="flex items-start gap-2">
               <span className="text-blue-600 mt-1">•</span>
               <span>
-                <strong>Stop ID:</strong> Find your stop ID on Port Authority's website or use the popular stops above
+                <strong>Stop ID Required:</strong> You must enter your actual stop ID from Port Authority. Stop IDs are typically 4-digit numbers found on bus stop signs or via Port Authority's website/app.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 mt-1">•</span>
+              <span>
+                <strong>Finding Your Stop ID:</strong> Check the bus stop sign at your location, visit <a href="https://www.portauthority.org" target="_blank" rel="noopener noreferrer" className="underline">Port Authority's website</a>, or use their TrueTime system/mobile app to find your stop ID.
+              </span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-blue-600 mt-1">•</span>
+              <span>
+                <strong>Accuracy:</strong> The data comes directly from Port Authority's real-time API. If a stop ID doesn't return results, verify the ID is correct and that the stop is currently active.
               </span>
             </li>
           </ul>

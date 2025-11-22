@@ -37,22 +37,28 @@ interface BusStop {
  * Uses Port Authority real-time API
  */
 export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams
-    const stopId = searchParams.get('stopId')
-    const route = searchParams.get('route')
+  const searchParams = request.nextUrl.searchParams
+  const stopId = searchParams.get('stopId')
+  const route = searchParams.get('route')
 
-    if (!stopId) {
-      return NextResponse.json(
-        { error: 'Stop ID is required' },
-        { status: 400 }
-      )
-    }
+  if (!stopId) {
+    return NextResponse.json(
+      { error: 'Stop ID is required' },
+      { status: 400 }
+    )
+  }
+
+  try {
 
     // Port Authority Real-Time API
     // Documentation: https://realtime.portauthority.org/bustime/api/v3/
+    // Note: The API may require a valid API key for production use
+    // For now, we'll use the demo endpoint
     const apiUrl = new URL('https://realtime.portauthority.org/bustime/api/v3/getpredictions')
-    apiUrl.searchParams.set('key', 'demo') // Public demo key
+    
+    // Port Authority API typically requires an API key
+    // Using demo key - in production, this should be an environment variable
+    apiUrl.searchParams.set('key', process.env.PORT_AUTHORITY_API_KEY || 'demo')
     apiUrl.searchParams.set('stpid', stopId)
     apiUrl.searchParams.set('format', 'json')
     
@@ -60,32 +66,55 @@ export async function GET(request: NextRequest) {
       apiUrl.searchParams.set('rt', route)
     }
 
+    // Create AbortController for timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+
     const response = await fetch(apiUrl.toString(), {
       headers: {
         'Accept': 'application/json',
+        'User-Agent': 'PittsburghEverything/1.0'
       },
-      next: { revalidate: 30 } // Cache for 30 seconds
+      next: { revalidate: 30 }, // Cache for 30 seconds
+      signal: controller.signal
     })
 
+    clearTimeout(timeoutId)
+
     if (!response.ok) {
-      console.error('Port Authority API error:', response.status, response.statusText)
+      const errorText = await response.text().catch(() => 'Unknown error')
+      console.error('Port Authority API error:', response.status, response.statusText, errorText)
       // Return mock data as fallback
       return NextResponse.json({
         predictions: getMockPredictions(stopId, route || undefined),
         source: 'mock',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        message: 'Using sample data. API may require authentication or stop ID may be invalid.'
       })
     }
 
     const data = await response.json()
+    
+    // Check for API errors
+    if (data['bustime-response']?.error) {
+      const error = data['bustime-response'].error[0]
+      console.error('Port Authority API error:', error)
+      return NextResponse.json({
+        predictions: getMockPredictions(stopId, route || undefined),
+        source: 'mock',
+        timestamp: new Date().toISOString(),
+        message: error.msg || 'API returned an error. Using sample data.'
+      })
+    }
+    
     const predictions = data['bustime-response']?.prd || []
 
     if (predictions.length === 0) {
       return NextResponse.json({
-        predictions: [],
-        source: 'api',
+        predictions: getMockPredictions(stopId, route || undefined),
+        source: 'mock',
         timestamp: new Date().toISOString(),
-        message: 'No predictions available for this stop'
+        message: 'No real-time predictions available. Showing sample data.'
       })
     }
 
@@ -107,16 +136,28 @@ export async function GET(request: NextRequest) {
       source: 'api',
       timestamp: new Date().toISOString()
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Bus schedules API error:', error)
+    
+    // Handle timeout or network errors
+    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
+      return NextResponse.json({
+        predictions: getMockPredictions(stopId, route || undefined),
+        source: 'mock',
+        timestamp: new Date().toISOString(),
+        message: 'Request timed out. Using sample data.'
+      })
+    }
+    
     return NextResponse.json(
       {
         error: 'Failed to fetch bus schedules',
-        predictions: [],
-        source: 'error',
-        timestamp: new Date().toISOString()
+        predictions: getMockPredictions(stopId, route || undefined),
+        source: 'mock',
+        timestamp: new Date().toISOString(),
+        message: 'API unavailable. Using sample data.'
       },
-      { status: 500 }
+      { status: 200 } // Return 200 with mock data instead of error
     )
   }
 }
