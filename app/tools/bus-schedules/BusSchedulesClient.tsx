@@ -68,6 +68,7 @@ export default function BusSchedulesClient() {
   const [locationError, setLocationError] = useState<string | null>(null)
   const [nearbyStops, setNearbyStops] = useState<StopOption[]>([])
   const [showNearbyStops, setShowNearbyStops] = useState(false)
+  const [announcement, setAnnouncement] = useState<string>('')
 
   const fetchBusSchedules = async (stopId: string, route?: string) => {
     setLoading(true)
@@ -94,15 +95,19 @@ export default function BusSchedulesClient() {
           setStopInfo(data.stop)
         }
         setLastUpdated(new Date())
+        // Screen reader announcement
+        setAnnouncement(`Loaded ${normalizedPredictions.length} bus ${normalizedPredictions.length === 1 ? 'arrival' : 'arrivals'} for stop ${stopId}`)
       } else {
         setError(data.message || 'No predictions available')
         setPredictions([])
+        setAnnouncement(`No bus arrivals found for stop ${stopId}`)
       }
     } catch (err) {
       console.error('Error fetching bus schedules:', err)
       setError('Failed to load bus schedules. Please try again.')
       setPredictions([])
       setDataSource('error')
+      setAnnouncement('Error loading bus schedules. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -346,11 +351,21 @@ export default function BusSchedulesClient() {
         )}
 
         {/* Stop Selection */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5" />
+            <MapPin className="w-5 h-5" aria-hidden="true" />
             Select Bus Stop
           </h2>
+          
+          {/* Screen reader announcements */}
+          <div 
+            role="status" 
+            aria-live="polite" 
+            aria-atomic="true"
+            className="sr-only"
+          >
+            {announcement}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {/* Searchable Stop Dropdown */}
@@ -363,8 +378,9 @@ export default function BusSchedulesClient() {
                   type="button"
                   onClick={getCurrentLocation}
                   disabled={isGettingLocation}
-                  className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 px-3 py-2 text-xs bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[44px] min-w-[44px]"
                   title="Find stops near your location"
+                  aria-label={isGettingLocation ? 'Getting your location' : 'Find stops near your current location'}
                 >
                   <Locate className="w-3 h-3" />
                   {isGettingLocation ? 'Locating...' : 'Near Me'}
@@ -399,8 +415,26 @@ export default function BusSchedulesClient() {
                     // Delay to allow click on dropdown item
                     setTimeout(() => setShowStopDropdown(false), 200)
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'ArrowDown' && stopSearchResults.length > 0) {
+                      e.preventDefault()
+                      const firstButton = document.querySelector('[data-stop-option]') as HTMLElement | null
+                      if (firstButton) {
+                        firstButton.focus()
+                      }
+                    }
+                    if (e.key === 'Escape') {
+                      setShowStopDropdown(false)
+                      setStopSearchQuery('')
+                    }
+                  }}
                   placeholder="Type to search stops (e.g., 'Oakland', 'Downtown', 'Fifth Ave')"
-                  className="w-full px-4 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                  className="w-full px-4 py-3 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10 text-base"
+                  aria-label="Search for bus stop by name, code, or ID"
+                  aria-autocomplete="list"
+                  aria-expanded={showStopDropdown}
+                  aria-controls="stop-search-results"
+                  role="combobox"
                 />
                 {isSearchingStops && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -422,18 +456,48 @@ export default function BusSchedulesClient() {
                 
                 {/* Dropdown Results */}
                 {showStopDropdown && stopSearchResults.length > 0 && (
-                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  <div 
+                    id="stop-search-results"
+                    className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                    role="listbox"
+                    aria-label="Bus stop search results"
+                  >
                     {showNearbyStops && (
-                      <div className="px-4 py-2 bg-blue-50 border-b border-blue-200 text-xs font-medium text-blue-700">
+                      <div className="px-4 py-2 bg-blue-50 border-b border-blue-200 text-xs font-medium text-blue-700" role="option" aria-label="Nearby stops section">
                         📍 Nearby Stops (within 1km)
                       </div>
                     )}
-                    {stopSearchResults.map((stop) => (
+                    {stopSearchResults.map((stop, index) => (
                       <button
                         key={stop.stop_id}
                         type="button"
+                        data-stop-option
                         onClick={() => handleStopSelect(stop)}
-                        className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                        onKeyDown={(e) => {
+                          if (e.key === 'ArrowDown') {
+                            e.preventDefault()
+                            const next = document.querySelectorAll('[data-stop-option]')[index + 1] as HTMLElement
+                            next?.focus()
+                          }
+                          if (e.key === 'ArrowUp') {
+                            e.preventDefault()
+                            if (index === 0) {
+                              const input = document.querySelector('input[aria-label="Search for bus stop"]') as HTMLElement | null
+                              if (input) input.focus()
+                            } else {
+                              const prev = document.querySelectorAll('[data-stop-option]')[index - 1] as HTMLElement | null
+                              if (prev) prev.focus()
+                            }
+                          }
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            handleStopSelect(stop)
+                          }
+                        }}
+                        className="w-full text-left px-4 py-4 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 border-b border-gray-100 last:border-b-0 transition-colors min-h-[60px]"
+                        role="option"
+                        aria-label={`${stop.stop_name}, Stop ID ${stop.stop_id}${stop.distance ? `, ${stop.distance < 1000 ? Math.round(stop.distance) + ' meters away' : (stop.distance / 1000).toFixed(1) + ' kilometers away'}` : ''}`}
+                        tabIndex={0}
                       >
                         <div className="font-medium text-gray-900">{stop.stop_name}</div>
                         <div className="text-sm text-gray-600">
@@ -494,8 +558,14 @@ export default function BusSchedulesClient() {
                 type="text"
                 value={selectedRoute}
                 onChange={(e) => setSelectedRoute(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && selectedStop) {
+                    fetchBusSchedules(selectedStop, selectedRoute || undefined)
+                  }
+                }}
                 placeholder="Enter route number (e.g., 61A, 71A)"
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                aria-label="Filter by route number (optional)"
               />
               <p className="text-xs text-gray-500 mt-1">
                 Leave empty to see all routes at this stop
@@ -513,8 +583,14 @@ export default function BusSchedulesClient() {
                 type="text"
                 value={selectedStop}
                 onChange={(e) => handleStopIdInput(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && selectedStop) {
+                    fetchBusSchedules(selectedStop, selectedRoute || undefined)
+                  }
+                }}
                 placeholder="Enter Stop ID (e.g., 2565)"
                 className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                aria-label="Enter bus stop ID directly"
               />
               <button
                 onClick={() => {
@@ -523,7 +599,8 @@ export default function BusSchedulesClient() {
                   }
                 }}
                 disabled={loading || !selectedStop}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Get bus schedules for selected stop"
               >
                 <Search className="w-4 h-4" />
                 Get Schedules
@@ -598,29 +675,42 @@ export default function BusSchedulesClient() {
             </p>
           </div>
         ) : loading && predictions.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <RefreshCw className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
+          <div className="bg-white rounded-lg shadow-md p-12 text-center" role="status" aria-live="polite" aria-label="Loading bus schedules">
+            <RefreshCw className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" aria-hidden="true" />
             <p className="text-gray-600">Loading bus schedules...</p>
+            <div className="mt-4 space-y-2">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
+              ))}
+            </div>
           </div>
         ) : error ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
+          <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center" role="alert" aria-live="assertive">
+            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" aria-hidden="true" />
             <p className="text-red-800 font-medium mb-2">Error Loading Schedules</p>
             <p className="text-red-600 text-sm">{error}</p>
             <button
               onClick={() => fetchBusSchedules(selectedStop, selectedRoute || undefined)}
-              className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              className="mt-4 px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+              aria-label="Retry loading bus schedules"
             >
               Try Again
             </button>
           </div>
         ) : predictions.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <Bus className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-600 mb-2">No bus predictions available</p>
-            <p className="text-sm text-gray-500">
+          <div className="bg-white rounded-lg shadow-md p-12 text-center" role="status" aria-live="polite">
+            <Bus className="w-12 h-12 text-gray-400 mx-auto mb-4" aria-hidden="true" />
+            <p className="text-gray-600 mb-2 font-medium">No bus predictions available</p>
+            <p className="text-sm text-gray-500 mb-4">
               This stop may not have active routes at this time, or the stop ID may be incorrect.
             </p>
+            <button
+              onClick={() => fetchBusSchedules(selectedStop, selectedRoute || undefined)}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              aria-label="Refresh bus schedules"
+            >
+              Refresh
+            </button>
           </div>
         ) : (
           <div className="space-y-4">
@@ -641,6 +731,8 @@ export default function BusSchedulesClient() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
                 className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-600"
+                role="article"
+                aria-label={`Route ${prediction.route} to ${prediction.destination}, arriving in ${formatTime(prediction.realtimeMinutes ?? prediction.scheduledMinutes ?? null)}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
