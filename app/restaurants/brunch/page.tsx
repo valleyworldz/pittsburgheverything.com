@@ -50,40 +50,6 @@ export default function BrunchPage() {
     <div className="min-h-screen bg-gray-50">
       <StructuredData data={structuredData} />
       <BrunchClient />
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-orange-500 to-orange-700 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Link
-            href="/restaurants"
-            className="inline-flex items-center gap-2 text-orange-200 hover:text-white transition-colors mb-6"
-          >
-            ← Back to Restaurants
-          </Link>
-          <div className="text-center">
-            <div className="flex justify-center mb-4">
-              <Coffee className="w-16 h-16 text-orange-200" />
-            </div>
-            <h1 className="text-4xl md:text-6xl font-black mb-6">
-              Best <span className="text-orange-200">Brunch</span> in Pittsburgh
-            </h1>
-            <p className="text-xl opacity-90 max-w-3xl mx-auto mb-8">
-              Start your weekend right with Pittsburgh\'s best brunch spots. From bottomless mimosas to creative breakfast dishes, discover where to brunch in the Steel City.
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 text-sm">
-              <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                <Coffee className="w-4 h-4" />
-                {restaurants.length} Brunch Spots
-              </span>
-              <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                <Utensils className="w-4 h-4" />
-                Weekend Favorites
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
     </div>
   )
 }
