@@ -314,9 +314,17 @@ async function fetchRealtimePredictions(
   stopId: string,
   route?: string
 ): Promise<any[]> {
+  const apiKey = process.env.PORT_AUTHORITY_API_KEY
+  
+  // Check if API key is configured
+  if (!apiKey || apiKey === 'demo' || apiKey.trim() === '') {
+    console.warn('Port Authority API key not configured. Real-time predictions unavailable.')
+    throw new Error('Port Authority API key not configured. Please set PORT_AUTHORITY_API_KEY environment variable. Visit https://www.portauthority.org/developer-resources/ to register for an API key.')
+  }
+  
   const apiUrl = new URL('https://realtime.portauthority.org/bustime/api/v3/getpredictions')
   
-  apiUrl.searchParams.set('key', process.env.PORT_AUTHORITY_API_KEY || 'demo')
+  apiUrl.searchParams.set('key', apiKey)
   apiUrl.searchParams.set('stpid', stopId)
   apiUrl.searchParams.set('format', 'json')
   
@@ -346,10 +354,23 @@ async function fetchRealtimePredictions(
     const data = await response.json()
     
     if (data['bustime-response']?.error) {
+      const errorMsg = data['bustime-response'].error[0]?.msg || 'Unknown error'
+      console.warn(`Port Authority API error for stop ${stopId}:`, errorMsg)
+      
+      // If it's an API key error, throw so we can show a helpful message
+      if (errorMsg.includes('API access key') || errorMsg.includes('Invalid API')) {
+        throw new Error('Port Authority API key is invalid or missing. Please set PORT_AUTHORITY_API_KEY environment variable.')
+      }
+      
+      // For other errors, return empty array so schedule can still be shown
       return []
     }
     
     const predictions = data['bustime-response']?.prd || []
+
+    if (predictions.length === 0) {
+      console.log(`No real-time predictions for stop ${stopId}`)
+    }
 
     return predictions.map((pred: BusPrediction) => ({
       route: pred.rt,
