@@ -8,6 +8,14 @@
 
 import path from 'path'
 import fs from 'fs'
+import { 
+  searchStopsJson, 
+  getStopsNearJson, 
+  getRoutesJson, 
+  getStopJson,
+  getStopsForRouteJson,
+  isJsonGtfsAvailable 
+} from './gtfsJsonService'
 
 // Safely import better-sqlite3 (may not work in all serverless environments)
 let Database: any = null
@@ -17,7 +25,7 @@ try {
   Database = require('better-sqlite3')
   sqliteAvailable = true
 } catch (error) {
-  console.warn('better-sqlite3 not available:', error instanceof Error ? error.message : 'Unknown error')
+  console.warn('better-sqlite3 not available, using JSON fallback:', error instanceof Error ? error.message : 'Unknown error')
   sqliteAvailable = false
 }
 
@@ -111,22 +119,29 @@ export interface ScheduleEntry {
 export function getRoutes(): Route[] {
   try {
     const database = getDb()
-    if (!database) return []
-    const stmt = database.prepare(`
-      SELECT 
-        route_id,
-        route_short_name,
-        route_long_name,
-        CAST(route_type AS INTEGER) as route_type,
-        route_color,
-        route_text_color
-      FROM routes
-      WHERE route_short_name IS NOT NULL AND route_short_name != ''
-      ORDER BY CAST(route_short_name AS INTEGER), route_short_name, route_long_name
-    `)
-    return stmt.all() as Route[]
+    if (database) {
+      const stmt = database.prepare(`
+        SELECT 
+          route_id,
+          route_short_name,
+          route_long_name,
+          CAST(route_type AS INTEGER) as route_type,
+          route_color,
+          route_text_color
+        FROM routes
+        WHERE route_short_name IS NOT NULL AND route_short_name != ''
+        ORDER BY CAST(route_short_name AS INTEGER), route_short_name, route_long_name
+      `)
+      return stmt.all() as Route[]
+    } else if (isJsonGtfsAvailable()) {
+      return getRoutesJson()
+    }
+    return []
   } catch (error) {
     console.error('Error fetching routes:', error)
+    if (isJsonGtfsAvailable()) {
+      return getRoutesJson()
+    }
     return []
   }
 }
@@ -165,7 +180,12 @@ export function getStopsForRoute(
 ): Stop[] {
   try {
     const database = getDb()
-    if (!database) return []
+    if (!database) {
+      if (isJsonGtfsAvailable()) {
+        return getStopsForRouteJson(routeId)
+      }
+      return []
+    }
     
     let query = `
       SELECT DISTINCT 
@@ -325,27 +345,34 @@ export function getScheduleForStop(
 export function getStop(stopId: string): Stop | null {
   try {
     const database = getDb()
-    if (!database) return null
-    const stmt = database.prepare(`
-      SELECT 
-        stop_id,
-        stop_name,
-        CAST(stop_lat AS REAL) as stop_lat,
-        CAST(stop_lon AS REAL) as stop_lon,
-        stop_code,
-        location_type,
-        parent_station
-      FROM stops
-      WHERE stop_id = ?
-    `)
-    const result = stmt.get(stopId) as Stop | undefined
-    if (result && typeof result.stop_lat === 'string') {
-      result.stop_lat = parseFloat(result.stop_lat)
-      result.stop_lon = parseFloat(result.stop_lon as string)
+    if (database) {
+      const stmt = database.prepare(`
+        SELECT 
+          stop_id,
+          stop_name,
+          CAST(stop_lat AS REAL) as stop_lat,
+          CAST(stop_lon AS REAL) as stop_lon,
+          stop_code,
+          location_type,
+          parent_station
+        FROM stops
+        WHERE stop_id = ?
+      `)
+      const result = stmt.get(stopId) as Stop | undefined
+      if (result && typeof result.stop_lat === 'string') {
+        result.stop_lat = parseFloat(result.stop_lat)
+        result.stop_lon = parseFloat(result.stop_lon as string)
+      }
+      return result || null
+    } else if (isJsonGtfsAvailable()) {
+      return getStopJson(stopId)
     }
-    return result || null
+    return null
   } catch (error) {
     console.error('Error fetching stop:', error)
+    if (isJsonGtfsAvailable()) {
+      return getStopJson(stopId)
+    }
     return null
   }
 }
@@ -356,30 +383,40 @@ export function getStop(stopId: string): Stop | null {
 export function searchStops(query: string, limit: number = 20): Stop[] {
   try {
     const database = getDb()
-    if (!database) return []
-    const searchTerm = `%${query}%`
-    const stmt = database.prepare(`
-      SELECT 
-        stop_id,
-        stop_name,
-        CAST(stop_lat AS REAL) as stop_lat,
-        CAST(stop_lon AS REAL) as stop_lon,
-        stop_code,
-        location_type,
-        parent_station
-      FROM stops
-      WHERE stop_name LIKE ? OR stop_code LIKE ? OR stop_id LIKE ?
-      ORDER BY stop_name
-      LIMIT ?
-    `)
-    const results = stmt.all(searchTerm, searchTerm, searchTerm, limit) as Stop[]
-    return results.map(r => ({
-      ...r,
-      stop_lat: typeof r.stop_lat === 'string' ? parseFloat(r.stop_lat) : r.stop_lat,
-      stop_lon: typeof r.stop_lon === 'string' ? parseFloat(r.stop_lon) : r.stop_lon
-    }))
+    if (database) {
+      // Use SQLite if available
+      const searchTerm = `%${query}%`
+      const stmt = database.prepare(`
+        SELECT 
+          stop_id,
+          stop_name,
+          CAST(stop_lat AS REAL) as stop_lat,
+          CAST(stop_lon AS REAL) as stop_lon,
+          stop_code,
+          location_type,
+          parent_station
+        FROM stops
+        WHERE stop_name LIKE ? OR stop_code LIKE ? OR stop_id LIKE ?
+        ORDER BY stop_name
+        LIMIT ?
+      `)
+      const results = stmt.all(searchTerm, searchTerm, searchTerm, limit) as Stop[]
+      return results.map(r => ({
+        ...r,
+        stop_lat: typeof r.stop_lat === 'string' ? parseFloat(r.stop_lat) : r.stop_lat,
+        stop_lon: typeof r.stop_lon === 'string' ? parseFloat(r.stop_lon) : r.stop_lon
+      }))
+    } else if (isJsonGtfsAvailable()) {
+      // Fallback to JSON
+      return searchStopsJson(query, limit)
+    }
+    return []
   } catch (error) {
     console.error('Error searching stops:', error)
+    // Try JSON fallback on error
+    if (isJsonGtfsAvailable()) {
+      return searchStopsJson(query, limit)
+    }
     return []
   }
 }
@@ -394,7 +431,13 @@ export function getStopsNear(
 ): Array<Stop & { distance: number }> {
   try {
     const database = getDb()
-    if (!database) return []
+    if (!database) {
+      // Fallback to JSON
+      if (isJsonGtfsAvailable()) {
+        return getStopsNearJson(lat, lon, radiusMeters)
+      }
+      return []
+    }
     
     // Haversine formula approximation
     // For small distances, we can use a simpler bounding box first
@@ -439,6 +482,10 @@ export function getStopsNear(
     }))
   } catch (error) {
     console.error('Error fetching nearby stops:', error)
+    // Try JSON fallback on error
+    if (isJsonGtfsAvailable()) {
+      return getStopsNearJson(lat, lon, radiusMeters)
+    }
     return []
   }
 }
@@ -526,6 +573,12 @@ export function getStopsWithRoutes(): Array<Stop & { routes: string[] }> {
  * Check if GTFS database exists and is valid
  */
 export function isGtfsAvailable(): boolean {
+  // Check JSON first (works in serverless)
+  if (isJsonGtfsAvailable()) {
+    return true
+  }
+  
+  // Check SQLite as fallback
   try {
     if (!sqliteAvailable || !Database) {
       return false

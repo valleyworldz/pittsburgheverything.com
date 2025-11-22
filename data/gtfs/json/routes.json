@@ -1,0 +1,507 @@
+[
+  {
+    "route_id": "BLUE",
+    "route_short_name": "BLUE",
+    "route_long_name": null
+  },
+  {
+    "route_id": "DQI",
+    "route_short_name": "DQI",
+    "route_long_name": "DUQUESNE INCLINE"
+  },
+  {
+    "route_id": "G2",
+    "route_short_name": "G2",
+    "route_long_name": "WEST BUSWAY"
+  },
+  {
+    "route_id": "G3",
+    "route_short_name": "G3",
+    "route_long_name": "MOON FLYER"
+  },
+  {
+    "route_id": "G31",
+    "route_short_name": "G31",
+    "route_long_name": "BRIDGEVILLE FLYER"
+  },
+  {
+    "route_id": "MI",
+    "route_short_name": "MI",
+    "route_long_name": "MONONGAHELA INCLINE"
+  },
+  {
+    "route_id": "MISC",
+    "route_short_name": "MISC",
+    "route_long_name": "Miscellaneous for TCH display"
+  },
+  {
+    "route_id": "O1",
+    "route_short_name": "O1",
+    "route_long_name": "ROSS FLYER"
+  },
+  {
+    "route_id": "O12",
+    "route_short_name": "O12",
+    "route_long_name": "MCKNIGHT FLYER"
+  },
+  {
+    "route_id": "O5",
+    "route_short_name": "O5",
+    "route_long_name": "THOMPSON RUN FLYER"
+  },
+  {
+    "route_id": "P1",
+    "route_short_name": "P1",
+    "route_long_name": "EAST BUSWAY-ALL STOPS"
+  },
+  {
+    "route_id": "P10",
+    "route_short_name": "P10",
+    "route_long_name": "ALLEGHENY VALLEY FLYER"
+  },
+  {
+    "route_id": "P12",
+    "route_short_name": "P12",
+    "route_long_name": "HOLIDAY PARK FLYER"
+  },
+  {
+    "route_id": "P13",
+    "route_short_name": "P13",
+    "route_long_name": "MOUNT ROYAL FLYER"
+  },
+  {
+    "route_id": "P16",
+    "route_short_name": "P16",
+    "route_long_name": "PENN HILLS FLYER"
+  },
+  {
+    "route_id": "P17",
+    "route_short_name": "P17",
+    "route_long_name": "LINCOLN PARK FLYER"
+  },
+  {
+    "route_id": "P3",
+    "route_short_name": "P3",
+    "route_long_name": "EAST BUSWAY-OAKLAND"
+  },
+  {
+    "route_id": "P67",
+    "route_short_name": "P67",
+    "route_long_name": "MONROEVILLE FLYER"
+  },
+  {
+    "route_id": "P68",
+    "route_short_name": "P68",
+    "route_long_name": "BRADDOCK HILLS FLYER"
+  },
+  {
+    "route_id": "P69",
+    "route_short_name": "P69",
+    "route_long_name": "TRAFFORD FLYER"
+  },
+  {
+    "route_id": "P7",
+    "route_short_name": "P7",
+    "route_long_name": "MCKEESPORT FLYER"
+  },
+  {
+    "route_id": "P71",
+    "route_short_name": "P71",
+    "route_long_name": "SWISSVALE FLYER"
+  },
+  {
+    "route_id": "P76",
+    "route_short_name": "P76",
+    "route_long_name": "LINCOLN HIGHWAY FLYER"
+  },
+  {
+    "route_id": "P78",
+    "route_short_name": "P78",
+    "route_long_name": "OAKMONT FLYER"
+  },
+  {
+    "route_id": "RED",
+    "route_short_name": "RED",
+    "route_long_name": null
+  },
+  {
+    "route_id": "SLVR",
+    "route_short_name": "SLVR",
+    "route_long_name": "SILVER LINE"
+  },
+  {
+    "route_id": "Y1",
+    "route_short_name": "Y1",
+    "route_long_name": "LARGE FLYER"
+  },
+  {
+    "route_id": "Y45",
+    "route_short_name": "Y45",
+    "route_long_name": "BALDWIN MANOR FLYER"
+  },
+  {
+    "route_id": "Y46",
+    "route_short_name": "Y46",
+    "route_long_name": "ELIZABETH FLYER"
+  },
+  {
+    "route_id": "Y47",
+    "route_short_name": "Y47",
+    "route_long_name": "CURRY FLYER"
+  },
+  {
+    "route_id": "Y49",
+    "route_short_name": "Y49",
+    "route_long_name": "PROSPECT FLYER"
+  },
+  {
+    "route_id": "1",
+    "route_short_name": "1",
+    "route_long_name": "FREEPORT ROAD"
+  },
+  {
+    "route_id": "2",
+    "route_short_name": "2",
+    "route_long_name": "MOUNT ROYAL"
+  },
+  {
+    "route_id": "4",
+    "route_short_name": "4",
+    "route_long_name": "TROY HILL"
+  },
+  {
+    "route_id": "6",
+    "route_short_name": "6",
+    "route_long_name": "SPRING HILL"
+  },
+  {
+    "route_id": "7",
+    "route_short_name": "7",
+    "route_long_name": "SPRING GARDEN"
+  },
+  {
+    "route_id": "8",
+    "route_short_name": "8",
+    "route_long_name": "PERRYSVILLE"
+  },
+  {
+    "route_id": "11",
+    "route_short_name": "11",
+    "route_long_name": "FINEVIEW"
+  },
+  {
+    "route_id": "12",
+    "route_short_name": "12",
+    "route_long_name": "MCKNIGHT"
+  },
+  {
+    "route_id": "13",
+    "route_short_name": "13",
+    "route_long_name": "BELLEVUE"
+  },
+  {
+    "route_id": "14",
+    "route_short_name": "14",
+    "route_long_name": "OHIO VALLEY"
+  },
+  {
+    "route_id": "15",
+    "route_short_name": "15",
+    "route_long_name": "CHARLES"
+  },
+  {
+    "route_id": "16",
+    "route_short_name": "16",
+    "route_long_name": "BRIGHTON"
+  },
+  {
+    "route_id": "17",
+    "route_short_name": "17",
+    "route_long_name": "SHADELAND"
+  },
+  {
+    "route_id": "18",
+    "route_short_name": "18",
+    "route_long_name": "MANCHESTER"
+  },
+  {
+    "route_id": "19L",
+    "route_short_name": "19L",
+    "route_long_name": "EMSWORTH LIMITED"
+  },
+  {
+    "route_id": "20",
+    "route_short_name": "20",
+    "route_long_name": "KENNEDY"
+  },
+  {
+    "route_id": "21",
+    "route_short_name": "21",
+    "route_long_name": "CORAOPOLIS"
+  },
+  {
+    "route_id": "22",
+    "route_short_name": "22",
+    "route_long_name": "MCCOY"
+  },
+  {
+    "route_id": "24",
+    "route_short_name": "24",
+    "route_long_name": "WEST PARK"
+  },
+  {
+    "route_id": "26",
+    "route_short_name": "26",
+    "route_long_name": "CHARTIERS"
+  },
+  {
+    "route_id": "27",
+    "route_short_name": "27",
+    "route_long_name": "FAIRYWOOD"
+  },
+  {
+    "route_id": "28X",
+    "route_short_name": "28X",
+    "route_long_name": "AIRPORT FLYER"
+  },
+  {
+    "route_id": "29",
+    "route_short_name": "29",
+    "route_long_name": "ROBINSON"
+  },
+  {
+    "route_id": "31",
+    "route_short_name": "31",
+    "route_long_name": "BRIDGEVILLE"
+  },
+  {
+    "route_id": "36",
+    "route_short_name": "36",
+    "route_long_name": "BANKSVILLE"
+  },
+  {
+    "route_id": "38",
+    "route_short_name": "38",
+    "route_long_name": "GREEN TREE"
+  },
+  {
+    "route_id": "39",
+    "route_short_name": "39",
+    "route_long_name": "BROOKLINE"
+  },
+  {
+    "route_id": "40",
+    "route_short_name": "40",
+    "route_long_name": "MOUNT WASHINGTON"
+  },
+  {
+    "route_id": "41",
+    "route_short_name": "41",
+    "route_long_name": "BOWER HILL"
+  },
+  {
+    "route_id": "43",
+    "route_short_name": "43",
+    "route_long_name": "BAILEY"
+  },
+  {
+    "route_id": "44",
+    "route_short_name": "44",
+    "route_long_name": "KNOXVILLE"
+  },
+  {
+    "route_id": "48",
+    "route_short_name": "48",
+    "route_long_name": "ARLINGTON"
+  },
+  {
+    "route_id": "51",
+    "route_short_name": "51",
+    "route_long_name": "CARRICK"
+  },
+  {
+    "route_id": "51L",
+    "route_short_name": "51L",
+    "route_long_name": "CARRICK LIMITED"
+  },
+  {
+    "route_id": "52L",
+    "route_short_name": "52L",
+    "route_long_name": "HOMEVILLE LIMITED"
+  },
+  {
+    "route_id": "53",
+    "route_short_name": "53",
+    "route_long_name": "HOMESTEAD PARK"
+  },
+  {
+    "route_id": "53L",
+    "route_short_name": "53L",
+    "route_long_name": "HOMESTEAD PARK LIMITED"
+  },
+  {
+    "route_id": "54",
+    "route_short_name": "54",
+    "route_long_name": "NORTH SIDE-OAKLAND-SOUTH SIDE"
+  },
+  {
+    "route_id": "55",
+    "route_short_name": "55",
+    "route_long_name": "GLASSPORT"
+  },
+  {
+    "route_id": "56",
+    "route_short_name": "56",
+    "route_long_name": "LINCOLN PLACE"
+  },
+  {
+    "route_id": "57",
+    "route_short_name": "57",
+    "route_long_name": "HAZELWOOD"
+  },
+  {
+    "route_id": "58",
+    "route_short_name": "58",
+    "route_long_name": "GREENFIELD"
+  },
+  {
+    "route_id": "59",
+    "route_short_name": "59",
+    "route_long_name": "MON VALLEY"
+  },
+  {
+    "route_id": "60",
+    "route_short_name": "60",
+    "route_long_name": "MCKEESPORT - WALNUT"
+  },
+  {
+    "route_id": "61A",
+    "route_short_name": "61A",
+    "route_long_name": "NORTH BRADDOCK"
+  },
+  {
+    "route_id": "61B",
+    "route_short_name": "61B",
+    "route_long_name": "BRADDOCK-SWISSVALE"
+  },
+  {
+    "route_id": "61C",
+    "route_short_name": "61C",
+    "route_long_name": "MCKEESPORT-HOMESTEAD"
+  },
+  {
+    "route_id": "61D",
+    "route_short_name": "61D",
+    "route_long_name": "MURRAY SHORT"
+  },
+  {
+    "route_id": "64",
+    "route_short_name": "64",
+    "route_long_name": "LAWRENCEVILLE - WATERFRONT"
+  },
+  {
+    "route_id": "65",
+    "route_short_name": "65",
+    "route_long_name": "SQUIRREL HILL"
+  },
+  {
+    "route_id": "67",
+    "route_short_name": "67",
+    "route_long_name": "MONROEVILLE"
+  },
+  {
+    "route_id": "69",
+    "route_short_name": "69",
+    "route_long_name": "TRAFFORD"
+  },
+  {
+    "route_id": "71",
+    "route_short_name": "71",
+    "route_long_name": "EDGEWOOD TOWN CENTER"
+  },
+  {
+    "route_id": "71A",
+    "route_short_name": "71A",
+    "route_long_name": "NEGLEY SHORT"
+  },
+  {
+    "route_id": "71B",
+    "route_short_name": "71B",
+    "route_long_name": "HIGHLAND PARK"
+  },
+  {
+    "route_id": "71C",
+    "route_short_name": "71C",
+    "route_long_name": "POINT BREEZE SHORT"
+  },
+  {
+    "route_id": "71D",
+    "route_short_name": "71D",
+    "route_long_name": "HAMILTON SHORT"
+  },
+  {
+    "route_id": "74",
+    "route_short_name": "74",
+    "route_long_name": "HOMEWOOD-SQUIRREL HILL"
+  },
+  {
+    "route_id": "75",
+    "route_short_name": "75",
+    "route_long_name": "ELLSWORTH"
+  },
+  {
+    "route_id": "77",
+    "route_short_name": "77",
+    "route_long_name": "PENN HILLS"
+  },
+  {
+    "route_id": "79",
+    "route_short_name": "79",
+    "route_long_name": "EAST HILLS"
+  },
+  {
+    "route_id": "81",
+    "route_short_name": "81",
+    "route_long_name": "OAK HILL"
+  },
+  {
+    "route_id": "82",
+    "route_short_name": "82",
+    "route_long_name": "LINCOLN"
+  },
+  {
+    "route_id": "83",
+    "route_short_name": "83",
+    "route_long_name": "BEDFORD HILL"
+  },
+  {
+    "route_id": "86",
+    "route_short_name": "86",
+    "route_long_name": "LIBERTY"
+  },
+  {
+    "route_id": "87",
+    "route_short_name": "87",
+    "route_long_name": "FRIENDSHIP"
+  },
+  {
+    "route_id": "88",
+    "route_short_name": "88",
+    "route_long_name": "PENN"
+  },
+  {
+    "route_id": "89",
+    "route_short_name": "89",
+    "route_long_name": "GARFIELD COMMONS"
+  },
+  {
+    "route_id": "91",
+    "route_short_name": "91",
+    "route_long_name": "BUTLER STREET"
+  },
+  {
+    "route_id": "93",
+    "route_short_name": "93",
+    "route_long_name": "LAWRENCEVILLE - HAZELWOOD"
+  }
+]

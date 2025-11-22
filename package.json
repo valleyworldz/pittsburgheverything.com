@@ -17,8 +17,10 @@
     "data:ingest": "npm run scrape:events && npm run scrape:restaurants",
     "transit:download": "tsx scripts/download-gtfs.ts",
     "transit:import": "tsx scripts/import-gtfs.ts",
+    "transit:convert-json": "tsx scripts/convert-gtfs-to-json.ts",
     "transit:refresh": "tsx scripts/refresh-gtfs.ts",
-    "transit:setup": "tsx scripts/setup-gtfs.ts"
+    "transit:setup": "tsx scripts/setup-gtfs.ts",
+    "transit:build": "npm run transit:download && npm run transit:import && npm run transit:convert-json"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.0",

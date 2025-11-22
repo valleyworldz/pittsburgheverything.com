@@ -87,3 +87,5 @@ dist/
 /data/gtfs/*.zip
 /data/gtfs/*.sqlite
 /data/gtfs/prt/
+# GTFS JSON files - KEEP THESE (small, work in serverless)
+# JSON files are ~1.6MB total and can be committed to GitHub

@@ -12,6 +12,7 @@
 
 import { downloadGtfs } from './download-gtfs'
 import { importGtfs } from './import-gtfs'
+import { convertToJson } from './convert-gtfs-to-json'
 
 async function main(): Promise<void> {
   console.log('🔄 Refreshing GTFS data...\n')
@@ -29,6 +30,15 @@ async function main(): Promise<void> {
     // Step 2: Import
     console.log('📦 Step 2: Importing GTFS data...')
     await importGtfs()
+    
+    // Step 3: Convert to JSON (for serverless compatibility)
+    try {
+      console.log('📝 Step 3: Converting to JSON format...')
+      await convertToJson()
+    } catch (error: any) {
+      console.warn(`⚠️  JSON conversion failed (non-critical): ${error.message}`)
+      // Don't fail - JSON is optional, SQLite is primary
+    }
     
     console.log('\n✅ GTFS refresh complete!')
   } catch (error: any) {
