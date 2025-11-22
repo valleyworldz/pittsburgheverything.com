@@ -82,3 +82,8 @@ node_modules/
 .next/
 out/
 dist/
+
+# GTFS data files (downloaded and imported, not versioned)
+/data/gtfs/*.zip
+/data/gtfs/*.sqlite
+/data/gtfs/prt/
