@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { getNewOpeningsRestaurants } from '@/data/pittsburghRestaurants'
 import RestaurantCard from '@/components/restaurants/RestaurantCard'
 import RestaurantFilters, { FilterState } from '@/components/restaurants/RestaurantFilters'
-import RestaurantListSkeleton from '@/components/restaurants/LoadingSkeleton'
+import { RestaurantListSkeleton } from '@/components/restaurants/LoadingSkeleton'
 import ErrorState from '@/components/restaurants/ErrorState'
 
 export default function NewOpeningsClient() {

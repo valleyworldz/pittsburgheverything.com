@@ -5,7 +5,7 @@ import { MapPin, Star, Building2, Utensils, Grid, List } from 'lucide-react'
 import Link from 'next/link'
 import { getAllNeighborhoods, getRestaurantsByNeighborhood, pittsburghRestaurants } from '@/data/pittsburghRestaurants'
 import RestaurantCard from '@/components/restaurants/RestaurantCard'
-import RestaurantListSkeleton from '@/components/restaurants/LoadingSkeleton'
+import { RestaurantListSkeleton } from '@/components/restaurants/LoadingSkeleton'
 import ErrorState from '@/components/restaurants/ErrorState'
 
 export default function NeighborhoodsClient() {
