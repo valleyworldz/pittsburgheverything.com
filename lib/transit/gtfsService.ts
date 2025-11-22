@@ -306,17 +306,22 @@ export function searchStops(query: string, limit: number = 20): Stop[] {
     SELECT 
       stop_id,
       stop_name,
-      stop_lat,
-      stop_lon,
+      CAST(stop_lat AS REAL) as stop_lat,
+      CAST(stop_lon AS REAL) as stop_lon,
       stop_code,
       location_type,
       parent_station
     FROM stops
-    WHERE stop_name LIKE ? OR stop_code LIKE ?
+    WHERE stop_name LIKE ? OR stop_code LIKE ? OR stop_id LIKE ?
     ORDER BY stop_name
     LIMIT ?
   `)
-  return stmt.all(searchTerm, searchTerm, limit) as Stop[]
+  const results = stmt.all(searchTerm, searchTerm, searchTerm, limit) as Stop[]
+  return results.map(r => ({
+    ...r,
+    stop_lat: typeof r.stop_lat === 'string' ? parseFloat(r.stop_lat) : r.stop_lat,
+    stop_lon: typeof r.stop_lon === 'string' ? parseFloat(r.stop_lon) : r.stop_lon
+  }))
 }
 
 /**

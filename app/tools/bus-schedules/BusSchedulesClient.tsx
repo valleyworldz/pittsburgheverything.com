@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bus, MapPin, Clock, AlertCircle, RefreshCw, Search, Navigation } from 'lucide-react'
+import { Bus, MapPin, Clock, AlertCircle, RefreshCw, Search, Navigation, X, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface BusPrediction {
@@ -36,21 +36,11 @@ interface BusSchedulesResponse {
   message?: string
 }
 
-// Popular Pittsburgh bus stops
-// IMPORTANT: These are example locations. Users must enter their ACTUAL stop ID from Port Authority.
-// Stop IDs are typically 4-digit numbers found on bus stop signs or via Port Authority's website.
-// To find your stop ID: Visit https://www.portauthority.org or check the bus stop sign at your location.
-const popularStops = [
-  { id: '', name: 'Find Your Stop ID', routes: [], description: 'Enter your actual stop ID below or find it on Port Authority\'s website' },
-  { id: 'EXAMPLE_1', name: 'Example: Downtown Area', routes: ['61A', '61B', '61C', '61D', '71A', '71B', '71C', '71D'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_2', name: 'Example: Oakland Area', routes: ['61A', '61B', '61C', '61D', '71A', '71B'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_3', name: 'Example: Shadyside Area', routes: ['71A', '71B', '71C', '71D'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_4', name: 'Example: Squirrel Hill Area', routes: ['61A', '61B', '61C', '61D'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_5', name: 'Example: Lawrenceville Area', routes: ['91', '92', '93'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_6', name: 'Example: South Side Area', routes: ['48', '51', '54'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_7', name: 'Example: Strip District Area', routes: ['91', '92', '93'], description: 'Example location - use your actual stop ID' },
-  { id: 'EXAMPLE_8', name: 'Example: Airport Area', routes: ['28X'], description: 'Example location - use your actual stop ID' }
-]
+interface StopOption {
+  stop_id: string
+  stop_name: string
+  stop_code?: string
+}
 
 export default function BusSchedulesClient() {
   const [selectedStop, setSelectedStop] = useState<string>('')
@@ -61,10 +51,13 @@ export default function BusSchedulesClient() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
   const [dataSource, setDataSource] = useState<'gtfs' | 'realtime-only' | 'api' | 'mock' | 'error'>('api')
   const [stopInfo, setStopInfo] = useState<{ id: string; name: string; code?: string } | null>(null)
-  const [customStopId, setCustomStopId] = useState('')
-  const [showCustomStop, setShowCustomStop] = useState(true) // Show custom stop input by default
-
-  const currentStop = popularStops.find(s => s.id === selectedStop)
+  
+  // Stop search state
+  const [stopSearchQuery, setStopSearchQuery] = useState('')
+  const [stopSearchResults, setStopSearchResults] = useState<StopOption[]>([])
+  const [isSearchingStops, setIsSearchingStops] = useState(false)
+  const [showStopDropdown, setShowStopDropdown] = useState(false)
+  const [selectedStopOption, setSelectedStopOption] = useState<StopOption | null>(null)
 
   const fetchBusSchedules = async (stopId: string, route?: string) => {
     setLoading(true)
@@ -105,9 +98,39 @@ export default function BusSchedulesClient() {
     }
   }
 
+  // Search stops when query changes (debounced)
+  useEffect(() => {
+    if (!stopSearchQuery.trim()) {
+      setStopSearchResults([])
+      setShowStopDropdown(false)
+      return
+    }
+
+    const timeoutId = setTimeout(async () => {
+      setIsSearchingStops(true)
+      try {
+        const response = await fetch(`/api/transit/stops?q=${encodeURIComponent(stopSearchQuery)}&limit=20`)
+        if (response.ok) {
+          const data = await response.json()
+          setStopSearchResults(data.stops || [])
+          setShowStopDropdown(true)
+        } else {
+          setStopSearchResults([])
+        }
+      } catch (err) {
+        console.error('Error searching stops:', err)
+        setStopSearchResults([])
+      } finally {
+        setIsSearchingStops(false)
+      }
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(timeoutId)
+  }, [stopSearchQuery])
+
   // Load data when stop or route changes (only if stop ID is valid)
   useEffect(() => {
-    if (selectedStop && selectedStop !== '' && !selectedStop.startsWith('EXAMPLE_') && selectedStop !== 'Find Your Stop ID') {
+    if (selectedStop && selectedStop !== '') {
       fetchBusSchedules(selectedStop, selectedRoute || undefined)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -127,11 +150,19 @@ export default function BusSchedulesClient() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStop, selectedRoute, loading])
 
-  const handleCustomStopSearch = () => {
-    if (customStopId.trim()) {
-      fetchBusSchedules(customStopId.trim(), selectedRoute || undefined)
-      setShowCustomStop(false)
-    }
+  const handleStopSelect = (stop: StopOption) => {
+    setSelectedStop(stop.stop_id)
+    setSelectedStopOption(stop)
+    setStopSearchQuery(stop.stop_name)
+    setShowStopDropdown(false)
+    setSelectedRoute('') // Reset route filter when stop changes
+  }
+
+  const handleStopIdInput = (stopId: string) => {
+    setSelectedStop(stopId)
+    setSelectedStopOption(null)
+    setStopSearchQuery('')
+    setShowStopDropdown(false)
   }
 
   const formatTime = (minutes: number | null | undefined) => {
@@ -231,89 +262,128 @@ export default function BusSchedulesClient() {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
+            {/* Searchable Stop Dropdown */}
+            <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Example Locations (for reference only)
+                Search for Bus Stop
               </label>
-              <select
-                value={selectedStop}
-                onChange={(e) => {
-                  const value = e.target.value
-                  if (value && !value.startsWith('EXAMPLE_') && value !== '') {
-                    setSelectedStop(value)
-                    setShowCustomStop(false)
-                    setSelectedRoute('') // Reset route filter when stop changes
-                  }
-                }}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select an example or enter your stop ID below</option>
-                {popularStops.map((stop) => (
-                  <option key={stop.id} value={stop.id} disabled={stop.id === '' || stop.id.startsWith('EXAMPLE_')}>
-                    {stop.name}
-                  </option>
-                ))}
-              </select>
-              <p className="text-xs text-gray-500 mt-1">
-                ⚠️ These are examples. You must enter your actual stop ID.
-              </p>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={stopSearchQuery}
+                  onChange={(e) => {
+                    setStopSearchQuery(e.target.value)
+                    if (e.target.value.trim()) {
+                      setShowStopDropdown(true)
+                    }
+                  }}
+                  onFocus={() => {
+                    if (stopSearchResults.length > 0) {
+                      setShowStopDropdown(true)
+                    }
+                  }}
+                  onBlur={() => {
+                    // Delay to allow click on dropdown item
+                    setTimeout(() => setShowStopDropdown(false), 200)
+                  }}
+                  placeholder="Type to search stops (e.g., 'Oakland', 'Downtown', 'Fifth Ave')"
+                  className="w-full px-4 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                />
+                {isSearchingStops && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  </div>
+                )}
+                {!isSearchingStops && stopSearchQuery && (
+                  <button
+                    onClick={() => {
+                      setStopSearchQuery('')
+                      setStopSearchResults([])
+                      setSelectedStopOption(null)
+                    }}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+                
+                {/* Dropdown Results */}
+                {showStopDropdown && stopSearchResults.length > 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {stopSearchResults.map((stop) => (
+                      <button
+                        key={stop.stop_id}
+                        type="button"
+                        onClick={() => handleStopSelect(stop)}
+                        className="w-full text-left px-4 py-3 hover:bg-blue-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                      >
+                        <div className="font-medium text-gray-900">{stop.stop_name}</div>
+                        <div className="text-sm text-gray-600">
+                          Stop ID: {stop.stop_id}
+                          {stop.stop_code && ` • Code: ${stop.stop_code}`}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {showStopDropdown && stopSearchQuery && !isSearchingStops && stopSearchResults.length === 0 && (
+                  <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg p-4 text-center text-gray-500">
+                    No stops found. Try a different search term.
+                  </div>
+                )}
+              </div>
+              {selectedStopOption && (
+                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3" />
+                  Selected: {selectedStopOption.stop_name} (ID: {selectedStopOption.stop_id})
+                </p>
+              )}
             </div>
 
-            {currentStop && currentStop.routes.length > 0 && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Filter by Route (Optional)
-                </label>
-                <select
-                  value={selectedRoute}
-                  onChange={(e) => setSelectedRoute(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">All Routes</option>
-                  {currentStop.routes.map((route) => (
-                    <option key={route} value={route}>
-                      Route {route}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
+            {/* Route Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Filter by Route (Optional)
+              </label>
+              <input
+                type="text"
+                value={selectedRoute}
+                onChange={(e) => setSelectedRoute(e.target.value)}
+                placeholder="Enter route number (e.g., 61A, 71A)"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Leave empty to see all routes at this stop
+              </p>
+            </div>
           </div>
 
-          <div className="mt-4">
+          {/* Manual Stop ID Input */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Enter Your Actual Stop ID *
+              Or Enter Stop ID Directly
             </label>
             <div className="flex gap-2">
               <input
                 type="text"
-                value={customStopId || selectedStop}
-                onChange={(e) => {
-                  const value = e.target.value
-                  setCustomStopId(value)
-                  if (value && !value.startsWith('EXAMPLE_')) {
-                    setSelectedStop(value)
-                  }
-                }}
-                placeholder="Enter your actual Stop ID (found on bus stop sign or Port Authority website)"
-                className="flex-1 px-4 py-2 border-2 border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                onKeyPress={(e) => e.key === 'Enter' && handleCustomStopSearch()}
+                value={selectedStop}
+                onChange={(e) => handleStopIdInput(e.target.value)}
+                placeholder="Enter Stop ID (e.g., 2565)"
+                className="flex-1 px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               <button
                 onClick={() => {
-                  if (customStopId) {
-                    handleCustomStopSearch()
-                  } else if (selectedStop && !selectedStop.startsWith('EXAMPLE_')) {
+                  if (selectedStop) {
                     fetchBusSchedules(selectedStop, selectedRoute || undefined)
                   }
                 }}
-                disabled={loading || (!customStopId && (!selectedStop || selectedStop.startsWith('EXAMPLE_')))}
+                disabled={loading || !selectedStop}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
               >
                 <Search className="w-4 h-4" />
                 Get Schedules
               </button>
-              {selectedStop && !selectedStop.startsWith('EXAMPLE_') && (
+              {selectedStop && (
                 <button
                   onClick={() => fetchBusSchedules(selectedStop, selectedRoute || undefined)}
                   disabled={loading}
@@ -339,7 +409,7 @@ export default function BusSchedulesClient() {
         </div>
 
         {/* Current Stop Info */}
-        {(stopInfo || (selectedStop && !selectedStop.startsWith('EXAMPLE_') && selectedStop !== '')) && (
+        {(stopInfo || selectedStop) && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3">
               <Navigation className="w-5 h-5 text-blue-600" />
@@ -352,9 +422,9 @@ export default function BusSchedulesClient() {
                     Stop ID: {stopInfo.id} {stopInfo.code && `(${stopInfo.code})`}
                   </p>
                 )}
-                {!stopInfo && currentStop && currentStop.routes.length > 0 && (
+                {selectedStopOption && !stopInfo && (
                   <p className="text-sm text-blue-700">
-                    Example Routes: {currentStop.routes.join(', ')}
+                    Stop: {selectedStopOption.stop_name} (ID: {selectedStopOption.stop_id})
                   </p>
                 )}
                 <p className="text-xs text-blue-600 mt-1">
