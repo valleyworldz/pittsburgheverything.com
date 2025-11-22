@@ -88,15 +88,46 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.6
   }))
 
-  // Utility pages
-  const utilityPages = [
-    { route: '/sitemap.xml', priority: 0.3 },
-    { route: '/robots.txt', priority: 0.3 }
-  ].map(({ route, priority }) => ({
-    url: `${baseUrl}${route}`,
+  // Blog post pages (mocked)
+  const blogPostPages = [
+    'pittsburgh-restaurant-week-2025',
+    'best-pittsburgh-winter-activities',
+    'pittsburgh-business-growth-2025',
+    'hidden-gems-pittsburgh',
+    'pittsburgh-coffee-scene',
+    'pittsburgh-sports-preview'
+  ].map(slug => ({
+    url: `${baseUrl}/blog/${slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority
+    priority: 0.7
+  }))
+
+  // Blog tag pages (mocked)
+  const blogTagPages = [
+    'restaurant-week', 'dining', 'food', 'events', 'winter', 'activities', 'indoor', 'sports',
+    'business', 'economy', 'startups', 'trends', 'hidden-gems', 'neighborhoods', 'local', 'discover',
+    'coffee', 'culture', 'roasteries', 'steelers', 'penguins', 'pirates'
+  ].map(tag => ({
+    url: `${baseUrl}/blog/tag/${tag}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6
+  }))
+
+  // Things to do category pages (mocked)
+  const thingsToDoCategoryPages = [
+    'cultural-museums',
+    'outdoor-nature',
+    'sports-entertainment',
+    'family-friendly',
+    'nightlife',
+    'historical-educational'
+  ].map(category => ({
+    url: `${baseUrl}/things-to-do/${category}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.7
   }))
 
   // Combine and sort by priority for SEO optimization
@@ -106,6 +137,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...restaurantPages,
     ...eventPages,
     ...servicePages,
-    ...utilityPages
+    ...blogPostPages,
+    ...blogTagPages,
+    ...thingsToDoCategoryPages
   ].sort((a, b) => b.priority - a.priority)
 }
