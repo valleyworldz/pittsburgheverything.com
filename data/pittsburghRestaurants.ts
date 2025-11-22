@@ -103,8 +103,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: true,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['iconic', 'pittsburgh-classic', 'sandwiches', 'must-try', 'strip-district', '24-hours']
   },
@@ -153,7 +156,9 @@ export const pittsburghRestaurants: Restaurant[] = [
       reservations: true,
       privateDining: true,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['farm-to-table', 'romantic', 'brunch', 'fine-dining', 'oakland', 'date-night']
   },
@@ -193,8 +198,10 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: true,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
       wifi: true,
+      liveMusic: false,
       happyHour: true
     },
     tags: ['craft-beer', 'pizza', 'sports-bar', 'south-side', 'casual', 'late-night']
@@ -243,7 +250,9 @@ export const pittsburghRestaurants: Restaurant[] = [
       reservations: true,
       privateDining: true,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['fine-dining', 'james-beard', 'tasting-menu', 'strip-district', 'special-occasion']
   },
@@ -286,7 +295,9 @@ export const pittsburghRestaurants: Restaurant[] = [
       reservations: true,
       privateDining: true,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['seafood', 'fine-dining', 'mount-washington', 'river-views', 'romantic', 'date-night']
   },
@@ -333,8 +344,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: true,
       reservations: true,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['brunch', 'weekend-brunch', 'shadyside', 'bottomless-mimosas', 'creative-menu']
   },
@@ -375,8 +389,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['breakfast', 'diner', 'pancakes', 'cash-only', 'shadyside', 'cheap-eats']
   },
@@ -416,8 +433,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['breakfast', 'diner', 'historic', 'strip-district', 'cheap-eats', 'large-portions']
   },
@@ -465,7 +485,9 @@ export const pittsburghRestaurants: Restaurant[] = [
       reservations: true,
       privateDining: true,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['fine-dining', 'romantic', 'date-night', 'mount-washington', 'skyline-views', 'special-occasion']
   },
@@ -511,8 +533,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: false,
       delivery: false,
       reservations: true,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['fine-dining', 'vegetable-forward', 'seasonal', 'regent-square', 'date-night', 'foodie']
   },
@@ -552,8 +577,10 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
       wifi: true,
+      liveMusic: false,
       happyHour: true
     },
     tags: ['barbecue', 'whiskey', 'lawrenceville', 'creative', 'date-night', 'cocktails']
@@ -595,8 +622,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: true,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['italian', 'pizza', 'cheap-eats', 'family-owned', 'squirrel-hill', 'traditional']
   },
@@ -636,8 +666,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['pizza', 'sicilian', 'cheap-eats', 'cash-only', 'takeout', 'brookline', 'legendary']
   },
@@ -678,8 +711,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: true,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['subs', 'sandwiches', 'cheap-eats', 'family-owned', 'north-side', 'takeout']
   },
@@ -724,8 +760,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['thai', 'street-food', 'cheap-eats', 'cash-only', 'shadyside', 'authentic']
   },
@@ -772,8 +811,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: true,
       reservations: true,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: true
+      wifi: true,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['italian', 'modern-italian', 'pasta', 'pizza', 'strip-district', 'brunch']
   },
@@ -813,8 +855,10 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
       wifi: true,
+      liveMusic: false,
       happyHour: true
     },
     tags: ['food-hall', 'strip-district', 'groups', 'casual', 'rotating-concepts']
@@ -855,8 +899,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['burgers', 'bloomfield', 'cash-only', 'local-favorite', 'bar-food']
   },
@@ -900,8 +947,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: true,
       delivery: false,
       reservations: false,
+      privateDining: false,
       wheelchairAccessible: true,
-      wifi: false
+      wifi: false,
+      liveMusic: false,
+      happyHour: false
     },
     tags: ['argentine', 'grilled-meats', 'strip-district', 'no-reservations', 'authentic']
   },
@@ -944,9 +994,11 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: false,
       delivery: false,
       reservations: true,
+      privateDining: false,
       wheelchairAccessible: true,
       wifi: true,
-      liveMusic: true
+      liveMusic: true,
+      happyHour: false
     },
     tags: ['jazz-club', 'latin', 'live-music', 'shadyside', 'new-opening', 'entertainment']
   },
@@ -987,8 +1039,10 @@ export const pittsburghRestaurants: Restaurant[] = [
       takeout: false,
       delivery: false,
       reservations: true,
+      privateDining: false,
       wheelchairAccessible: true,
       wifi: true,
+      liveMusic: false,
       happyHour: true
     },
     tags: ['modern-american', 'small-plates', 'bloomfield', 'new-opening', 'creative', 'craft-cocktails']
