@@ -1,9 +1,10 @@
 'use client'
 
-import { Calendar, MapPin, Clock, Star, Heart, Camera, Coffee, Music, Mountain, TreePine, Building, Waves } from 'lucide-react'
+import { Calendar, MapPin, Clock, Star, Heart, Camera, Coffee, Music, Mountain, TreePine, Building, Waves, Sparkles, Gift, Users } from 'lucide-react'
 import Link from 'next/link'
 import Hero from '@/components/Hero'
 import { siteConfig } from '@/config/site'
+import { pittsburghAttractions } from '@/data/pittsburghAttractions'
 
 const activityCategories = [
   {
@@ -258,6 +259,64 @@ export default function ThingsToDoPage() {
                 World-class Attractions
               </span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Navigation */}
+      <section className="py-12 bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-pittsburgh-black mb-4">
+              Explore by Category
+            </h2>
+            <p className="text-gray-600">
+              Find exactly what you're looking for
+            </p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <Link
+              href="/things-to-do/must-see"
+              className="bg-gradient-to-br from-pittsburgh-gold to-yellow-400 text-pittsburgh-black rounded-lg p-4 text-center hover:shadow-lg transition-shadow"
+            >
+              <Star className="w-8 h-8 mx-auto mb-2" />
+              <div className="font-semibold text-sm">Must-See</div>
+            </Link>
+            <Link
+              href="/things-to-do/free"
+              className="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg p-4 text-center hover:shadow-lg transition-shadow"
+            >
+              <Gift className="w-8 h-8 mx-auto mb-2" />
+              <div className="font-semibold text-sm">Free Things</div>
+            </Link>
+            <Link
+              href="/things-to-do/outdoor"
+              className="bg-gradient-to-br from-green-600 to-green-700 text-white rounded-lg p-4 text-center hover:shadow-lg transition-shadow"
+            >
+              <TreePine className="w-8 h-8 mx-auto mb-2" />
+              <div className="font-semibold text-sm">Outdoor</div>
+            </Link>
+            <Link
+              href="/things-to-do/museums"
+              className="bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-lg p-4 text-center hover:shadow-lg transition-shadow"
+            >
+              <Building className="w-8 h-8 mx-auto mb-2" />
+              <div className="font-semibold text-sm">Museums</div>
+            </Link>
+            <Link
+              href="/things-to-do/family"
+              className="bg-gradient-to-br from-pink-500 to-pink-600 text-white rounded-lg p-4 text-center hover:shadow-lg transition-shadow"
+            >
+              <Users className="w-8 h-8 mx-auto mb-2" />
+              <div className="font-semibold text-sm">Family</div>
+            </Link>
+            <Link
+              href="/things-to-do/hidden"
+              className="bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-lg p-4 text-center hover:shadow-lg transition-shadow"
+            >
+              <Sparkles className="w-8 h-8 mx-auto mb-2" />
+              <div className="font-semibold text-sm">Hidden Gems</div>
+            </Link>
           </div>
         </div>
       </section>
