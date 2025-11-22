@@ -29,7 +29,7 @@ export default function DealsCarousel() {
             businessName: deal.businessName,
             discount: deal.discount,
             category: deal.category || 'General',
-            image: deal.image || '/images/deals/default-deal.svg',
+              image: deal.image || '/images/placeholder-deal.svg',
             expiresAt: deal.validUntil ? new Date(deal.validUntil).toISOString().split('T')[0] : undefined,
             url: deal.url,
             code: deal.code,

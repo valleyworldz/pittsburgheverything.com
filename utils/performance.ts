@@ -207,16 +207,16 @@ export class PerformanceMonitor {
 
       // Custom analytics endpoint (batched)
       if (process.env.NODE_ENV === 'production') {
-        // Send in background, don't wait
-        navigator.sendBeacon('/api/analytics/track', JSON.stringify({
-          events: batch.map(({ eventName, data, timestamp }) => ({
+        // Send each event individually to match API expectations
+        batch.forEach(({ eventName, data, timestamp }) => {
+          navigator.sendBeacon('/api/analytics/track', JSON.stringify({
             event: eventName,
             data,
             userAgent: navigator.userAgent,
             url: window.location.href,
             timestamp
           }))
-        }))
+        })
       }
     } catch (err) {
       console.warn('Analytics batch send failed:', err)
@@ -332,9 +332,9 @@ export class UserAnalyticsTracker {
 
   private sendAnalytics(eventType: string, data: any) {
     if (typeof window === 'undefined') return
+    if (!navigator?.sendBeacon) return // Fallback if sendBeacon not available
 
-    // Use sendBeacon for better performance (fire-and-forget)
-    if (process.env.NODE_ENV === 'production') {
+    try {
       const analyticsData = {
         event: eventType,
         sessionId: this.sessionId,
@@ -345,8 +345,12 @@ export class UserAnalyticsTracker {
         userAgent: navigator.userAgent
       }
 
-      // Use sendBeacon for non-blocking analytics
-      navigator.sendBeacon('/api/analytics/track', JSON.stringify(analyticsData))
+      // Use sendBeacon for non-blocking analytics (only in production)
+      if (process.env.NODE_ENV === 'production') {
+        navigator.sendBeacon('/api/analytics/track', JSON.stringify(analyticsData))
+      }
+    } catch (error) {
+      console.warn('Analytics sendBeacon failed:', error)
     }
 
     // Console logging only in development
@@ -378,14 +382,42 @@ export function initializeMonitoring() {
       const analytics = userAnalytics.getAnalyticsData()
       const sessionData = {
         sessionId: analytics.sessionId,
-        endTime: Date.now(),
+        endTime: new Date().toISOString(),
         duration: analytics.timeOnPage,
         pageViews: analytics.pageViews,
         events: analytics.interactions.length
       }
-      navigator.sendBeacon('/api/analytics/session', JSON.stringify(sessionData))
+
+      // Use fetch with PUT method for session end (more reliable than sendBeacon for PUT)
+      fetch('/api/analytics/session', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sessionData),
+        keepalive: true
+      }).catch(err => console.warn('Session end failed:', err))
     }
   }, { passive: true })
+
+  // Send session start immediately
+  if (userAnalytics) {
+    const analytics = userAnalytics.getAnalyticsData()
+    const sessionStartData = {
+      sessionId: analytics.sessionId,
+      userId: analytics.userId,
+      startTime: new Date().toISOString(),
+      userAgent: navigator.userAgent,
+      referrer: document.referrer,
+      url: window.location.href
+    }
+
+    // Send session start (use fetch since sendBeacon doesn't support POST well)
+    fetch('/api/analytics/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sessionStartData),
+      keepalive: true
+    }).catch(err => console.warn('Session start failed:', err))
+  }
 
   // Only log performance metrics in development
   if (process.env.NODE_ENV === 'development') {

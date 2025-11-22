@@ -371,11 +371,13 @@ self.addEventListener('message', (event) => {
       break
 
     case 'CACHE_REVIEW':
-      cachePendingReview(data)
+      // Fire and forget - don't block the message handler
+      event.waitUntil(cachePendingReview(data))
       break
 
     case 'CACHE_EVENT':
-      cachePendingEvent(data)
+      // Fire and forget - don't block the message handler
+      event.waitUntil(cachePendingEvent(data))
       break
 
     default:
