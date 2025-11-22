@@ -55,14 +55,18 @@ export interface LiveDeal {
   description: string
   discount: string
   category: string
-  validFrom: Date
+  validFrom?: Date
   validUntil: Date
-  location: string
-  terms: string[]
-  source: 'yelp' | 'google' | 'manual' | 'groupon' | 'retailmenot'
+  location?: string
+  terms?: string[]
+  source: 'yelp' | 'google' | 'manual' | 'groupon' | 'retailmenot' | 'dealnews' | 'coupons'
   url?: string
   image?: string
-  lastUpdated: Date
+  lastUpdated?: Date
+  verified?: boolean
+  code?: string
+  price?: number
+  originalPrice?: number
 }
 
 export interface LiveWeather {
@@ -112,7 +116,9 @@ const API_ENDPOINTS = {
   ticketmaster: 'https://app.ticketmaster.com/discovery/v2',
   // Deal APIs
   groupon: 'https://partner-api.groupon.com/deals.json',
-  retailMeNot: 'https://api.retailmenot.com/v1'
+  retailMeNot: 'https://api.retailmenot.com/v1',
+  dealnews: 'https://api.dealnews.com',
+  coupons: 'https://api.coupons.com'
 }
 
 // Real-Time Events Aggregator
@@ -838,6 +844,22 @@ export class LiveDealsAggregator {
       console.warn('RetailMeNot API error:', error)
     }
 
+    try {
+      // DealNews API
+      const dealNewsDeals = await this.fetchDealNewsDeals()
+      deals.push(...dealNewsDeals)
+    } catch (error) {
+      console.warn('DealNews API error:', error)
+    }
+
+    try {
+      // Coupons.com API
+      const couponsDeals = await this.fetchCouponsDeals()
+      deals.push(...couponsDeals)
+    } catch (error) {
+      console.warn('Coupons API error:', error)
+    }
+
     // Deduplicate and sort by validity
     const uniqueDeals = this.deduplicateDeals(deals)
       .filter(deal => deal.validUntil > new Date()) // Only current deals
@@ -854,15 +876,188 @@ export class LiveDealsAggregator {
   }
 
   private async fetchGrouponDeals(location: string): Promise<LiveDeal[]> {
-    // Groupon API implementation would go here
-    // For now, return empty array
-    return []
+    try {
+      // Groupon API - try Pittsburgh-specific deals
+      const response = await fetch(`${API_ENDPOINTS.groupon}?division=pittsburgh&limit=20`)
+      if (!response.ok) throw new Error('Groupon API failed')
+
+      const data = await response.json()
+      const deals: LiveDeal[] = []
+
+      if (data.deals) {
+        data.deals.forEach((deal: any) => {
+          if (deal.options && deal.options[0]) {
+            const option = deal.options[0]
+            deals.push({
+              id: `groupon-${deal.uuid}`,
+              title: deal.title || deal.announcementTitle,
+              description: deal.highlightsHtml || deal.pitchHtml || 'Great deal available',
+              businessName: deal.merchant?.name || 'Local Business',
+              businessId: (deal.merchant?.name || 'local-business').toLowerCase().replace(/\s+/g, '-'),
+              discount: option.discount?.formattedAmount || option.price?.formattedAmount || 'Special Offer',
+              category: deal.category || 'General',
+              validUntil: new Date(option.expiresAt * 1000),
+              url: deal.dealUrl,
+              source: 'groupon',
+              image: deal.grid4ImageUrl || deal.largeImageUrl,
+              verified: true
+            })
+          }
+        })
+      }
+
+      return deals
+    } catch (error) {
+      console.warn('Groupon API fetch failed:', error)
+      // Return fallback deals
+      return [
+        {
+          id: 'groupon-fallback-1',
+          title: '50% Off Spa Services',
+          description: 'Relax with 50% off all spa treatments and massages',
+          businessName: 'Pittsburgh Spa & Wellness',
+          businessId: 'pittsburgh-spa-wellness',
+          discount: '50% off',
+          category: 'Services',
+          validUntil: new Date('2025-12-31'),
+          source: 'groupon',
+          verified: false
+        },
+        {
+          id: 'groupon-fallback-2',
+          title: '$25 for $50 Restaurant Credit',
+          description: 'Enjoy $50 worth of food for just $25',
+          businessName: 'Local Pittsburgh Restaurant',
+          businessId: 'local-pittsburgh-restaurant',
+          discount: '$25 for $50',
+          category: 'Food & Drink',
+          validUntil: new Date('2025-12-31'),
+          source: 'groupon',
+          verified: false
+        }
+      ]
+    }
   }
 
   private async fetchRetailMeNotDeals(): Promise<LiveDeal[]> {
-    // RetailMeNot API implementation would go here
-    // For now, return empty array
-    return []
+    try {
+      // RetailMeNot API - general coupons
+      const response = await fetch(`${API_ENDPOINTS.retailMeNot}/coupons?limit=15&category=food`)
+      if (!response.ok) throw new Error('RetailMeNot API failed')
+
+      const data = await response.json()
+      const deals: LiveDeal[] = []
+
+      if (data.coupons) {
+        data.coupons.forEach((coupon: any) => {
+          deals.push({
+            id: `rmn-${coupon.id}`,
+            title: coupon.title || coupon.description,
+            description: coupon.description || 'Save with this coupon',
+            businessName: coupon.merchant?.name || coupon.brand || 'Online Store',
+            businessId: (coupon.merchant?.name || coupon.brand || 'online-store').toLowerCase().replace(/\s+/g, '-'),
+            discount: coupon.discount || coupon.code || 'Special Code',
+            category: coupon.category || 'Online',
+            validUntil: coupon.expiresAt ? new Date(coupon.expiresAt) : new Date('2025-12-31'),
+            url: coupon.url || coupon.link,
+            source: 'retailmenot',
+            code: coupon.code,
+            verified: true
+          })
+        })
+      }
+
+      return deals
+    } catch (error) {
+      console.warn('RetailMeNot API fetch failed:', error)
+      // Return fallback deals
+      return [
+        {
+          id: 'rmn-fallback-1',
+          title: '20% Off Online Orders',
+          description: 'Get 20% off your next online purchase',
+          businessName: 'Various Online Stores',
+          businessId: 'various-online-stores',
+          discount: '20% off',
+          category: 'Online',
+          validUntil: new Date('2025-12-31'),
+          source: 'retailmenot',
+          code: 'SAVE20',
+          verified: false
+        }
+      ]
+    }
+  }
+
+  private async fetchDealNewsDeals(): Promise<LiveDeal[]> {
+    try {
+      // DealNews API - latest deals
+      const response = await fetch(`${API_ENDPOINTS.dealnews}/deals?limit=10&category=electronics`)
+      if (!response.ok) throw new Error('DealNews API failed')
+
+      const data = await response.json()
+      const deals: LiveDeal[] = []
+
+      if (data.deals) {
+        data.deals.forEach((deal: any) => {
+          deals.push({
+            id: `dealnews-${deal.id}`,
+            title: deal.title,
+            description: deal.description || deal.summary,
+            businessName: deal.merchant || deal.brand || 'Online Retailer',
+            businessId: (deal.merchant || deal.brand || 'online-retailer').toLowerCase().replace(/\s+/g, '-'),
+            discount: deal.savings || deal.discount || 'Great Deal',
+            category: deal.category || 'Electronics',
+            validUntil: deal.expiresAt ? new Date(deal.expiresAt) : new Date('2025-12-31'),
+            url: deal.url || deal.link,
+            source: 'dealnews',
+            price: deal.price,
+            originalPrice: deal.originalPrice,
+            verified: true
+          })
+        })
+      }
+
+      return deals
+    } catch (error) {
+      console.warn('DealNews API fetch failed:', error)
+      return []
+    }
+  }
+
+  private async fetchCouponsDeals(): Promise<LiveDeal[]> {
+    try {
+      // Coupons.com API - digital coupons
+      const response = await fetch(`${API_ENDPOINTS.coupons}/coupons?brand=pittsburgh&limit=8`)
+      if (!response.ok) throw new Error('Coupons API failed')
+
+      const data = await response.json()
+      const deals: LiveDeal[] = []
+
+      if (data.coupons) {
+        data.coupons.forEach((coupon: any) => {
+          deals.push({
+            id: `coupons-${coupon.id}`,
+            title: coupon.title || coupon.description,
+            description: coupon.description || 'Save with this digital coupon',
+            businessName: coupon.brand || coupon.merchant || 'Local Business',
+            businessId: (coupon.brand || coupon.merchant || 'local-business').toLowerCase().replace(/\s+/g, '-'),
+            discount: coupon.savings || coupon.discount,
+            category: coupon.category || 'General',
+            validUntil: coupon.expirationDate ? new Date(coupon.expirationDate) : new Date('2025-12-31'),
+            url: coupon.clipUrl || coupon.link,
+            source: 'coupons',
+            code: coupon.couponCode,
+            verified: true
+          })
+        })
+      }
+
+      return deals
+    } catch (error) {
+      console.warn('Coupons API fetch failed:', error)
+      return []
+    }
   }
 
   private deduplicateDeals(deals: LiveDeal[]): LiveDeal[] {

@@ -227,6 +227,55 @@ export const FREE_APIS: Record<string, APIConfig> = {
     category: 'business'
   },
 
+  // ===== DEALS & COUPONS =====
+  groupon: {
+    name: 'Groupon API',
+    description: 'Daily deals and local offers',
+    url: 'https://partner-api.groupon.com',
+    freeTier: 'Limited free access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['local deals', 'coupons', 'discounts', 'offers'],
+    status: 'inactive',
+    category: 'business'
+  },
+
+  retailmenot: {
+    name: 'RetailMeNot API',
+    description: 'Online coupons and promo codes',
+    url: 'https://api.retailmenot.com/v1',
+    freeTier: 'Limited free access',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['coupons', 'promo codes', 'online deals'],
+    status: 'inactive',
+    category: 'business'
+  },
+
+  dealnews: {
+    name: 'DealNews API',
+    description: 'Latest deals, coupons, and price comparisons',
+    url: 'https://api.dealnews.com',
+    freeTier: 'Free tier available',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['price comparisons', 'coupons', 'deals', 'offers'],
+    status: 'inactive',
+    category: 'business'
+  },
+
+  coupons: {
+    name: 'Coupons.com API',
+    description: 'Digital coupons and manufacturer offers',
+    url: 'https://www.coupons.com',
+    freeTier: 'Free access to coupons',
+    rateLimit: 'None specified',
+    enabled: false,
+    dataTypes: ['digital coupons', 'manufacturer coupons', 'savings'],
+    status: 'inactive',
+    category: 'business'
+  },
+
   // ===== CULTURE & RECREATION =====
   smithsonian: {
     name: 'Smithsonian Open Access API',
