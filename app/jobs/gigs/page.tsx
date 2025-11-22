@@ -2,6 +2,7 @@ import { Metadata } from 'next'
 import { DollarSign, Clock, MapPin, Users, Briefcase, Zap } from 'lucide-react'
 import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
+import GigsClient from './GigsClient'
 
 export const metadata: Metadata = {
   title: 'Gigs in Pittsburgh | Freelance Work, Side Hustles & Temporary Jobs',
@@ -76,63 +77,6 @@ export default function GigsPage() {
       icon: MapPin,
       color: 'teal',
       description: 'Virtual assistance, online tutoring'
-    }
-  ]
-
-  const featuredGigs = [
-    {
-      title: 'Weekend Bartender',
-      company: 'Private Event',
-      location: 'Shadyside',
-      pay: '$25-35/hour + tips',
-      duration: 'Saturday evening',
-      description: 'Private party needs experienced bartender. Must have TIPS certification.',
-      tags: ['Hospitality', 'Tips', 'Weekend']
-    },
-    {
-      title: 'House Cleaning',
-      company: 'Local Client',
-      location: 'Squirrel Hill',
-      pay: '$30/hour',
-      duration: '4 hours',
-      description: 'Deep cleaning for 3-bedroom home. Supplies provided. Flexible timing.',
-      tags: ['Cleaning', 'Home Services', 'Flexible']
-    },
-    {
-      title: 'Photography Assistant',
-      company: 'Pittsburgh Wedding Photographer',
-      location: 'Various locations',
-      pay: '$150-200/day',
-      duration: 'Wedding day',
-      description: 'Assist professional photographer at weddings. Experience preferred but not required.',
-      tags: ['Photography', 'Events', 'Creative']
-    },
-    {
-      title: 'Lawn Mowing',
-      company: 'Residential Client',
-      location: 'Regent Square',
-      pay: '$50-75',
-      duration: '2-3 hours',
-      description: 'Weekly lawn maintenance for residential property. Equipment provided.',
-      tags: ['Lawn Care', 'Outdoor', 'Weekly']
-    },
-    {
-      title: 'Product Demonstrator',
-      company: 'Giant Eagle',
-      location: 'Multiple stores',
-      pay: '$18-22/hour',
-      duration: '4-6 hour shifts',
-      description: 'Demonstrate food products in grocery stores. Fun and interactive work.',
-      tags: ['Retail', 'Food', 'Part-time']
-    },
-    {
-      title: 'Virtual Assistant',
-      company: 'Local Business',
-      location: 'Remote',
-      pay: '$20-25/hour',
-      duration: '10-20 hours/week',
-      description: 'Administrative support for small business. Flexible remote work.',
-      tags: ['Virtual', 'Administrative', 'Remote']
     }
   ]
 
@@ -233,73 +177,7 @@ export default function GigsPage() {
         </div>
       </section>
 
-      {/* Featured Gigs */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-pittsburgh-black mb-4">
-              Featured Gigs
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              High-paying opportunities with flexible schedules
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {featuredGigs.map((gig, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-bold text-pittsburgh-black mb-1">{gig.title}</h3>
-                    <p className="text-gray-600 mb-2">{gig.company}</p>
-
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {gig.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {gig.duration}
-                      </span>
-                    </div>
-
-                    <p className="text-gray-700 mb-3">{gig.description}</p>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {gig.tags.map((tag, tagIndex) => (
-                        <span key={tagIndex} className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-semibold">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-green-600" />
-                    <span className="font-semibold text-green-600">{gig.pay}</span>
-                  </div>
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors">
-                    Apply Now
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-8">
-            <Link
-              href="/jobs/local"
-              className="bg-pittsburgh-gold text-white px-8 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition-colors inline-flex items-center gap-2"
-            >
-              <Briefcase className="w-5 h-5" />
-              View All Gigs
-            </Link>
-          </div>
-        </div>
-      </section>
+      <GigsClient />
 
       {/* How It Works */}
       <section className="py-16 bg-white">
@@ -342,40 +220,6 @@ export default function GigsPage() {
               <p className="text-gray-700">
                 Complete gigs and get paid promptly. Many offer same-week payment.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Gig Economy Stats */}
-      <section className="py-16 bg-gradient-to-r from-pittsburgh-black to-steel-gray text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Pittsburgh Gig Economy</h2>
-            <p className="text-xl opacity-90">
-              Join thousands earning extra income through flexible work
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-pittsburgh-gold mb-2">$25-50/hour</div>
-              <div className="text-sm opacity-75">Average Pay</div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-3xl font-bold text-pittsburgh-gold mb-2">10K+</div>
-              <div className="text-sm opacity-75">Active Gig Workers</div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-3xl font-bold text-pittsburgh-gold mb-2">85%</div>
-              <div className="text-sm opacity-75">Work-Life Balance</div>
-            </div>
-
-            <div className="text-center">
-              <div className="text-3xl font-bold text-pittsburgh-gold mb-2">48hrs</div>
-              <div className="text-sm opacity-75">Avg Response Time</div>
             </div>
           </div>
         </div>

@@ -2,6 +2,8 @@ import { Metadata } from 'next'
 import { MessageSquare, Search, Filter, Plus, Eye, Heart, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
+import { getRecentPosts, getAllCommunityPosts } from '@/data/pittsburghCommunity'
+import PostCard from '@/components/community/PostCard'
 
 export const metadata: Metadata = {
   title: 'Pittsburgh Community | Questions, Lost & Found, Volunteer',
@@ -21,87 +23,9 @@ export const metadata: Metadata = {
   }
 }
 
-// Mock community posts - in production, this would come from database
-const communityPosts = [
-  {
-    id: '1',
-    type: 'question',
-    title: 'Best Italian restaurants in Bloomfield?',
-    body: 'Moving to Bloomfield next month and looking for authentic Italian food recommendations. Any hidden gems?',
-    authorName: 'Maria R.',
-    neighborhood: 'Bloomfield',
-    createdAt: '2025-01-20T10:30:00Z',
-    status: 'active',
-    responses: 8,
-    views: 45
-  },
-  {
-    id: '2',
-    type: 'lost-found',
-    title: 'Found: Black wallet in Schenley Park',
-    body: 'Found a black leather wallet with ID, credit cards, and cash near the fountain. Contact me to claim.',
-    authorName: 'Anonymous',
-    neighborhood: 'Schenley Park',
-    createdAt: '2025-01-19T14:15:00Z',
-    status: 'active',
-    responses: 2,
-    views: 23
-  },
-  {
-    id: '3',
-    type: 'volunteer',
-    title: 'Community Garden needs volunteers',
-    body: 'The Lawrenceville Community Garden needs help with spring planting. No experience required, training provided.',
-    authorName: 'Green Pittsburgh',
-    neighborhood: 'Lawrenceville',
-    createdAt: '2025-01-18T09:00:00Z',
-    status: 'active',
-    responses: 12,
-    views: 67
-  },
-  {
-    id: '4',
-    type: 'question',
-    title: 'Car recommendations for Pittsburgh winters?',
-    body: 'Thinking of buying a new car. What do locals recommend for handling snow and ice?',
-    authorName: 'John D.',
-    neighborhood: 'Shadyside',
-    createdAt: '2025-01-17T16:45:00Z',
-    status: 'active',
-    responses: 15,
-    views: 89
-  },
-  {
-    id: '5',
-    type: 'lost-found',
-    title: 'Lost: Golden retriever puppy',
-    body: 'Our 3-month-old golden retriever escaped from our yard in Regent Square. Please call if found!',
-    authorName: 'Sarah M.',
-    neighborhood: 'Regent Square',
-    createdAt: '2025-01-16T20:00:00Z',
-    status: 'active',
-    responses: 5,
-    views: 156
-  }
-]
+// Get recent posts from data
+const communityPosts = getRecentPosts(10)
 
-const postTypeConfig = {
-  question: {
-    icon: MessageSquare,
-    color: 'blue',
-    label: 'Question'
-  },
-  'lost-found': {
-    icon: Search,
-    color: 'orange',
-    label: 'Lost & Found'
-  },
-  volunteer: {
-    icon: Heart,
-    color: 'green',
-    label: 'Volunteer'
-  }
-}
 
 export default function CommunityPage() {
   const structuredData = {
@@ -184,18 +108,27 @@ export default function CommunityPage() {
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="font-bold text-pittsburgh-black mb-4">Browse by Category</h3>
                 <div className="space-y-2">
-                  {Object.entries(postTypeConfig).map(([type, config]) => {
-                    const Icon = config.icon
-                    return (
-                      <button
-                        key={type}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
-                      >
-                        <Icon className={`w-4 h-4 text-${config.color}-500`} />
-                        <span className="text-sm">{config.label}</span>
-                      </button>
-                    )
-                  })}
+                  <Link
+                    href="/community/questions"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <MessageSquare className="w-4 h-4 text-blue-500" />
+                    <span className="text-sm">Questions</span>
+                  </Link>
+                  <Link
+                    href="/community/lost-found"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <Search className="w-4 h-4 text-orange-500" />
+                    <span className="text-sm">Lost & Found</span>
+                  </Link>
+                  <Link
+                    href="/community/volunteer"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <Heart className="w-4 h-4 text-green-500" />
+                    <span className="text-sm">Volunteer</span>
+                  </Link>
                 </div>
 
                 <div className="mt-6 pt-4 border-t">
@@ -233,67 +166,9 @@ export default function CommunityPage() {
 
               {/* Posts Feed */}
               <div className="space-y-4">
-                {communityPosts.map((post) => {
-                  const config = postTypeConfig[post.type as keyof typeof postTypeConfig]
-                  const Icon = config.icon
-
-                  return (
-                    <article key={post.id} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                      <div className="flex items-start gap-4">
-                        <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${
-                          post.type === 'question' ? 'bg-blue-100' :
-                          post.type === 'lost-found' ? 'bg-orange-100' : 'bg-green-100'
-                        }`}>
-                          <Icon className={`w-5 h-5 ${
-                            post.type === 'question' ? 'text-blue-600' :
-                            post.type === 'lost-found' ? 'text-orange-600' : 'text-green-600'
-                          }`} />
-                        </div>
-
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                                  post.type === 'question' ? 'bg-blue-100 text-blue-800' :
-                                  post.type === 'lost-found' ? 'bg-orange-100 text-orange-800' :
-                                  'bg-green-100 text-green-800'
-                                }`}>
-                                  {config.label}
-                                </span>
-                                <span className="text-sm text-gray-500">{post.neighborhood}</span>
-                              </div>
-
-                              <h3 className="text-lg font-semibold text-pittsburgh-black mb-2">
-                                <Link href={`/community/${post.id}`} className="hover:text-pittsburgh-gold transition-colors">
-                                  {post.title}
-                                </Link>
-                              </h3>
-
-                              <p className="text-gray-700 mb-3 line-clamp-2">{post.body}</p>
-
-                              <div className="flex items-center gap-4 text-sm text-gray-500">
-                                <span>by {post.authorName}</span>
-                                <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                              </div>
-                            </div>
-
-                            <div className="flex items-center gap-4 text-sm text-gray-500">
-                              <div className="flex items-center gap-1">
-                                <Eye className="w-4 h-4" />
-                                <span>{post.views}</span>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <MessageCircle className="w-4 h-4" />
-                                <span>{post.responses}</span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  )
-                })}
+                {communityPosts.map((post) => (
+                  <PostCard key={post.id} post={post} />
+                ))}
               </div>
 
               {/* Load More */}

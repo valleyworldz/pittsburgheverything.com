@@ -1,7 +1,9 @@
 import { Metadata } from 'next'
-import { Briefcase, MapPin, DollarSign, Clock, Search, Filter } from 'lucide-react'
+import { Briefcase, MapPin, DollarSign, Clock, Search } from 'lucide-react'
 import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
+import { getAllJobs, getUrgentJobs, getAllCompanies } from '@/data/pittsburghJobs'
+import JobCard from '@/components/jobs/JobCard'
 
 export const metadata: Metadata = {
   title: 'Jobs in Pittsburgh | Local Employment & Career Opportunities',
@@ -34,13 +36,31 @@ export default function JobsPage() {
     }
   }
 
+  const allJobs = getAllJobs()
+  const urgentJobs = getUrgentJobs()
+  const companies = getAllCompanies()
+  
+  const totalJobs = allJobs.length
+  const totalCompanies = companies.length
+  const avgSalary = Math.round(
+    allJobs
+      .filter(job => job.salary?.annual)
+      .reduce((sum, job) => sum + (job.salary?.min || 0), 0) / 
+    allJobs.filter(job => job.salary?.annual).length
+  ) || 65000
+
+  const featuredJobs = allJobs
+    .filter(job => !job.urgent)
+    .sort((a, b) => new Date(b.postedDate).getTime() - new Date(a.postedDate).getTime())
+    .slice(0, 4)
+
   const jobCategories = [
     {
       title: 'Hiring Now',
       href: '/jobs/hiring',
       description: 'Urgent job openings and immediate hiring opportunities',
       icon: Clock,
-      count: '120+',
+      count: `${urgentJobs.length}+`,
       color: 'green'
     },
     {
@@ -48,7 +68,7 @@ export default function JobsPage() {
       href: '/jobs/local',
       description: 'Full-time and part-time positions in Pittsburgh',
       icon: Briefcase,
-      count: '350+',
+      count: `${allJobs.filter(j => j.type === 'full-time' || j.type === 'part-time').length}+`,
       color: 'blue'
     },
     {
@@ -56,7 +76,7 @@ export default function JobsPage() {
       href: '/jobs/gigs',
       description: 'Freelance work, side hustles, and temporary opportunities',
       icon: DollarSign,
-      count: '85+',
+      count: `${allJobs.filter(j => j.type === 'freelance' || j.type === 'contract' || j.type === 'temporary').length}+`,
       color: 'purple'
     },
     {
@@ -66,41 +86,6 @@ export default function JobsPage() {
       icon: Search,
       count: 'Free',
       color: 'orange'
-    }
-  ]
-
-  const featuredJobs = [
-    {
-      title: 'Software Engineer',
-      company: 'Google Pittsburgh',
-      location: 'Pittsburgh, PA',
-      type: 'Full-time',
-      salary: '$120K - $150K',
-      posted: '2 days ago'
-    },
-    {
-      title: 'Restaurant Server',
-      company: 'The Capital Grille',
-      location: 'Downtown Pittsburgh',
-      type: 'Part-time',
-      salary: '$15/hour + tips',
-      posted: '1 day ago'
-    },
-    {
-      title: 'Barista',
-      company: 'Crazy Mocha',
-      location: 'Oakland',
-      type: 'Part-time',
-      salary: '$15 - $18/hour',
-      posted: '3 days ago'
-    },
-    {
-      title: 'Marketing Coordinator',
-      company: 'Pittsburgh Steelers',
-      location: 'Heinz Field',
-      type: 'Full-time',
-      salary: '$50K - $65K',
-      posted: '1 week ago'
     }
   ]
 
@@ -122,17 +107,17 @@ export default function JobsPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
               <div className="text-center">
                 <Briefcase className="w-8 h-8 mx-auto mb-2 text-pittsburgh-gold" />
-                <div className="text-2xl font-bold">470+</div>
+                <div className="text-2xl font-bold">{totalJobs}+</div>
                 <div className="text-sm opacity-75">Active Jobs</div>
               </div>
               <div className="text-center">
                 <MapPin className="w-8 h-8 mx-auto mb-2 text-pittsburgh-gold" />
-                <div className="text-2xl font-bold">50+</div>
+                <div className="text-2xl font-bold">{totalCompanies}+</div>
                 <div className="text-sm opacity-75">Companies</div>
               </div>
               <div className="text-center">
                 <DollarSign className="w-8 h-8 mx-auto mb-2 text-pittsburgh-gold" />
-                <div className="text-2xl font-bold">$65K</div>
+                <div className="text-2xl font-bold">${Math.round(avgSalary / 1000)}K</div>
                 <div className="text-sm opacity-75">Avg Salary</div>
               </div>
               <div className="text-center">
@@ -226,36 +211,11 @@ export default function JobsPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {featuredJobs.map((job, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-pittsburgh-black mb-1">{job.title}</h3>
-                    <p className="text-gray-600 mb-2">{job.company}</p>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {job.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Briefcase className="w-4 h-4" />
-                        {job.type}
-                      </span>
-                    </div>
-                  </div>
-                  <span className="text-xs text-gray-400">{job.posted}</span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-green-600" />
-                    <span className="font-semibold text-green-600">{job.salary}</span>
-                  </div>
-                  <button className="bg-pittsburgh-gold text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-500 transition-colors">
-                    Apply Now
-                  </button>
-                </div>
-              </div>
+            {featuredJobs.map((job) => (
+              <JobCard
+                key={job.id}
+                job={job}
+              />
             ))}
           </div>
 

@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { DollarSign, TrendingUp, Users, Home, Car, ShoppingCart, Zap, Heart } from 'lucide-react'
 import StructuredData from '@/components/StructuredData'
+import { getAllNeighborhoods } from '@/data/pittsburghNeighborhoods'
 
 export const metadata: Metadata = {
   title: 'Cost of Living in Pittsburgh | Housing, Salaries, Expenses (2025)',
@@ -20,68 +21,42 @@ export const metadata: Metadata = {
   }
 }
 
-// Mock census data - in production, this would come from Census API
+// Get comprehensive neighborhood data
+const allNeighborhoods = getAllNeighborhoods()
+const cityNeighborhoods = allNeighborhoods.filter(n => n.type === 'neighborhood')
+
+// Calculate citywide averages
+const citywide = {
+  medianIncome: Math.round(
+    cityNeighborhoods.reduce((sum, n) => sum + n.medianIncome, 0) / cityNeighborhoods.length
+  ),
+  medianRent: Math.round(
+    cityNeighborhoods.reduce((sum, n) => sum + (n.medianHomePrice * 0.005), 0) / cityNeighborhoods.length
+  ),
+  medianHomeValue: Math.round(
+    cityNeighborhoods.reduce((sum, n) => sum + n.medianHomePrice, 0) / cityNeighborhoods.length
+  ),
+  population: cityNeighborhoods.reduce((sum, n) => sum + n.population, 0),
+  averageAge: Math.round(
+    cityNeighborhoods.reduce((sum, n) => sum + n.demographics.medianAge, 0) / cityNeighborhoods.length
+  ),
+  educationLevel: "Bachelor's Degree",
+  unemploymentRate: 4.2,
+  commuteTime: 25
+}
+
+// Neighborhood data with rent estimates (using median home price * 0.005 as rent estimate)
 const censusData = {
-  citywide: {
-    medianIncome: 65000,
-    medianRent: 1200,
-    medianHomeValue: 250000,
-    population: 302000,
-    averageAge: 34,
-    educationLevel: "Bachelor's Degree",
-    unemploymentRate: 4.2,
-    commuteTime: 25
-  },
-  neighborhoods: [
-    {
-      name: 'Downtown',
-      medianRent: 1650,
-      medianIncome: 75000,
-      walkScore: 95,
-      population: 5000,
-      averageAge: 32
-    },
-    {
-      name: 'Shadyside',
-      medianRent: 1400,
-      medianIncome: 85000,
-      walkScore: 78,
-      population: 15000,
-      averageAge: 38
-    },
-    {
-      name: 'Lawrenceville',
-      medianRent: 1150,
-      medianIncome: 55000,
-      walkScore: 85,
-      population: 8000,
-      averageAge: 35
-    },
-    {
-      name: 'Squirrel Hill',
-      medianRent: 1050,
-      medianIncome: 75000,
-      walkScore: 82,
-      population: 25000,
-      averageAge: 35
-    },
-    {
-      name: 'Oakland',
-      medianRent: 950,
-      medianIncome: 45000,
-      walkScore: 88,
-      population: 25000,
-      averageAge: 25
-    },
-    {
-      name: 'South Side',
-      medianRent: 1100,
-      medianIncome: 65000,
-      walkScore: 82,
-      population: 12000,
-      averageAge: 33
-    }
-  ]
+  citywide,
+  neighborhoods: cityNeighborhoods.slice(0, 12).map(n => ({
+    name: n.name,
+    medianRent: Math.round(n.medianHomePrice * 0.005),
+    medianIncome: n.medianIncome,
+    walkScore: n.walkScore,
+    population: n.population,
+    averageAge: n.demographics.medianAge,
+    medianHomePrice: n.medianHomePrice
+  }))
 }
 
 const costBreakdown = {

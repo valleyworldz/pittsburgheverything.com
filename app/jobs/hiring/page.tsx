@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
-import { Clock, MapPin, DollarSign, Briefcase, Search } from 'lucide-react'
+import { Clock, Search, Briefcase, DollarSign } from 'lucide-react'
 import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
+import HiringClient from './HiringClient'
 
 export const metadata: Metadata = {
   title: 'Hiring Now in Pittsburgh | Urgent Job Openings & Immediate Employment',
@@ -33,69 +34,6 @@ export default function HiringNowPage() {
       "name": "PittsburghEverything"
     }
   }
-
-  const urgentJobs = [
-    {
-      title: 'Line Cook',
-      company: 'The Capital Grille',
-      location: 'Downtown Pittsburgh',
-      salary: '$18-22/hour',
-      type: 'Full-time',
-      urgency: 'Interview today',
-      posted: '2 hours ago',
-      description: 'Immediate opening for experienced line cook. No experience required for entry-level.'
-    },
-    {
-      title: 'Bartender',
-      company: 'Fat Head\'s Saloon',
-      location: 'Strip District',
-      salary: '$15/hour + tips',
-      type: 'Part-time',
-      urgency: 'Start tomorrow',
-      posted: '4 hours ago',
-      description: 'Busy craft beer bar needs experienced bartender. TIPS certification preferred.'
-    },
-    {
-      title: 'Delivery Driver',
-      company: 'Uber Eats',
-      location: 'Pittsburgh Metro',
-      salary: '$18-25/hour + tips',
-      type: 'Flexible',
-      urgency: 'Apply now, start today',
-      posted: '1 hour ago',
-      description: 'Flexible schedule, great earnings. Use your own vehicle or company car available.'
-    },
-    {
-      title: 'Retail Associate',
-      company: 'Giant Eagle',
-      location: 'Oakland',
-      salary: '$15-17/hour',
-      type: 'Part-time',
-      urgency: 'Hiring immediately',
-      posted: '6 hours ago',
-      description: 'Customer service focused retail position. Morning and evening shifts available.'
-    },
-    {
-      title: 'Housekeeper',
-      company: 'Hilton Garden Inn',
-      location: 'Downtown Pittsburgh',
-      salary: '$16-18/hour',
-      type: 'Full-time',
-      urgency: 'Urgent need',
-      posted: '3 hours ago',
-      description: 'Hotel housekeeping position. Experience preferred but will train motivated candidates.'
-    },
-    {
-      title: 'Cashier',
-      company: 'Sheetz',
-      location: 'Multiple locations',
-      salary: '$14-16/hour',
-      type: 'Part-time',
-      urgency: 'Now hiring',
-      posted: '5 hours ago',
-      description: 'Convenience store cashier. Fast-paced environment with great benefits.'
-    }
-  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -150,62 +88,7 @@ export default function HiringNowPage() {
         </div>
       </section>
 
-      {/* Job Listings */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-pittsburgh-black mb-4">
-              Urgent Job Openings
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              These employers are actively hiring and need staff immediately. Apply now for fastest response.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {urgentJobs.map((job, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-sm p-6 hover:shadow-lg transition-shadow border-l-4 border-red-500">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-semibold">
-                        {job.urgency}
-                      </span>
-                      <span className="text-xs text-gray-500">{job.posted}</span>
-                    </div>
-
-                    <h3 className="text-xl font-bold text-pittsburgh-black mb-1">{job.title}</h3>
-                    <p className="text-gray-600 mb-3">{job.company}</p>
-
-                    <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="w-4 h-4" />
-                        {job.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Briefcase className="w-4 h-4" />
-                        {job.type}
-                      </span>
-                    </div>
-
-                    <p className="text-gray-700 text-sm mb-4">{job.description}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <DollarSign className="w-4 h-4 text-green-600" />
-                    <span className="font-semibold text-green-600">{job.salary}</span>
-                  </div>
-                  <button className="bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition-colors">
-                    Apply Now
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HiringClient />
 
       {/* How It Works */}
       <section className="py-16 bg-gray-50">

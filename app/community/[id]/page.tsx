@@ -3,9 +3,10 @@ import { ArrowLeft, MessageSquare, Search, Heart, Eye, MessageCircle, Clock, Map
 import Link from 'next/link'
 import StructuredData from '@/components/StructuredData'
 import { notFound } from 'next/navigation'
+import { getPostById } from '@/data/pittsburghCommunity'
+import type { CommunityPost } from '@/data/pittsburghCommunity'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  // In production, fetch post data here
   const post = getPostById(params.id)
   
   if (!post) {
@@ -20,123 +21,14 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-// Mock data - in production, fetch from database
-const communityPosts = [
-  {
-    id: '1',
-    type: 'question',
-    title: 'Best Italian restaurants in Bloomfield?',
-    body: 'Moving to Bloomfield next month and looking for authentic Italian food recommendations. Any hidden gems? I\'m particularly interested in family-owned places with traditional recipes. Also, any recommendations for good pizza places?',
-    authorName: 'Maria R.',
-    neighborhood: 'Bloomfield',
-    createdAt: '2025-01-20T10:30:00Z',
-    status: 'active',
-    responses: 8,
-    views: 45,
-    replies: [
-      {
-        id: 'r1',
-        authorName: 'Tony M.',
-        body: 'You have to try Piccolo Forno on Butler Street! Amazing wood-fired pizza and authentic Italian dishes. Family-owned for generations.',
-        createdAt: '2025-01-20T11:15:00Z',
-        isAdminResponse: false
-      },
-      {
-        id: 'r2',
-        authorName: 'Lisa K.',
-        body: 'I second Piccolo Forno! Also check out DiAnoia\'s Eatery - great pasta and they make their own bread. Welcome to Bloomfield!',
-        createdAt: '2025-01-20T12:30:00Z',
-        isAdminResponse: false
-      },
-      {
-        id: 'r3',
-        authorName: 'PittsburghEverything',
-        body: 'Great question! Bloomfield is known as Pittsburgh\'s Little Italy. Check out our restaurant guide for more recommendations: /restaurants',
-        createdAt: '2025-01-20T14:00:00Z',
-        isAdminResponse: true
-      }
-    ]
-  },
-  {
-    id: '2',
-    type: 'lost-found',
-    title: 'Found: Black wallet in Schenley Park',
-    body: 'Found a black leather wallet with ID, credit cards, and cash near the fountain. Contact me to claim. I\'ll be at the park until 5pm today, or you can email me.',
-    authorName: 'Anonymous',
-    neighborhood: 'Schenley Park',
-    createdAt: '2025-01-19T14:15:00Z',
-    status: 'active',
-    responses: 2,
-    views: 23,
-    replies: [
-      {
-        id: 'r1',
-        authorName: 'Mike T.',
-        body: 'That might be mine! I lost my wallet yesterday. Can you describe the ID name?',
-        createdAt: '2025-01-19T15:00:00Z',
-        isAdminResponse: false
-      }
-    ]
-  },
-  {
-    id: '3',
-    type: 'volunteer',
-    title: 'Community Garden needs volunteers',
-    body: 'The Lawrenceville Community Garden needs help with spring planting. No experience required, training provided. We meet every Saturday morning from 9am-12pm. Great way to meet neighbors and learn about gardening!',
-    authorName: 'Green Pittsburgh',
-    neighborhood: 'Lawrenceville',
-    createdAt: '2025-01-18T09:00:00Z',
-    status: 'active',
-    responses: 12,
-    views: 67,
-    replies: [
-      {
-        id: 'r1',
-        authorName: 'Sarah J.',
-        body: 'I\'d love to help! I\'m new to gardening but excited to learn. Should I just show up on Saturday?',
-        createdAt: '2025-01-18T10:30:00Z',
-        isAdminResponse: false
-      },
-      {
-        id: 'r2',
-        authorName: 'Green Pittsburgh',
-        body: 'Yes! Just come to the garden at 9am. We\'ll provide all tools and gloves. Looking forward to meeting you!',
-        createdAt: '2025-01-18T11:00:00Z',
-        isAdminResponse: false
-      }
-    ]
-  },
-  {
-    id: '4',
-    type: 'question',
-    title: 'Car recommendations for Pittsburgh winters?',
-    body: 'Thinking of buying a new car. What do locals recommend for handling snow and ice? I\'m looking for something reliable that can handle Pittsburgh\'s hills and winter weather.',
-    authorName: 'John D.',
-    neighborhood: 'Shadyside',
-    createdAt: '2025-01-17T16:45:00Z',
-    status: 'active',
-    responses: 15,
-    views: 89,
-    replies: []
-  },
-  {
-    id: '5',
-    type: 'lost-found',
-    title: 'Lost: Golden retriever puppy',
-    body: 'Our 3-month-old golden retriever escaped from our yard in Regent Square. Please call if found! He\'s wearing a blue collar with our phone number. His name is Max and he\'s very friendly.',
-    authorName: 'Sarah M.',
-    neighborhood: 'Regent Square',
-    createdAt: '2025-01-16T20:00:00Z',
-    status: 'active',
-    responses: 5,
-    views: 156,
-    replies: []
-  }
-]
-
-function getPostById(id: string) {
-  return communityPosts.find(post => post.id === id)
-}
+// Mock replies - in production, fetch from database
+const mockReplies: Array<{
+  id: string
+  authorName: string
+  body: string
+  createdAt: string
+  isAdminResponse: boolean
+}> = []
 
 const postTypeConfig = {
   question: {
@@ -257,8 +149,21 @@ export default function CommunityPostPage({ params }: { params: { id: string } }
                 </div>
 
                 <div className="prose max-w-none text-gray-700 whitespace-pre-wrap mb-6">
-                  {post.body}
+                  {post.longDescription || post.body}
                 </div>
+                
+                {post.tags && post.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {post.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </article>
@@ -268,13 +173,13 @@ export default function CommunityPostPage({ params }: { params: { id: string } }
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-pittsburgh-black flex items-center gap-2">
                 <MessageCircle className="w-5 h-5" />
-                Responses ({post.replies?.length || 0})
+                Responses ({post.responses || 0})
               </h2>
             </div>
 
-            {post.replies && post.replies.length > 0 ? (
+            {mockReplies.length > 0 ? (
               <div className="space-y-6">
-                {post.replies.map((reply) => (
+                {mockReplies.map((reply) => (
                   <div key={reply.id} className="border-l-4 border-gray-200 pl-6 py-4">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-3">
@@ -312,6 +217,9 @@ export default function CommunityPostPage({ params }: { params: { id: string } }
               <div className="text-center py-12 text-gray-500">
                 <MessageCircle className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                 <p>No responses yet. Be the first to help!</p>
+                <p className="text-sm text-gray-400 mt-2">
+                  {post.responses > 0 ? `${post.responses} people have shown interest` : 'Be the first to respond'}
+                </p>
               </div>
             )}
 
