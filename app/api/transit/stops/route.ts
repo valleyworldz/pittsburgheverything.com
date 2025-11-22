@@ -15,16 +15,6 @@ import { searchStops, getStopsWithRoutes, getStopsNear, isGtfsAvailable } from '
  */
 export async function GET(request: NextRequest) {
   try {
-    if (!isGtfsAvailable()) {
-      return NextResponse.json(
-        {
-          error: 'GTFS data not available',
-          message: 'Please run the GTFS import script first: npm run transit:import'
-        },
-        { status: 503 }
-      )
-    }
-
     const searchParams = request.nextUrl.searchParams
     const query = searchParams.get('q')
     const limit = parseInt(searchParams.get('limit') || '20')
@@ -33,6 +23,18 @@ export async function GET(request: NextRequest) {
     const lon = searchParams.get('lon')
     const radius = parseInt(searchParams.get('radius') || '500')
 
+    // Check if GTFS is available (but don't fail if not - return empty results)
+    if (!isGtfsAvailable()) {
+      console.warn('GTFS data not available - returning empty results')
+      return NextResponse.json({
+        stops: [],
+        count: 0,
+        error: 'GTFS data not available',
+        message: 'Stop search is temporarily unavailable. Please try again later.',
+        timestamp: new Date().toISOString()
+      }, { status: 200 }) // Return 200 with empty results instead of 503
+    }
+
     // Get stops near location
     if (lat && lon) {
       const latitude = parseFloat(lat)
@@ -40,49 +42,88 @@ export async function GET(request: NextRequest) {
       
       if (isNaN(latitude) || isNaN(longitude)) {
         return NextResponse.json(
-          { error: 'Invalid latitude or longitude' },
+          { error: 'Invalid latitude or longitude', stops: [], count: 0 },
           { status: 400 }
         )
       }
 
-      const stops = getStopsNear(latitude, longitude, radius)
-      return NextResponse.json({
-        stops,
-        count: stops.length,
-        location: { lat: latitude, lon: longitude },
-        radius,
-        timestamp: new Date().toISOString()
-      })
+      try {
+        const stops = getStopsNear(latitude, longitude, radius)
+        return NextResponse.json({
+          stops,
+          count: stops.length,
+          location: { lat: latitude, lon: longitude },
+          radius,
+          timestamp: new Date().toISOString()
+        })
+      } catch (error: any) {
+        console.error('Error fetching nearby stops:', error)
+        return NextResponse.json({
+          stops: [],
+          count: 0,
+          error: 'Failed to fetch nearby stops',
+          message: error.message,
+          timestamp: new Date().toISOString()
+        }, { status: 200 })
+      }
     }
 
     if (query) {
       // Search stops
-      const stops = searchStops(query, limit)
-      return NextResponse.json({
-        stops,
-        count: stops.length,
-        query,
-        timestamp: new Date().toISOString()
-      })
+      try {
+        const stops = searchStops(query, limit)
+        return NextResponse.json({
+          stops,
+          count: stops.length,
+          query,
+          timestamp: new Date().toISOString()
+        })
+      } catch (error: any) {
+        console.error('Error searching stops:', error)
+        return NextResponse.json({
+          stops: [],
+          count: 0,
+          error: 'Failed to search stops',
+          message: error.message,
+          timestamp: new Date().toISOString()
+        }, { status: 200 })
+      }
     } else if (withRoutes) {
       // Get all stops with routes
-      const stops = getStopsWithRoutes()
-      return NextResponse.json({
-        stops,
-        count: stops.length,
-        timestamp: new Date().toISOString()
-      })
+      try {
+        const stops = getStopsWithRoutes()
+        return NextResponse.json({
+          stops,
+          count: stops.length,
+          timestamp: new Date().toISOString()
+        })
+      } catch (error: any) {
+        console.error('Error fetching stops with routes:', error)
+        return NextResponse.json({
+          stops: [],
+          count: 0,
+          error: 'Failed to fetch stops',
+          message: error.message,
+          timestamp: new Date().toISOString()
+        }, { status: 200 })
+      }
     } else {
       return NextResponse.json(
-        { error: 'Please provide a search query (q), location (lat/lon), or set withRoutes=true' },
+        { error: 'Please provide a search query (q), location (lat/lon), or set withRoutes=true', stops: [], count: 0 },
         { status: 400 }
       )
     }
   } catch (error: any) {
-    console.error('Error fetching stops:', error)
+    console.error('Error in stops API:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch stops', message: error.message },
-      { status: 500 }
+      { 
+        error: 'Failed to fetch stops', 
+        message: error.message,
+        stops: [],
+        count: 0,
+        timestamp: new Date().toISOString()
+      },
+      { status: 200 } // Return 200 with error info instead of 500
     )
   }
 }

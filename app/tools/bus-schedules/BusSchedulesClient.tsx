@@ -183,13 +183,22 @@ export default function BusSchedulesClient() {
       setIsSearchingStops(true)
       try {
         const response = await fetch(`/api/transit/stops?q=${encodeURIComponent(stopSearchQuery)}&limit=20`)
-        if (response.ok) {
-          const data = await response.json()
+        const data = await response.json()
+        
+        if (response.ok && data.stops) {
           setStopSearchResults(data.stops || [])
           setShowStopDropdown(true)
           setShowNearbyStops(false)
+          
+          // Show warning if GTFS not available
+          if (data.error && data.message) {
+            console.warn('GTFS search warning:', data.message)
+          }
         } else {
           setStopSearchResults([])
+          if (data.error) {
+            console.warn('Stop search error:', data.error, data.message)
+          }
         }
       } catch (err) {
         console.error('Error searching stops:', err)
