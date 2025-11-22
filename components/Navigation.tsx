@@ -240,6 +240,15 @@ const navigationItems = [
     ]
   },
   {
+    label: 'TOOLS',
+    icon: Wrench,
+    description: 'Useful tools and utilities',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/tools/bus-schedules', label: 'Bus Schedules', apiSource: 'port-authority-api' }
+    ]
+  },
+  {
     label: 'ABOUT',
     icon: User,
     description: 'About PittsburghEverything',
