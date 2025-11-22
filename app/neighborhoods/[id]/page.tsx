@@ -5,6 +5,8 @@ import Link from 'next/link'
 import NeighborhoodActionButton from '@/components/NeighborhoodActionButton'
 import NeighborhoodMap from '@/components/NeighborhoodMap'
 import StructuredData from '@/components/StructuredData'
+import { getNeighborhoodBySlug, getAllNeighborhoods } from '@/data/pittsburghNeighborhoods'
+import type { NeighborhoodData } from '@/data/pittsburghNeighborhoods'
 
 interface NeighborhoodPageProps {
   params: {
@@ -12,6 +14,7 @@ interface NeighborhoodPageProps {
   }
 }
 
+// Legacy neighborhood data for backward compatibility
 const neighborhoodData = {
   'downtown': {
     name: 'Downtown Pittsburgh',
@@ -1236,18 +1239,38 @@ const neighborhoodData = {
 }
 
 export async function generateMetadata({ params }: NeighborhoodPageProps): Promise<Metadata> {
-  const neighborhood = neighborhoodData[params.id as keyof typeof neighborhoodData]
-
+  // Try to get from new comprehensive data first
+  let neighborhood = getNeighborhoodBySlug(params.id)
+  
+  // Fallback to legacy data if not found
   if (!neighborhood) {
-    return {
-      title: 'Neighborhood Not Found | PittsburghEverything',
-      description: 'Discover Pittsburgh neighborhoods, restaurants, events, and attractions.',
+    const legacyData = neighborhoodData[params.id as keyof typeof neighborhoodData]
+    if (!legacyData) {
+      return {
+        title: 'Neighborhood Not Found | PittsburghEverything',
+        description: 'Discover Pittsburgh neighborhoods, restaurants, events, and attractions.',
+      }
     }
+    // Use legacy data for metadata - create a compatible structure
+    const legacyDining = (legacyData as any).dining || []
+    const legacyShops = (legacyData as any).shops || []
+    const legacyEvents = (legacyData as any).events || []
+    const legacyAttractions = legacyData.attractions || []
+    
+    neighborhood = {
+      name: legacyData.name,
+      description: legacyData.description,
+      walkScore: legacyData.walkScore || 0,
+      attractions: legacyAttractions,
+      dining: legacyDining,
+      shops: legacyShops,
+      events: legacyEvents
+    } as NeighborhoodData
   }
 
-  const restaurants = (neighborhood as any).dining?.flatMap((cat: any) => cat.spots) || []
-  const shops = (neighborhood as any).shops?.flatMap((cat: any) => cat.spots) || []
-  const events = (neighborhood as any).events?.flatMap((cat: any) => cat.events) || []
+  const restaurants = neighborhood.dining?.flatMap((cat: any) => cat.spots) || []
+  const shops = neighborhood.shops?.flatMap((cat: any) => cat.spots) || []
+  const events = neighborhood.events?.flatMap((cat: any) => cat.events) || []
 
   const keywords = [
     neighborhood.name,
@@ -1335,11 +1358,85 @@ export async function generateMetadata({ params }: NeighborhoodPageProps): Promi
   }
 }
 
-export default function NeighborhoodPage({ params }: NeighborhoodPageProps) {
-  const neighborhood = neighborhoodData[params.id as keyof typeof neighborhoodData]
+// Helper function to convert legacy data to new format
+function convertLegacyToNew(legacyData: any, id: string): NeighborhoodData {
+  return {
+    id,
+    name: legacyData.name,
+    slug: id,
+    type: 'neighborhood' as const,
+    county: 'Allegheny',
+    distanceFromDowntown: 0,
+    direction: 'Central' as const,
+    coordinates: { lat: 40.4406, lng: -79.9959 },
+    zipCodes: [],
+    population: legacyData.population || 0,
+    medianIncome: legacyData.medianIncome || 0,
+    medianHomePrice: legacyData.realEstate?.medianHomePrice || 0,
+    walkScore: legacyData.walkScore || 0,
+    transitScore: legacyData.realEstate?.transitScore || 0,
+    bikeScore: legacyData.realEstate?.bikeScore || 0,
+    description: legacyData.description,
+    highlights: [],
+    attractions: Array.isArray(legacyData.attractions) ? legacyData.attractions : [],
+    dining: Array.isArray(legacyData.dining) ? legacyData.dining.map((d: any) => ({
+      category: d.category || '',
+      spots: Array.isArray(d.spots) ? d.spots : []
+    })) : [],
+    shops: Array.isArray(legacyData.shops) ? legacyData.shops.map((s: any) => ({
+      category: s.category || '',
+      spots: Array.isArray(s.spots) ? s.spots : []
+    })) : [],
+    events: Array.isArray(legacyData.events) ? legacyData.events.map((e: any) => ({
+      category: e.category || '',
+      events: Array.isArray(e.events) ? e.events : []
+    })) : [],
+    photos: Array.isArray(legacyData.photos) ? legacyData.photos.map((p: any) => ({
+      category: p.category || '',
+      images: Array.isArray(p.images) ? p.images : []
+    })) : [],
+    transportation: {
+      public: Array.isArray(legacyData.transportation?.public) ? legacyData.transportation.public : [],
+      parking: legacyData.transportation?.parking || '',
+      highways: Array.isArray(legacyData.transportation?.highways) ? legacyData.transportation.highways : [],
+      walking: legacyData.transportation?.walking || '',
+      biking: legacyData.transportation?.biking || '',
+      airports: legacyData.transportation?.airports || ''
+    },
+    realEstate: {
+      medianHomePrice: legacyData.realEstate?.medianHomePrice || 0,
+      walkScore: legacyData.realEstate?.walkScore || legacyData.walkScore || 0,
+      transitScore: legacyData.realEstate?.transitScore || 0,
+      bikeScore: legacyData.realEstate?.bikeScore || 0,
+      propertyTypes: Array.isArray(legacyData.realEstate?.propertyTypes) ? legacyData.realEstate.propertyTypes : []
+    },
+    demographics: {
+      medianAge: legacyData.demographics?.medianAge || 0,
+      medianIncome: legacyData.demographics?.medianIncome || legacyData.medianIncome || 0,
+      educationLevel: legacyData.demographics?.educationLevel || '',
+      workforce: legacyData.demographics?.workforce || ''
+    },
+    seo: {
+      title: `${legacyData.name} Guide | PittsburghEverything`,
+      description: legacyData.description,
+      keywords: [],
+      h1: legacyData.name
+    }
+  }
+}
 
+export default function NeighborhoodPage({ params }: NeighborhoodPageProps) {
+  // Try to get from new comprehensive data first
+  let neighborhood = getNeighborhoodBySlug(params.id)
+  
+  // Fallback to legacy data if not found
   if (!neighborhood) {
-    notFound()
+    const legacyData = neighborhoodData[params.id as keyof typeof neighborhoodData]
+    if (!legacyData) {
+      notFound()
+    }
+    // Convert legacy format to new format
+    neighborhood = convertLegacyToNew(legacyData, params.id)
   }
 
   // Generate structured data for SEO
@@ -1798,7 +1895,19 @@ export default function NeighborhoodPage({ params }: NeighborhoodPageProps) {
 }
 
 export async function generateStaticParams() {
-  return Object.keys(neighborhoodData).map((id) => ({
+  // Get all neighborhoods from new comprehensive data
+  const allNeighborhoods = getAllNeighborhoods()
+  
+  // Also include legacy neighborhoods
+  const legacyIds = Object.keys(neighborhoodData)
+  
+  // Combine and deduplicate
+  const allIds = new Set([
+    ...allNeighborhoods.map(n => n.slug),
+    ...legacyIds
+  ])
+  
+  return Array.from(allIds).map((id) => ({
     id,
   }))
 }

@@ -79,12 +79,21 @@ const navigationItems = [
     shortcut: 'Alt+N',
     hasDropdown: true,
     dropdownItems: [
+      { href: '/neighborhoods/downtown', label: 'Downtown', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/oakland', label: 'Oakland', apiSource: 'neighborhood-data' },
       { href: '/neighborhoods/lawrenceville', label: 'Lawrenceville', apiSource: 'neighborhood-data' },
       { href: '/neighborhoods/shadyside', label: 'Shadyside', apiSource: 'neighborhood-data' },
       { href: '/neighborhoods/south-side', label: 'South Side', apiSource: 'neighborhood-data' },
-      { href: '/neighborhoods/downtown', label: 'Downtown', apiSource: 'neighborhood-data' },
-      { href: '/neighborhoods/oakland', label: 'Oakland', apiSource: 'neighborhood-data' },
-      { href: '/neighborhoods', label: 'All Areas', apiSource: 'neighborhood-data' }
+      { href: '/neighborhoods/strip-district', label: 'Strip District', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/strip-district', label: 'Strip District', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/squirrel-hill', label: 'Squirrel Hill', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/bloomfield', label: 'Bloomfield', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/mt-washington', label: 'Mt. Washington', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/north-shore', label: 'North Shore', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/cranberry-township', label: 'Cranberry Township', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/mt-lebanon', label: 'Mt. Lebanon', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/upper-st-clair', label: 'Upper St. Clair', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods', label: 'All Areas (21+)', apiSource: 'neighborhood-data' }
     ]
   },
   {
