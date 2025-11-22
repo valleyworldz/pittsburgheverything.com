@@ -110,7 +110,7 @@ export default function AnalyticsPage() {
                       <span className="text-2xl font-bold text-gray-300">#{index + 1}</span>
                       <div>
                         <div className="font-medium text-pittsburgh-black">{page.page}</div>
-                        <div className="text-sm text-gray-600">{page.views.toLocaleString()} views</div>
+                        <div className="text-sm text-gray-600">{page.views}</div>
                       </div>
                     </div>
                     <span className="text-green-600 font-medium">{page.change}</span>
@@ -129,7 +129,7 @@ export default function AnalyticsPage() {
                       <span className="text-2xl font-bold text-gray-300">#{index + 1}</span>
                       <div>
                         <div className="font-medium text-pittsburgh-black">{search.term}</div>
-                        <div className="text-sm text-gray-600">{search.searches.toLocaleString()} searches</div>
+                        <div className="text-sm text-gray-600">{search.searches}</div>
                       </div>
                     </div>
                     <div className={`w-3 h-3 rounded-full ${
