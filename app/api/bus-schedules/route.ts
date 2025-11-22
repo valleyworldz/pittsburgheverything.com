@@ -165,16 +165,22 @@ export async function GET(request: NextRequest) {
     }
 
     // Overlay real-time predictions if requested and available
+    // ALWAYS try real-time if schedule is empty (serverless fallback)
     let realtimePredictions: any[] = []
     let realtimeSource = 'none'
+    let realtimeError: string | null = null
 
-    if (includeRealtime) {
+    if (includeRealtime || scheduleEntries.length === 0) {
       try {
         realtimePredictions = await fetchRealtimePredictions(stopId, route || undefined)
-        realtimeSource = 'api'
-      } catch (error) {
-        console.log('Real-time API unavailable, using schedule only')
-        realtimeSource = 'unavailable'
+        realtimeSource = realtimePredictions.length > 0 ? 'api' : 'empty'
+        if (realtimePredictions.length === 0) {
+          realtimeError = 'No real-time predictions available for this stop at this time.'
+        }
+      } catch (error: any) {
+        console.error('Real-time API error:', error)
+        realtimeSource = 'error'
+        realtimeError = error.message || 'Real-time API unavailable'
       }
     }
 
@@ -228,7 +234,7 @@ export async function GET(request: NextRequest) {
         return timeA - timeB
       })
     } else if (realtimePredictions.length > 0 && scheduleEntries.length === 0) {
-      // Real-time only (no GTFS schedule available)
+      // Real-time only (no GTFS schedule available - serverless fallback)
       scheduleEntries = realtimePredictions.map((pred: any) => ({
         route: pred.route,
         routeName: pred.routeName,
@@ -240,20 +246,52 @@ export async function GET(request: NextRequest) {
         vehicleId: pred.vehicleId,
         source: 'realtime'
       }))
+    } else if (scheduleEntries.length === 0 && realtimePredictions.length === 0) {
+      // No data available from either source
+      // This could mean:
+      // 1. Stop has no active routes at this time
+      // 2. Real-time API is down
+      // 3. GTFS schedule not available (serverless) and no real-time data
+      console.warn(`No schedule or real-time data for stop ${stopId}`)
+    }
+
+    // Build helpful message
+    let message = ''
+    if (scheduleEntries.length === 0) {
+      if (!gtfsAvailable && realtimeSource === 'error') {
+        message = 'GTFS schedule data not available in serverless environment. Real-time API error: ' + (realtimeError || 'Unknown error')
+      } else if (!gtfsAvailable && realtimeSource === 'empty') {
+        message = 'GTFS schedule data not available in serverless environment. No real-time predictions available for this stop at this time. This stop may not have active routes currently, or the stop ID may be incorrect.'
+      } else if (!gtfsAvailable) {
+        message = 'GTFS schedule data not available in serverless environment. Using real-time predictions only.'
+      } else if (realtimeSource === 'empty' || realtimeSource === 'error') {
+        message = 'No bus predictions available. This stop may not have active routes at this time, or the stop ID may be incorrect.'
+      } else {
+        message = 'No bus predictions available. This stop may not have active routes at this time.'
+      }
+    } else if (gtfsAvailable) {
+      message = 'Schedule data from GTFS (authoritative). Real-time predictions overlaid when available.'
+    } else {
+      message = 'Real-time predictions only (GTFS schedule not available in serverless).'
     }
 
     return NextResponse.json({
       predictions: scheduleEntries,
       stop: stopInfo,
-      source: gtfsAvailable ? 'gtfs' : 'realtime-only',
+      source: gtfsAvailable ? 'gtfs' : (realtimePredictions.length > 0 ? 'realtime-only' : 'none'),
       realtimeSource,
+      realtimeError,
       date: date.toISOString().slice(0, 10),
       route: route || null,
       count: scheduleEntries.length,
       timestamp: new Date().toISOString(),
-      message: gtfsAvailable 
-        ? 'Schedule data from GTFS (authoritative). Real-time predictions overlaid when available.'
-        : 'GTFS data not available. Using real-time predictions only. Run: npm run transit:import'
+      message,
+      debug: {
+        gtfsAvailable,
+        scheduleCount: scheduleEntries.length,
+        realtimeCount: realtimePredictions.length,
+        realtimeSource
+      }
     })
   } catch (error: any) {
     console.error('Bus schedules API error:', error)
