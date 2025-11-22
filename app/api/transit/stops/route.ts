@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { searchStops, getStopsWithRoutes, isGtfsAvailable } from '@/lib/transit/gtfsService'
+import { searchStops, getStopsWithRoutes, getStopsNear, isGtfsAvailable } from '@/lib/transit/gtfsService'
 
 /**
  * GET /api/transit/stops
- * Search stops or get all stops with routes
+ * Search stops, get stops near location, or get all stops with routes
  * 
  * Query params:
- * - q: search query (searches stop name and code)
+ * - q: search query (searches stop name, code, and ID)
  * - limit: max results (default: 20)
  * - withRoutes: include routes for each stop (default: false)
+ * - lat: latitude for nearby stops search
+ * - lon: longitude for nearby stops search
+ * - radius: search radius in meters (default: 500)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -26,6 +29,31 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get('q')
     const limit = parseInt(searchParams.get('limit') || '20')
     const withRoutes = searchParams.get('withRoutes') === 'true'
+    const lat = searchParams.get('lat')
+    const lon = searchParams.get('lon')
+    const radius = parseInt(searchParams.get('radius') || '500')
+
+    // Get stops near location
+    if (lat && lon) {
+      const latitude = parseFloat(lat)
+      const longitude = parseFloat(lon)
+      
+      if (isNaN(latitude) || isNaN(longitude)) {
+        return NextResponse.json(
+          { error: 'Invalid latitude or longitude' },
+          { status: 400 }
+        )
+      }
+
+      const stops = getStopsNear(latitude, longitude, radius)
+      return NextResponse.json({
+        stops,
+        count: stops.length,
+        location: { lat: latitude, lon: longitude },
+        radius,
+        timestamp: new Date().toISOString()
+      })
+    }
 
     if (query) {
       // Search stops
@@ -46,7 +74,7 @@ export async function GET(request: NextRequest) {
       })
     } else {
       return NextResponse.json(
-        { error: 'Please provide a search query (q) or set withRoutes=true' },
+        { error: 'Please provide a search query (q), location (lat/lon), or set withRoutes=true' },
         { status: 400 }
       )
     }

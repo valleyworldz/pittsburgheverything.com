@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Bus, MapPin, Clock, AlertCircle, RefreshCw, Search, Navigation, X, CheckCircle } from 'lucide-react'
+import { Bus, MapPin, Clock, AlertCircle, RefreshCw, Search, Navigation, X, CheckCircle, Locate } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface BusPrediction {
@@ -40,6 +40,9 @@ interface StopOption {
   stop_id: string
   stop_name: string
   stop_code?: string
+  stop_lat?: number | string
+  stop_lon?: number | string
+  distance?: number // Distance in meters for nearby stops
 }
 
 export default function BusSchedulesClient() {
@@ -58,6 +61,13 @@ export default function BusSchedulesClient() {
   const [isSearchingStops, setIsSearchingStops] = useState(false)
   const [showStopDropdown, setShowStopDropdown] = useState(false)
   const [selectedStopOption, setSelectedStopOption] = useState<StopOption | null>(null)
+  
+  // Location state
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null)
+  const [isGettingLocation, setIsGettingLocation] = useState(false)
+  const [locationError, setLocationError] = useState<string | null>(null)
+  const [nearbyStops, setNearbyStops] = useState<StopOption[]>([])
+  const [showNearbyStops, setShowNearbyStops] = useState(false)
 
   const fetchBusSchedules = async (stopId: string, route?: string) => {
     setLoading(true)
@@ -98,11 +108,69 @@ export default function BusSchedulesClient() {
     }
   }
 
+  // Get user location
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation is not supported by your browser')
+      return
+    }
+
+    setIsGettingLocation(true)
+    setLocationError(null)
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation({ lat: latitude, lon: longitude })
+        
+        // Fetch nearby stops
+        try {
+          const response = await fetch(`/api/transit/stops?lat=${latitude}&lon=${longitude}&radius=1000&limit=20`)
+          if (response.ok) {
+            const data = await response.json()
+            setNearbyStops(data.stops || [])
+            setShowNearbyStops(true)
+            setStopSearchResults(data.stops || [])
+            setShowStopDropdown(true)
+          }
+        } catch (err) {
+          console.error('Error fetching nearby stops:', err)
+          setLocationError('Failed to fetch nearby stops')
+        } finally {
+          setIsGettingLocation(false)
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error)
+        let errorMessage = 'Failed to get your location'
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please enable location permissions.'
+            break
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable.'
+            break
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out.'
+            break
+        }
+        setLocationError(errorMessage)
+        setIsGettingLocation(false)
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 300000 // 5 minutes
+      }
+    )
+  }
+
   // Search stops when query changes (debounced)
   useEffect(() => {
     if (!stopSearchQuery.trim()) {
       setStopSearchResults([])
       setShowStopDropdown(false)
+      setShowNearbyStops(false)
       return
     }
 
@@ -114,6 +182,7 @@ export default function BusSchedulesClient() {
           const data = await response.json()
           setStopSearchResults(data.stops || [])
           setShowStopDropdown(true)
+          setShowNearbyStops(false)
         } else {
           setStopSearchResults([])
         }
@@ -136,7 +205,7 @@ export default function BusSchedulesClient() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStop, selectedRoute])
 
-  // Auto-refresh every 30 seconds
+  // Auto-refresh schedules every 30 seconds
   useEffect(() => {
     if (!selectedStop) return
 
@@ -149,6 +218,28 @@ export default function BusSchedulesClient() {
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedStop, selectedRoute, loading])
+
+  // Auto-refresh nearby stops every 2 minutes when location is available
+  useEffect(() => {
+    if (!userLocation || !showNearbyStops) return
+
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/transit/stops?lat=${userLocation.lat}&lon=${userLocation.lon}&radius=1000&limit=20`)
+        if (response.ok) {
+          const data = await response.json()
+          setNearbyStops(data.stops || [])
+          if (showStopDropdown) {
+            setStopSearchResults(data.stops || [])
+          }
+        }
+      } catch (err) {
+        console.error('Error refreshing nearby stops:', err)
+      }
+    }, 120000) // 2 minutes
+
+    return () => clearInterval(interval)
+  }, [userLocation, showNearbyStops, showStopDropdown])
 
   const handleStopSelect = (stop: StopOption) => {
     setSelectedStop(stop.stop_id)
@@ -264,9 +355,31 @@ export default function BusSchedulesClient() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             {/* Searchable Stop Dropdown */}
             <div className="relative">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search for Bus Stop
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Search for Bus Stop
+                </label>
+                <button
+                  type="button"
+                  onClick={getCurrentLocation}
+                  disabled={isGettingLocation}
+                  className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Find stops near your location"
+                >
+                  <Locate className="w-3 h-3" />
+                  {isGettingLocation ? 'Locating...' : 'Near Me'}
+                </button>
+              </div>
+              {locationError && (
+                <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                  {locationError}
+                </div>
+              )}
+              {userLocation && (
+                <div className="mb-2 text-xs text-gray-600">
+                  📍 Location: {userLocation.lat.toFixed(4)}, {userLocation.lon.toFixed(4)}
+                </div>
+              )}
               <div className="relative">
                 <input
                   type="text"
@@ -310,6 +423,11 @@ export default function BusSchedulesClient() {
                 {/* Dropdown Results */}
                 {showStopDropdown && stopSearchResults.length > 0 && (
                   <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                    {showNearbyStops && (
+                      <div className="px-4 py-2 bg-blue-50 border-b border-blue-200 text-xs font-medium text-blue-700">
+                        📍 Nearby Stops (within 1km)
+                      </div>
+                    )}
                     {stopSearchResults.map((stop) => (
                       <button
                         key={stop.stop_id}
@@ -321,7 +439,20 @@ export default function BusSchedulesClient() {
                         <div className="text-sm text-gray-600">
                           Stop ID: {stop.stop_id}
                           {stop.stop_code && ` • Code: ${stop.stop_code}`}
+                          {stop.distance !== undefined && (
+                            <span className="text-blue-600 font-medium">
+                              {' • '}
+                              {stop.distance < 1000 
+                                ? `${Math.round(stop.distance)}m away`
+                                : `${(stop.distance / 1000).toFixed(1)}km away`}
+                            </span>
+                          )}
                         </div>
+                        {stop.stop_lat && stop.stop_lon && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            📍 {typeof stop.stop_lat === 'number' ? stop.stop_lat.toFixed(4) : stop.stop_lat}, {typeof stop.stop_lon === 'number' ? stop.stop_lon.toFixed(4) : stop.stop_lon}
+                          </div>
+                        )}
                       </button>
                     ))}
                   </div>
@@ -333,10 +464,24 @@ export default function BusSchedulesClient() {
                 )}
               </div>
               {selectedStopOption && (
-                <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
-                  <CheckCircle className="w-3 h-3" />
-                  Selected: {selectedStopOption.stop_name} (ID: {selectedStopOption.stop_id})
-                </p>
+                <div className="text-xs text-green-600 mt-1 space-y-1">
+                  <p className="flex items-center gap-1">
+                    <CheckCircle className="w-3 h-3" />
+                    Selected: {selectedStopOption.stop_name} (ID: {selectedStopOption.stop_id})
+                  </p>
+                  {selectedStopOption.stop_lat && selectedStopOption.stop_lon && (
+                    <p className="text-gray-500 ml-4">
+                      📍 Location: {typeof selectedStopOption.stop_lat === 'number' ? selectedStopOption.stop_lat.toFixed(4) : selectedStopOption.stop_lat}, {typeof selectedStopOption.stop_lon === 'number' ? selectedStopOption.stop_lon.toFixed(4) : selectedStopOption.stop_lon}
+                    </p>
+                  )}
+                  {selectedStopOption.distance !== undefined && (
+                    <p className="text-blue-600 ml-4 font-medium">
+                      📏 {selectedStopOption.distance < 1000 
+                        ? `${Math.round(selectedStopOption.distance)}m away`
+                        : `${(selectedStopOption.distance / 1000).toFixed(1)}km away`}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
 
