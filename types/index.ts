@@ -84,6 +84,17 @@ export interface Deal {
   category: string
   image?: string
   terms?: string
+  // Enhanced deal fields
+  rating?: number
+  reviewCount?: number
+  verified?: boolean
+  location?: string
+  code?: string
+  savingsPercent?: number
+  minimumPurchase?: number
+  source?: string
+  url?: string
+  price?: number
 }
 
 export interface Top100Item {

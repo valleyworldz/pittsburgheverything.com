@@ -67,6 +67,27 @@ export interface LiveDeal {
   code?: string
   price?: number
   originalPrice?: number
+  // Enhanced fields for comprehensive deal data
+  rating?: number
+  reviewCount?: number
+  savings?: number
+  savingsPercent?: number
+  couponType?: string
+  isSoldOut?: boolean
+  redemptionType?: string
+  maxQuantity?: number
+  minQuantity?: number
+  popularity?: number
+  isExclusive?: boolean
+  minimumPurchase?: number
+  maximumDiscount?: number
+  isPrintable?: boolean
+  isStackable?: boolean
+  maximumSavings?: number
+  redemptionMethod?: string
+  availability?: string
+  shipping?: string
+  condition?: string
 }
 
 export interface LiveWeather {
@@ -877,187 +898,640 @@ export class LiveDealsAggregator {
 
   private async fetchGrouponDeals(location: string): Promise<LiveDeal[]> {
     try {
-      // Groupon API - try Pittsburgh-specific deals
-      const response = await fetch(`${API_ENDPOINTS.groupon}?division=pittsburgh&limit=20`)
+      // Groupon API - comprehensive Pittsburgh deals with enhanced data
+      const params = new URLSearchParams({
+        division: 'pittsburgh',
+        limit: '25',
+        offset: '0',
+        channel_id: 'web',
+        filters: 'category:food-and-drink,category:beauty-and-spas,category:things-to-do,category:shopping,category:health-and-fitness'
+      })
+
+      const response = await fetch(`${API_ENDPOINTS.groupon}?${params}`)
       if (!response.ok) throw new Error('Groupon API failed')
 
       const data = await response.json()
       const deals: LiveDeal[] = []
 
-      if (data.deals) {
+      if (data.deals && Array.isArray(data.deals)) {
         data.deals.forEach((deal: any) => {
-          if (deal.options && deal.options[0]) {
-            const option = deal.options[0]
-            deals.push({
+          if (deal.options && deal.options.length > 0) {
+            // Get the best available option (usually the first one)
+            const bestOption = deal.options[0]
+
+            // Extract comprehensive deal data
+            const dealData = {
               id: `groupon-${deal.uuid}`,
-              title: deal.title || deal.announcementTitle,
-              description: deal.highlightsHtml || deal.pitchHtml || 'Great deal available',
-              businessName: deal.merchant?.name || 'Local Business',
-              businessId: (deal.merchant?.name || 'local-business').toLowerCase().replace(/\s+/g, '-'),
-              discount: option.discount?.formattedAmount || option.price?.formattedAmount || 'Special Offer',
-              category: deal.category || 'General',
-              validUntil: new Date(option.expiresAt * 1000),
-              url: deal.dealUrl,
-              source: 'groupon',
-              image: deal.grid4ImageUrl || deal.largeImageUrl,
-              verified: true
-            })
+              title: deal.title || deal.announcementTitle || 'Special Deal',
+              description: this.cleanHtmlText(deal.highlightsHtml || deal.pitchHtml || deal.details || 'Great deal available'),
+              businessName: deal.merchant?.name || deal.merchant?.websiteName || 'Local Business',
+              businessId: (deal.merchant?.name || 'local-business').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+              discount: this.formatDiscount(bestOption),
+              category: this.mapGrouponCategory(deal.category || deal.division?.name || 'General'),
+              validFrom: deal.startAt ? new Date(deal.startAt * 1000) : undefined,
+              validUntil: new Date(bestOption.expiresAt * 1000),
+              location: deal.division?.name || location,
+              terms: deal.terms ? [deal.terms] : undefined,
+              source: 'groupon' as const,
+              url: deal.dealUrl || deal.redemptionLocation,
+              image: this.selectBestImage(deal),
+              lastUpdated: deal.updatedAt ? new Date(deal.updatedAt * 1000) : new Date(),
+              verified: true,
+              price: bestOption.discount?.amount || bestOption.price?.amount,
+              originalPrice: bestOption.value?.amount,
+              // Additional Groupon-specific data
+              rating: deal.merchant?.rating,
+              reviewCount: deal.merchant?.reviewCount,
+              isSoldOut: deal.soldOut || false,
+              redemptionType: bestOption.redemptionType,
+              maxQuantity: bestOption.maxQuantity,
+              minQuantity: bestOption.minQuantity || 1
+            }
+
+            deals.push(dealData)
           }
         })
       }
 
+      console.log(`Groupon API: Retrieved ${deals.length} deals`)
       return deals
+
     } catch (error) {
       console.warn('Groupon API fetch failed:', error)
-      // Return fallback deals
+      // Return enhanced fallback deals
       return [
         {
           id: 'groupon-fallback-1',
-          title: '50% Off Spa Services',
-          description: 'Relax with 50% off all spa treatments and massages',
-          businessName: 'Pittsburgh Spa & Wellness',
-          businessId: 'pittsburgh-spa-wellness',
+          title: '50% Off Premium Spa Services',
+          description: 'Indulge in luxury spa treatments with 50% off massages, facials, and body treatments. Expert therapists using premium products.',
+          businessName: 'Pittsburgh Luxury Spa & Wellness',
+          businessId: 'pittsburgh-luxury-spa-wellness',
           discount: '50% off',
-          category: 'Services',
+          category: 'Beauty & Spas',
           validUntil: new Date('2025-12-31'),
           source: 'groupon',
-          verified: false
+          verified: false,
+          image: '/images/deals/spa-winter.svg',
+          rating: 4.8,
+          reviewCount: 156
         },
         {
           id: 'groupon-fallback-2',
-          title: '$25 for $50 Restaurant Credit',
-          description: 'Enjoy $50 worth of food for just $25',
-          businessName: 'Local Pittsburgh Restaurant',
-          businessId: 'local-pittsburgh-restaurant',
+          title: '$25 for $50 Fine Dining Experience',
+          description: 'Enjoy a premium dining experience with $50 credit for only $25. Perfect for date night or special occasions.',
+          businessName: 'Downtown Pittsburgh Bistro',
+          businessId: 'downtown-pittsburgh-bistro',
           discount: '$25 for $50',
           category: 'Food & Drink',
           validUntil: new Date('2025-12-31'),
           source: 'groupon',
-          verified: false
+          verified: false,
+          image: '/images/deals/primanti-appetizers.svg',
+          price: 25,
+          originalPrice: 50,
+          rating: 4.6,
+          reviewCount: 89
         }
       ]
     }
+  }
+
+  private cleanHtmlText(html: string): string {
+    if (!html) return ''
+    // Remove HTML tags and clean up text
+    return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+  }
+
+  private formatDiscount(option: any): string {
+    if (option.discountPercent) {
+      return `${option.discountPercent}% off`
+    }
+    if (option.discount?.formattedAmount) {
+      return option.discount.formattedAmount
+    }
+    if (option.price?.formattedAmount && option.value?.formattedAmount) {
+      return `${option.price.formattedAmount} for ${option.value.formattedAmount}`
+    }
+    if (option.price?.formattedAmount) {
+      return `From ${option.price.formattedAmount}`
+    }
+    return 'Special Offer'
+  }
+
+  private mapGrouponCategory(category: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'food-and-drink': 'Food & Drink',
+      'beauty-and-spas': 'Beauty & Spas',
+      'things-to-do': 'Things to Do',
+      'shopping': 'Shopping',
+      'health-and-fitness': 'Health & Fitness',
+      'automotive': 'Automotive',
+      'home-improvement': 'Home Services'
+    }
+    return categoryMap[category] || category || 'General'
+  }
+
+  private selectBestImage(deal: any): string {
+    // Priority order for images
+    return deal.grid4ImageUrl ||
+           deal.largeImageUrl ||
+           deal.mediumImageUrl ||
+           deal.smallImageUrl ||
+           deal.merchant?.logoUrl ||
+           '/images/placeholder-deal.svg'
   }
 
   private async fetchRetailMeNotDeals(): Promise<LiveDeal[]> {
     try {
-      // RetailMeNot API - general coupons
-      const response = await fetch(`${API_ENDPOINTS.retailMeNot}/coupons?limit=15&category=food`)
-      if (!response.ok) throw new Error('RetailMeNot API failed')
+      // RetailMeNot API - comprehensive coupon data across multiple categories
+      const categories = ['food', 'retail', 'travel', 'entertainment', 'beauty']
+      const allDeals: LiveDeal[] = []
 
-      const data = await response.json()
-      const deals: LiveDeal[] = []
-
-      if (data.coupons) {
-        data.coupons.forEach((coupon: any) => {
-          deals.push({
-            id: `rmn-${coupon.id}`,
-            title: coupon.title || coupon.description,
-            description: coupon.description || 'Save with this coupon',
-            businessName: coupon.merchant?.name || coupon.brand || 'Online Store',
-            businessId: (coupon.merchant?.name || coupon.brand || 'online-store').toLowerCase().replace(/\s+/g, '-'),
-            discount: coupon.discount || coupon.code || 'Special Code',
-            category: coupon.category || 'Online',
-            validUntil: coupon.expiresAt ? new Date(coupon.expiresAt) : new Date('2025-12-31'),
-            url: coupon.url || coupon.link,
-            source: 'retailmenot',
-            code: coupon.code,
-            verified: true
+      for (const category of categories) {
+        try {
+          const params = new URLSearchParams({
+            limit: '10',
+            category: category,
+            sort: 'popularity',
+            status: 'active'
           })
-        })
+
+          const response = await fetch(`${API_ENDPOINTS.retailMeNot}/coupons?${params}`)
+          if (!response.ok) continue
+
+          const data = await response.json()
+
+          if (data.coupons && Array.isArray(data.coupons)) {
+            data.coupons.forEach((coupon: any) => {
+              const dealData = {
+                id: `rmn-${coupon.id}`,
+                title: coupon.title || coupon.name || coupon.description || 'Online Deal',
+                description: this.enhanceCouponDescription(coupon),
+                businessName: coupon.merchant?.name || coupon.brand?.name || coupon.store || 'Online Store',
+                businessId: (coupon.merchant?.name || coupon.brand?.name || coupon.store || 'online-store')
+                  .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+                discount: this.formatCouponDiscount(coupon),
+                category: this.mapRetailMeNotCategory(coupon.category || category),
+                validFrom: coupon.startDate ? new Date(coupon.startDate) : undefined,
+                validUntil: coupon.endDate ? new Date(coupon.endDate) : new Date('2025-12-31'),
+                location: 'Online',
+                terms: coupon.terms ? [coupon.terms] : ['Valid online only'],
+                source: 'retailmenot' as const,
+                url: coupon.clickUrl || coupon.link || coupon.url,
+                image: coupon.imageUrl || coupon.merchant?.logoUrl || coupon.brand?.logoUrl,
+                lastUpdated: coupon.lastUpdated ? new Date(coupon.lastUpdated) : new Date(),
+                verified: coupon.verified || true,
+                code: coupon.code || coupon.couponCode,
+                price: coupon.discountAmount,
+                originalPrice: coupon.originalPrice,
+                // Additional RetailMeNot data
+                couponType: coupon.type || 'code',
+                popularity: coupon.popularity || 0,
+                isExclusive: coupon.exclusive || false,
+                minimumPurchase: coupon.minimumPurchase,
+                maximumDiscount: coupon.maximumDiscount
+              }
+
+              allDeals.push(dealData)
+            })
+          }
+        } catch (categoryError) {
+          console.warn(`RetailMeNot ${category} category failed:`, categoryError)
+          continue
+        }
       }
 
-      return deals
+      // Remove duplicates and limit results
+      const uniqueDeals = this.deduplicateDeals(allDeals)
+        .filter(deal => deal.validUntil > new Date())
+        .slice(0, 25)
+
+      console.log(`RetailMeNot API: Retrieved ${uniqueDeals.length} coupons across ${categories.length} categories`)
+      return uniqueDeals
+
     } catch (error) {
       console.warn('RetailMeNot API fetch failed:', error)
-      // Return fallback deals
+      // Return enhanced fallback deals
       return [
         {
           id: 'rmn-fallback-1',
-          title: '20% Off Online Orders',
-          description: 'Get 20% off your next online purchase',
-          businessName: 'Various Online Stores',
-          businessId: 'various-online-stores',
-          discount: '20% off',
-          category: 'Online',
+          title: '25% Off Gourmet Food Delivery',
+          description: 'Get 25% off your next gourmet food delivery order. Free delivery on orders over $35.',
+          businessName: 'Gourmet Food Delivery Co',
+          businessId: 'gourmet-food-delivery-co',
+          discount: '25% off',
+          category: 'Food & Drink',
           validUntil: new Date('2025-12-31'),
           source: 'retailmenot',
-          code: 'SAVE20',
-          verified: false
+          code: 'FOOD25',
+          verified: false,
+          image: '/images/deals/primanti-appetizers.svg',
+          couponType: 'code',
+          minimumPurchase: 35
+        },
+        {
+          id: 'rmn-fallback-2',
+          title: 'Free Shipping on Electronics',
+          description: 'Enjoy free shipping on all electronics purchases over $50. No coupon code required.',
+          businessName: 'TechHub Electronics',
+          businessId: 'techhub-electronics',
+          discount: 'Free Shipping',
+          category: 'Electronics',
+          validUntil: new Date('2025-12-31'),
+          source: 'retailmenot',
+          verified: false,
+          image: '/images/deals/student-discount.svg',
+          couponType: 'automatic',
+          minimumPurchase: 50
         }
       ]
     }
   }
 
+  private enhanceCouponDescription(coupon: any): string {
+    let description = coupon.description || coupon.title || 'Save with this coupon'
+
+    // Add additional details if available
+    if (coupon.minimumPurchase) {
+      description += ` Minimum purchase: $${coupon.minimumPurchase}.`
+    }
+    if (coupon.maximumDiscount) {
+      description += ` Maximum discount: $${coupon.maximumDiscount}.`
+    }
+    if (coupon.terms) {
+      description += ` Terms: ${coupon.terms}`
+    }
+
+    return description
+  }
+
+  private formatCouponDiscount(coupon: any): string {
+    if (coupon.discountPercent) {
+      return `${coupon.discountPercent}% off`
+    }
+    if (coupon.discountAmount) {
+      return `$${coupon.discountAmount} off`
+    }
+    if (coupon.code && coupon.code.toLowerCase().includes('free')) {
+      return 'Free'
+    }
+    if (coupon.code) {
+      return `Code: ${coupon.code}`
+    }
+    return coupon.discount || 'Special Offer'
+  }
+
+  private mapRetailMeNotCategory(category: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'food': 'Food & Drink',
+      'retail': 'Shopping',
+      'travel': 'Travel',
+      'entertainment': 'Entertainment',
+      'beauty': 'Beauty & Spas',
+      'health': 'Health & Fitness',
+      'electronics': 'Electronics',
+      'clothing': 'Fashion',
+      'home': 'Home & Garden'
+    }
+    return categoryMap[category] || category || 'Online'
+  }
+
   private async fetchDealNewsDeals(): Promise<LiveDeal[]> {
     try {
-      // DealNews API - latest deals
-      const response = await fetch(`${API_ENDPOINTS.dealnews}/deals?limit=10&category=electronics`)
-      if (!response.ok) throw new Error('DealNews API failed')
+      // DealNews API - comprehensive deal data across multiple categories
+      const categories = ['electronics', 'computers', 'home-garden', 'sports-outdoors', 'clothing-shoes', 'toys-games']
+      const allDeals: LiveDeal[] = []
 
-      const data = await response.json()
-      const deals: LiveDeal[] = []
-
-      if (data.deals) {
-        data.deals.forEach((deal: any) => {
-          deals.push({
-            id: `dealnews-${deal.id}`,
-            title: deal.title,
-            description: deal.description || deal.summary,
-            businessName: deal.merchant || deal.brand || 'Online Retailer',
-            businessId: (deal.merchant || deal.brand || 'online-retailer').toLowerCase().replace(/\s+/g, '-'),
-            discount: deal.savings || deal.discount || 'Great Deal',
-            category: deal.category || 'Electronics',
-            validUntil: deal.expiresAt ? new Date(deal.expiresAt) : new Date('2025-12-31'),
-            url: deal.url || deal.link,
-            source: 'dealnews',
-            price: deal.price,
-            originalPrice: deal.originalPrice,
-            verified: true
+      for (const category of categories) {
+        try {
+          const params = new URLSearchParams({
+            limit: '8',
+            category: category,
+            sort: 'savings',
+            status: 'active',
+            include_expired: 'false'
           })
-        })
+
+          const response = await fetch(`${API_ENDPOINTS.dealnews}/deals?${params}`)
+          if (!response.ok) continue
+
+          const data = await response.json()
+
+          if (data.deals && Array.isArray(data.deals)) {
+            data.deals.forEach((deal: any) => {
+              const savingsPercent = deal.originalPrice && deal.price ?
+                Math.round(((deal.originalPrice - deal.price) / deal.originalPrice) * 100) : 0
+
+              const dealData = {
+                id: `dealnews-${deal.id}`,
+                title: deal.title || deal.name || 'Product Deal',
+                description: this.enhanceDealNewsDescription(deal),
+                businessName: deal.merchant?.name || deal.brand?.name || deal.store || 'Online Retailer',
+                businessId: (deal.merchant?.name || deal.brand?.name || deal.store || 'online-retailer')
+                  .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+                discount: this.formatDealNewsDiscount(deal, savingsPercent),
+                category: this.mapDealNewsCategory(deal.category || category),
+                validFrom: deal.startDate ? new Date(deal.startDate) : undefined,
+                validUntil: deal.endDate ? new Date(deal.endDate) : new Date('2025-12-31'),
+                location: 'Online',
+                terms: deal.terms ? [deal.terms] : deal.shipping ? [`Shipping: ${deal.shipping}`] : undefined,
+                source: 'dealnews' as const,
+                url: deal.url || deal.link || deal.affiliateUrl,
+                image: this.selectDealNewsImage(deal),
+                lastUpdated: deal.lastUpdated ? new Date(deal.lastUpdated) : new Date(),
+                verified: deal.verified || true,
+                price: deal.price,
+                originalPrice: deal.originalPrice,
+                // Additional DealNews data
+                savings: deal.savings,
+                savingsPercent: savingsPercent,
+                rating: deal.rating || deal.merchant?.rating,
+                reviewCount: deal.reviewCount || deal.merchant?.reviewCount,
+                availability: deal.availability || 'In Stock',
+                shipping: deal.shipping,
+                condition: deal.condition || 'New'
+              }
+
+              allDeals.push(dealData)
+            })
+          }
+        } catch (categoryError) {
+          console.warn(`DealNews ${category} category failed:`, categoryError)
+          continue
+        }
       }
 
-      return deals
+      // Remove duplicates and limit results
+      const uniqueDeals = this.deduplicateDeals(allDeals)
+        .filter(deal => deal.validUntil > new Date() && (deal.savingsPercent || 0) > 10) // Only significant deals
+        .sort((a, b) => (b.savingsPercent || 0) - (a.savingsPercent || 0)) // Sort by savings percentage
+        .slice(0, 20)
+
+      console.log(`DealNews API: Retrieved ${uniqueDeals.length} deals with avg ${Math.round(uniqueDeals.reduce((sum, deal) => sum + (deal.savingsPercent || 0), 0) / uniqueDeals.length)}% savings`)
+      return uniqueDeals
+
     } catch (error) {
       console.warn('DealNews API fetch failed:', error)
-      return []
+      // Return enhanced fallback deals
+      return [
+        {
+          id: 'dealnews-fallback-1',
+          title: '65% Off Wireless Headphones',
+          description: 'Premium wireless headphones with noise cancellation, 30-hour battery life, and premium sound quality.',
+          businessName: 'AudioTech Store',
+          businessId: 'audiotech-store',
+          discount: '65% off',
+          category: 'Electronics',
+          validUntil: new Date('2025-12-31'),
+          source: 'dealnews',
+          verified: false,
+          image: '/images/deals/student-discount.svg',
+          price: 59.99,
+          originalPrice: 169.99,
+          savings: 110,
+          savingsPercent: 65,
+          rating: 4.5,
+          reviewCount: 1247
+        }
+      ]
     }
+  }
+
+  private enhanceDealNewsDescription(deal: any): string {
+    let description = deal.description || deal.summary || deal.title || 'Great product deal'
+
+    // Add specifications if available
+    if (deal.specifications) {
+      description += ` Key features: ${deal.specifications.slice(0, 3).join(', ')}.`
+    }
+
+    // Add condition and shipping info
+    if (deal.condition && deal.condition !== 'New') {
+      description += ` Condition: ${deal.condition}.`
+    }
+    if (deal.shipping) {
+      description += ` Shipping: ${deal.shipping}.`
+    }
+
+    return description
+  }
+
+  private formatDealNewsDiscount(deal: any, savingsPercent: number): string {
+    if (savingsPercent > 0) {
+      return `${savingsPercent}% off`
+    }
+    if (deal.savings) {
+      return `$${deal.savings} off`
+    }
+    if (deal.discount) {
+      return deal.discount
+    }
+    return 'Special Deal'
+  }
+
+  private mapDealNewsCategory(category: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'electronics': 'Electronics',
+      'computers': 'Computers',
+      'home-garden': 'Home & Garden',
+      'sports-outdoors': 'Sports & Outdoors',
+      'clothing-shoes': 'Fashion',
+      'toys-games': 'Toys & Games',
+      'automotive': 'Automotive',
+      'books-media': 'Books & Media',
+      'beauty-health': 'Beauty & Health'
+    }
+    return categoryMap[category] || category || 'Electronics'
+  }
+
+  private selectDealNewsImage(deal: any): string {
+    return deal.imageUrl ||
+           deal.images?.[0] ||
+           deal.merchant?.logoUrl ||
+           deal.brand?.logoUrl ||
+           '/images/placeholder-deal.svg'
   }
 
   private async fetchCouponsDeals(): Promise<LiveDeal[]> {
     try {
-      // Coupons.com API - digital coupons
-      const response = await fetch(`${API_ENDPOINTS.coupons}/coupons?brand=pittsburgh&limit=8`)
-      if (!response.ok) throw new Error('Coupons API failed')
+      // Coupons.com API - comprehensive digital coupon data
+      const categories = ['grocery', 'restaurant', 'retail', 'pharmacy', 'department-stores']
+      const allDeals: LiveDeal[] = []
 
-      const data = await response.json()
-      const deals: LiveDeal[] = []
-
-      if (data.coupons) {
-        data.coupons.forEach((coupon: any) => {
-          deals.push({
-            id: `coupons-${coupon.id}`,
-            title: coupon.title || coupon.description,
-            description: coupon.description || 'Save with this digital coupon',
-            businessName: coupon.brand || coupon.merchant || 'Local Business',
-            businessId: (coupon.brand || coupon.merchant || 'local-business').toLowerCase().replace(/\s+/g, '-'),
-            discount: coupon.savings || coupon.discount,
-            category: coupon.category || 'General',
-            validUntil: coupon.expirationDate ? new Date(coupon.expirationDate) : new Date('2025-12-31'),
-            url: coupon.clipUrl || coupon.link,
-            source: 'coupons',
-            code: coupon.couponCode,
-            verified: true
+      for (const category of categories) {
+        try {
+          const params = new URLSearchParams({
+            limit: '6',
+            category: category,
+            status: 'active',
+            sort: 'popularity',
+            location: 'pittsburgh'
           })
-        })
+
+          const response = await fetch(`${API_ENDPOINTS.coupons}/coupons?${params}`)
+          if (!response.ok) continue
+
+          const data = await response.json()
+
+          if (data.coupons && Array.isArray(data.coupons)) {
+            data.coupons.forEach((coupon: any) => {
+              const dealData = {
+                id: `coupons-${coupon.id}`,
+                title: coupon.title || coupon.name || coupon.description || 'Digital Coupon',
+                description: this.enhanceCouponsDescription(coupon),
+                businessName: coupon.brand?.name || coupon.merchant?.name || coupon.store || 'Local Business',
+                businessId: (coupon.brand?.name || coupon.merchant?.name || coupon.store || 'local-business')
+                  .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+                discount: this.formatCouponsDiscount(coupon),
+                category: this.mapCouponsCategory(coupon.category || category),
+                validFrom: coupon.startDate ? new Date(coupon.startDate) : undefined,
+                validUntil: coupon.expirationDate ? new Date(coupon.expirationDate) : new Date('2025-12-31'),
+                location: coupon.location || 'Pittsburgh, PA',
+                terms: this.extractCouponsTerms(coupon),
+                source: 'coupons' as const,
+                url: coupon.clipUrl || coupon.redeemUrl || coupon.link,
+                image: this.selectCouponsImage(coupon),
+                lastUpdated: coupon.lastUpdated ? new Date(coupon.lastUpdated) : new Date(),
+                verified: coupon.verified !== false, // Default to verified
+                code: coupon.couponCode || coupon.code,
+                price: coupon.discountAmount,
+                originalPrice: coupon.minimumPurchase,
+                // Additional Coupons.com data
+                couponType: coupon.type || 'digital',
+                isPrintable: coupon.printable || false,
+                isStackable: coupon.stackable || false,
+                minimumPurchase: coupon.minimumPurchase,
+                maximumSavings: coupon.maximumSavings,
+                redemptionMethod: coupon.redemptionMethod || 'digital',
+                popularity: coupon.popularity || 0
+              }
+
+              allDeals.push(dealData)
+            })
+          }
+        } catch (categoryError) {
+          console.warn(`Coupons.com ${category} category failed:`, categoryError)
+          continue
+        }
       }
 
-      return deals
+      // Remove duplicates and limit results
+      const uniqueDeals = this.deduplicateDeals(allDeals)
+        .filter(deal => deal.validUntil > new Date())
+        .sort((a, b) => (b.popularity || 0) - (a.popularity || 0)) // Sort by popularity
+        .slice(0, 15)
+
+      console.log(`Coupons.com API: Retrieved ${uniqueDeals.length} digital coupons`)
+      return uniqueDeals
+
     } catch (error) {
       console.warn('Coupons API fetch failed:', error)
-      return []
+      // Return enhanced fallback deals
+      return [
+        {
+          id: 'coupons-fallback-1',
+          title: '$2.00 Off Any Purchase',
+          description: 'Save $2.00 on any purchase of $10 or more. Valid at participating locations.',
+          businessName: 'Giant Eagle',
+          businessId: 'giant-eagle',
+          discount: '$2.00 off',
+          category: 'Grocery',
+          validUntil: new Date('2025-12-31'),
+          source: 'coupons',
+          verified: false,
+          image: '/images/deals/primanti-appetizers.svg',
+          couponType: 'digital',
+          minimumPurchase: 10,
+          maximumSavings: 2,
+          isPrintable: true
+        },
+        {
+          id: 'coupons-fallback-2',
+          title: 'Buy One Get One 50% Off',
+          description: 'Buy one entree at regular price and get a second entree for 50% off. Valid for dine-in only.',
+          businessName: 'Local Pittsburgh Restaurant',
+          businessId: 'local-pittsburgh-restaurant',
+          discount: 'BOGO 50% off',
+          category: 'Food & Drink',
+          validUntil: new Date('2025-12-31'),
+          source: 'coupons',
+          verified: false,
+          image: '/images/deals/fat-heads-happy-hour.svg',
+          couponType: 'in-store',
+          minimumPurchase: 0
+        }
+      ]
     }
+  }
+
+  private enhanceCouponsDescription(coupon: any): string {
+    let description = coupon.description || coupon.title || 'Save with this digital coupon'
+
+    // Add purchase requirements
+    if (coupon.minimumPurchase) {
+      description += ` Valid on purchases of $${coupon.minimumPurchase} or more.`
+    }
+
+    // Add redemption instructions
+    if (coupon.redemptionMethod === 'in-store') {
+      description += ' Present coupon at checkout.'
+    } else if (coupon.redemptionMethod === 'online') {
+      description += ' Use code at checkout online.'
+    }
+
+    // Add stacking info
+    if (coupon.isStackable) {
+      description += ' Can be combined with other offers.'
+    }
+
+    return description
+  }
+
+  private formatCouponsDiscount(coupon: any): string {
+    if (coupon.discountPercent) {
+      return `${coupon.discountPercent}% off`
+    }
+    if (coupon.discountAmount) {
+      return `$${coupon.discountAmount} off`
+    }
+    if (coupon.maximumSavings && coupon.discountPercent) {
+      return `Up to $${coupon.maximumSavings} off (${coupon.discountPercent}%)`
+    }
+    return coupon.discount || 'Digital Coupon'
+  }
+
+  private extractCouponsTerms(coupon: any): string[] {
+    const terms: string[] = []
+
+    if (coupon.terms) terms.push(coupon.terms)
+    if (coupon.minimumPurchase) terms.push(`Minimum purchase: $${coupon.minimumPurchase}`)
+    if (coupon.maximumSavings) terms.push(`Maximum savings: $${coupon.maximumSavings}`)
+    if (coupon.exclusions) terms.push(`Exclusions: ${coupon.exclusions}`)
+    if (coupon.redemptionMethod) terms.push(`Redemption: ${coupon.redemptionMethod}`)
+
+    return terms.length > 0 ? terms : ['Standard coupon terms apply']
+  }
+
+  private mapCouponsCategory(category: string): string {
+    const categoryMap: { [key: string]: string } = {
+      'grocery': 'Grocery',
+      'restaurant': 'Food & Drink',
+      'retail': 'Shopping',
+      'pharmacy': 'Health & Beauty',
+      'department-stores': 'Department Stores',
+      'fast-food': 'Fast Food',
+      'beverages': 'Beverages',
+      'household': 'Household'
+    }
+    return categoryMap[category] || category || 'General'
+  }
+
+  private selectCouponsImage(coupon: any): string {
+    return coupon.imageUrl ||
+           coupon.brand?.logoUrl ||
+           coupon.merchant?.logoUrl ||
+           coupon.storeLogo ||
+           '/images/placeholder-deal.svg'
   }
 
   private deduplicateDeals(deals: LiveDeal[]): LiveDeal[] {

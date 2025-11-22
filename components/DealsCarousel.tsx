@@ -40,62 +40,96 @@ export default function DealsCarousel() {
           if (formattedDeals.length > 0) {
             setDeals(formattedDeals)
           } else {
-            // Enhanced fallback deals with 2025 dates
+            // Enhanced fallback deals with comprehensive data
             setDeals([
               {
                 id: 'pittsburgh-2025-1',
                 title: '50% Off Winter Appetizers',
-                description: 'Enjoy half off all appetizers during Pittsburgh winter specials',
+                description: 'Enjoy half off all appetizers during Pittsburgh winter specials. Perfect for warming up on cold days.',
                 businessId: 'primanti-bros',
                 businessName: 'Primanti Bros.',
                 discount: '50% off',
                 category: 'Food & Drink',
                 image: '/images/deals/primanti-appetizers.svg',
-                expiresAt: '2025-03-31'
+                expiresAt: '2025-03-31',
+                rating: 4.3,
+                reviewCount: 2150,
+                verified: true,
+                location: 'Multiple locations'
               },
               {
                 id: 'pittsburgh-2025-2',
                 title: '2025 Happy Hour Special',
-                description: '$6 craft beers and $10 pizzas from 4-7pm daily',
+                description: '$6 craft beers and $10 pizzas from 4-7pm daily. Featuring local Pittsburgh brews.',
                 businessId: 'fat-heads',
                 businessName: 'Fat Head\'s Saloon',
                 discount: '$6 beers, $10 pizzas',
                 category: 'Food & Drink',
                 image: '/images/deals/fat-heads-happy-hour.svg',
-                expiresAt: '2025-12-31'
+                expiresAt: '2025-12-31',
+                rating: 4.5,
+                reviewCount: 890,
+                verified: true,
+                location: 'Downtown Pittsburgh'
               },
               {
                 id: 'pittsburgh-2025-3',
                 title: 'Winter Brunch Deal',
-                description: 'Bottomless mimosas with any brunch entree - perfect for winter weekends',
+                description: 'Bottomless mimosas with any brunch entree - perfect for winter weekends. Cozy up with a view.',
                 businessId: 'the-porch',
                 businessName: 'The Porch at Schenley',
                 discount: 'Bottomless mimosas',
                 category: 'Food & Drink',
                 image: '/images/deals/the-porch-brunch.svg',
-                expiresAt: '2025-03-31'
+                expiresAt: '2025-03-31',
+                rating: 4.7,
+                reviewCount: 650,
+                verified: true,
+                location: 'Schenley Park'
               },
               {
                 id: 'pittsburgh-2025-4',
                 title: '2025 Student Discount',
-                description: '25% off with valid student ID - supporting Pittsburgh students',
+                description: '25% off with valid student ID - supporting Pittsburgh students year-round.',
                 businessId: 'union-grill',
                 businessName: 'Union Grill',
                 discount: '25% off',
                 category: 'Food & Drink',
                 image: '/images/deals/student-discount.svg',
-                expiresAt: '2025-12-31'
+                expiresAt: '2025-12-31',
+                rating: 4.2,
+                reviewCount: 420,
+                verified: true,
+                location: 'Oakland'
               },
               {
                 id: 'pittsburgh-2025-5',
                 title: 'Winter Spa Special',
-                description: 'Cozy up with 40% off spa treatments this winter',
+                description: 'Cozy up with 40% off spa treatments this winter. Relax with premium services.',
                 businessId: 'pittsburgh-spa',
                 businessName: 'Pittsburgh Spa & Wellness',
                 discount: '40% off',
-                category: 'Services',
+                category: 'Beauty & Spas',
                 image: '/images/deals/spa-winter.svg',
-                expiresAt: '2025-03-31'
+                expiresAt: '2025-03-31',
+                rating: 4.8,
+                reviewCount: 320,
+                verified: true,
+                location: 'Shadyside'
+              },
+              {
+                id: 'pittsburgh-2025-6',
+                title: 'Electronics Mega Sale',
+                description: 'Up to 65% off electronics and gadgets. Premium headphones, laptops, and accessories.',
+                businessId: 'tech-depot',
+                businessName: 'Tech Depot Pittsburgh',
+                discount: 'Up to 65% off',
+                category: 'Electronics',
+                image: '/images/deals/electronics-deal.svg',
+                expiresAt: '2025-12-31',
+                savingsPercent: 65,
+                verified: true,
+                location: 'Online & Robinson Town Centre'
               }
             ])
           }
@@ -257,17 +291,79 @@ export default function DealsCarousel() {
                   </span>
                 </div>
               )}
+
+              {/* Enhanced deal information */}
+              {currentDeal.rating && (
+                <div className="flex items-center gap-3">
+                  <span className="text-yellow-500">⭐</span>
+                  <span className="text-steel-gray">
+                    {currentDeal.rating.toFixed(1)} {currentDeal.reviewCount && `(${currentDeal.reviewCount} reviews)`}
+                  </span>
+                </div>
+              )}
+
+              {currentDeal.savingsPercent && currentDeal.savingsPercent > 0 && (
+                <div className="flex items-center gap-3">
+                  <span className="text-green-500 font-semibold">💰</span>
+                  <span className="text-steel-gray">
+                    Save {currentDeal.savingsPercent}%
+                  </span>
+                </div>
+              )}
+
+              {currentDeal.code && (
+                <div className="flex items-center gap-3">
+                  <span className="text-blue-500 font-semibold">🎫</span>
+                  <span className="text-steel-gray font-mono text-sm">
+                    Code: {currentDeal.code}
+                  </span>
+                </div>
+              )}
+
+              {currentDeal.minimumPurchase && (
+                <div className="flex items-center gap-3">
+                  <span className="text-orange-500">💵</span>
+                  <span className="text-steel-gray">
+                    Min. purchase: ${currentDeal.minimumPurchase}
+                  </span>
+                </div>
+              )}
             </div>
 
             <button
               onClick={() => {
-                // For demo purposes, show deal details and claim process
-                // In production, this would integrate with a deal claiming system
-                alert(`🎉 Deal Claimed!\n\n${currentDeal.title}\n\nDiscount: ${currentDeal.discount}\nBusiness: ${currentDeal.businessName}\n\nA confirmation has been sent to your email. Show this deal at the business to redeem!`)
+                // Enhanced deal claiming with comprehensive information
+                let claimMessage = `🎉 Deal Claimed!\n\n${currentDeal.title}\n\n`
+                claimMessage += `Discount: ${currentDeal.discount}\n`
+                claimMessage += `Business: ${currentDeal.businessName}\n`
+
+                if (currentDeal.price && currentDeal.originalPrice) {
+                  claimMessage += `Price: $${currentDeal.price} (was $${currentDeal.originalPrice})\n`
+                }
+
+                if (currentDeal.code) {
+                  claimMessage += `Promo Code: ${currentDeal.code}\n`
+                }
+
+                if (currentDeal.minimumPurchase) {
+                  claimMessage += `Minimum Purchase: $${currentDeal.minimumPurchase}\n`
+                }
+
+                claimMessage += `\nExpires: ${currentDeal.expiresAt ? new Date(currentDeal.expiresAt).toLocaleDateString() : 'No expiration'}\n\n`
+
+                if (currentDeal.source === 'retailmenot' || currentDeal.source === 'coupons') {
+                  claimMessage += 'Use this code online or show at checkout!'
+                } else if (currentDeal.source === 'groupon') {
+                  claimMessage += 'Present this deal at the business location!'
+                } else {
+                  claimMessage += 'Show this deal to redeem your savings!'
+                }
+
+                alert(claimMessage)
               }}
               className="btn-primary cursor-pointer"
             >
-              Claim This Deal
+              {currentDeal.code ? 'Copy Code' : 'Claim This Deal'}
             </button>
           </div>
 
