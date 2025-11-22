@@ -146,7 +146,9 @@ export const pittsburghRestaurants: Restaurant[] = [
     dietaryOptions: {
       vegetarian: true,
       vegan: true,
-      glutenFree: true
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -240,7 +242,9 @@ export const pittsburghRestaurants: Restaurant[] = [
     dietaryOptions: {
       vegetarian: true,
       vegan: true,
-      glutenFree: true
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -336,7 +340,10 @@ export const pittsburghRestaurants: Restaurant[] = [
     bestFor: ['Brunch', 'Weekend dining', 'Groups', 'Date brunch', 'Families'],
     dietaryOptions: {
       vegetarian: true,
-      glutenFree: true
+      vegan: false,
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -475,7 +482,10 @@ export const pittsburghRestaurants: Restaurant[] = [
     bestFor: ['Date night', 'Special occasions', 'Romantic dining', 'Anniversaries', 'Proposals'],
     dietaryOptions: {
       vegetarian: true,
-      glutenFree: true
+      vegan: false,
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -525,7 +535,9 @@ export const pittsburghRestaurants: Restaurant[] = [
     dietaryOptions: {
       vegetarian: true,
       vegan: true,
-      glutenFree: true
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -752,7 +764,9 @@ export const pittsburghRestaurants: Restaurant[] = [
     dietaryOptions: {
       vegetarian: true,
       vegan: true,
-      glutenFree: true
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -803,7 +817,10 @@ export const pittsburghRestaurants: Restaurant[] = [
     bestFor: ['Italian food lovers', 'Brunch', 'Date night', 'Families', 'Foodies'],
     dietaryOptions: {
       vegetarian: true,
-      glutenFree: true
+      vegan: false,
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
@@ -939,7 +956,11 @@ export const pittsburghRestaurants: Restaurant[] = [
     specialties: ['Grilled Meats', 'Empanadas', 'Chimichurri', 'Argentine Classics'],
     bestFor: ['Meat lovers', 'Groups', 'Casual dining', 'Foodies', 'Authentic cuisine'],
     dietaryOptions: {
-      glutenFree: true
+      vegetarian: false,
+      vegan: false,
+      glutenFree: true,
+      halal: false,
+      kosher: false
     },
     amenities: {
       parking: true,
