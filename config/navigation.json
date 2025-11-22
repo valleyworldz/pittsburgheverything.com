@@ -1,0 +1,223 @@
+{
+  "menuStructure": {
+    "HOME": {
+      "href": "/",
+      "dataSource": "static",
+      "implementationType": "static-page",
+      "priority": "high"
+    },
+    "LIVE NOW": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Trending Today": {
+          "href": "/live/trending",
+          "dataSource": "api-aggregation",
+          "implementationType": "api-endpoint",
+          "apis": ["weather", "news", "sports", "events", "deals"],
+          "status": "implemented"
+        },
+        "Today in Pittsburgh": {
+          "href": "/live/today",
+          "dataSource": "weather-events",
+          "implementationType": "api-endpoint",
+          "apis": ["openweather", "eventbrite"],
+          "status": "implemented"
+        },
+        "Hot Deals": {
+          "href": "/live/deals",
+          "dataSource": "deals-api",
+          "implementationType": "api-endpoint",
+          "apis": ["foursquare", "local-db"],
+          "status": "implemented"
+        }
+      }
+    },
+    "EVENTS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Today": { "href": "/events/today", "dataSource": "eventbrite", "status": "implemented" },
+        "This Weekend": { "href": "/events/weekend", "dataSource": "eventbrite", "status": "implemented" },
+        "Concerts": { "href": "/events/concerts", "dataSource": "ticketmaster", "status": "implemented" },
+        "Festivals": { "href": "/events/festivals", "dataSource": "eventbrite", "status": "implemented" },
+        "Nightlife": { "href": "/events/nightlife", "dataSource": "yelp", "status": "implemented" },
+        "Family-Friendly": { "href": "/events/family", "dataSource": "eventbrite", "status": "implemented" }
+      }
+    },
+    "RESTAURANTS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Top Picks": { "href": "/restaurants/top-picks", "dataSource": "yelp", "status": "implemented" },
+        "By Neighborhood": { "href": "/restaurants/neighborhoods", "dataSource": "yelp", "status": "implemented" },
+        "Brunch": { "href": "/restaurants/brunch", "dataSource": "yelp", "status": "implemented" },
+        "Date Night": { "href": "/restaurants/date-night", "dataSource": "yelp", "status": "implemented" },
+        "Cheap Eats": { "href": "/restaurants/cheap-eats", "dataSource": "yelp", "status": "implemented" },
+        "New Openings": { "href": "/restaurants/new", "dataSource": "yelp", "status": "implemented" }
+      }
+    },
+    "THINGS TO DO": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Must-See Spots": { "href": "/things-to-do/must-see", "dataSource": "google-places", "status": "implemented" },
+        "Free Things to Do": { "href": "/things-to-do/free", "dataSource": "eventbrite", "status": "implemented" },
+        "Outdoor & Parks": { "href": "/things-to-do/outdoor", "dataSource": "google-places", "status": "implemented" },
+        "Museums & Culture": { "href": "/things-to-do/museums", "dataSource": "google-places", "status": "implemented" },
+        "Kids & Family": { "href": "/things-to-do/family", "dataSource": "eventbrite", "status": "implemented" },
+        "Hidden Gems": { "href": "/things-to-do/hidden", "dataSource": "foursquare", "status": "implemented" }
+      }
+    },
+    "NEIGHBORHOODS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Lawrenceville": { "href": "/neighborhoods/lawrenceville", "dataSource": "neighborhood-data", "status": "implemented" },
+        "Shadyside": { "href": "/neighborhoods/shadyside", "dataSource": "neighborhood-data", "status": "implemented" },
+        "South Side": { "href": "/neighborhoods/south-side", "dataSource": "neighborhood-data", "status": "implemented" },
+        "Downtown": { "href": "/neighborhoods/downtown", "dataSource": "neighborhood-data", "status": "implemented" },
+        "Oakland": { "href": "/neighborhoods/oakland", "dataSource": "neighborhood-data", "status": "implemented" },
+        "All Areas": { "href": "/neighborhoods", "dataSource": "neighborhood-data", "status": "implemented" }
+      }
+    },
+    "HOUSING": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Apartments": { "href": "/housing/apartments", "dataSource": "local-db", "implementationType": "business-directory", "status": "pending" },
+        "Cost of Living": { "href": "/housing/cost-of-living", "dataSource": "census-api", "implementationType": "static-with-data", "status": "pending" },
+        "Best Areas to Live": { "href": "/housing/best-areas", "dataSource": "neighborhood-data", "implementationType": "static-content", "status": "pending" },
+        "Moving Guide": { "href": "/housing/moving-guide", "dataSource": "static-content", "implementationType": "markdown-guide", "status": "pending" },
+        "Real Estate Agents": { "href": "/housing/agents", "dataSource": "business-db", "implementationType": "business-directory", "status": "pending" }
+      }
+    },
+    "JOBS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Hiring Now": { "href": "/jobs/hiring", "dataSource": "indeed", "status": "implemented" },
+        "Local Jobs": { "href": "/jobs/local", "dataSource": "indeed", "status": "implemented" },
+        "Gigs": { "href": "/jobs/gigs", "dataSource": "indeed", "status": "implemented" },
+        "Post a Job": { "href": "/jobs/post", "dataSource": "custom-form", "implementationType": "form-submission", "status": "pending" }
+      }
+    },
+    "LOCAL SERVICES": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Home Services": { "href": "/services/home", "dataSource": "yelp", "status": "implemented" },
+        "Creatives": { "href": "/services/creatives", "dataSource": "yelp", "status": "implemented" },
+        "Auto Repair": { "href": "/services/auto", "dataSource": "yelp", "status": "implemented" },
+        "DJs & Events": { "href": "/services/djs-events", "dataSource": "yelp", "status": "implemented" },
+        "Submit Business": { "href": "/services/submit", "dataSource": "custom-form", "status": "implemented" }
+      }
+    },
+    "DEALS & SPECIALS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Food Deals": { "href": "/deals/food", "dataSource": "yelp", "status": "implemented" },
+        "Happy Hours": { "href": "/deals/happy-hours", "dataSource": "yelp", "status": "implemented" },
+        "Weekly Specials": { "href": "/deals/weekly", "dataSource": "local-db", "status": "implemented" }
+      }
+    },
+    "TOP 100": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Restaurants": { "href": "/top-100/restaurants", "dataSource": "yelp", "status": "implemented" },
+        "Bars & Nightlife": { "href": "/top-100/bars", "dataSource": "yelp", "status": "implemented" },
+        "Experiences": { "href": "/top-100/experiences", "dataSource": "google-places", "status": "implemented" },
+        "Local Businesses": { "href": "/top-100/businesses", "dataSource": "yelp", "status": "implemented" }
+      }
+    },
+    "GUIDES": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Ultimate Guides": { "href": "/guides/ultimate", "dataSource": "markdown-content", "implementationType": "mdx-pages", "status": "pending" },
+        "Seasonal Guides": { "href": "/guides/seasonal", "dataSource": "markdown-content", "implementationType": "mdx-pages", "status": "pending" },
+        "Weekend Guides": { "href": "/guides/weekend", "dataSource": "markdown-content", "implementationType": "mdx-pages", "status": "pending" },
+        "Moving Guides": { "href": "/guides/moving", "dataSource": "markdown-content", "implementationType": "mdx-pages", "status": "pending" }
+      }
+    },
+    "FOR VISITORS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Where to Stay": { "href": "/visitors/stay", "dataSource": "curated-list", "implementationType": "static-content", "status": "pending" },
+        "First-Time Guide": { "href": "/visitors/first-time", "dataSource": "markdown-content", "implementationType": "mdx-guide", "status": "pending" },
+        "Parking & Transit": { "href": "/visitors/parking", "dataSource": "city-data", "implementationType": "static-with-data", "status": "pending" }
+      }
+    },
+    "FAMILY": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Kids Activities": { "href": "/family/activities", "dataSource": "eventbrite", "status": "implemented" },
+        "Family Restaurants": { "href": "/family/restaurants", "dataSource": "yelp", "status": "implemented" },
+        "Parks & Playgrounds": { "href": "/family/parks", "dataSource": "google-places", "status": "implemented" }
+      }
+    },
+    "PETS": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Dog Parks": { "href": "/pets/parks", "dataSource": "google-places", "status": "implemented" },
+        "Pet-Friendly Spots": { "href": "/pets/friendly", "dataSource": "yelp", "status": "implemented" },
+        "Vets & Groomers": { "href": "/pets/vets", "dataSource": "yelp", "status": "implemented" }
+      }
+    },
+    "AI GUIDE": {
+      "href": "/ai-guide",
+      "dataSource": "llm-api",
+      "implementationType": "ai-chat",
+      "status": "pending"
+    },
+    "NEWSLETTER": {
+      "href": "/newsletter",
+      "dataSource": "email-service",
+      "implementationType": "signup-form",
+      "status": "pending"
+    },
+    "COMMUNITY": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Questions": { "href": "/community/questions", "dataSource": "local-db", "implementationType": "post-system", "status": "pending" },
+        "Lost & Found": { "href": "/community/lost-found", "dataSource": "local-db", "implementationType": "post-system", "status": "pending" },
+        "Volunteer": { "href": "/community/volunteer", "dataSource": "local-db", "implementationType": "post-system", "status": "pending" }
+      }
+    },
+    "MEDIA": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Photos": { "href": "/media/photos", "dataSource": "cloud-storage", "implementationType": "gallery", "status": "pending" },
+        "Videos": { "href": "/media/videos", "dataSource": "external-embeds", "implementationType": "video-gallery", "status": "pending" }
+      }
+    },
+    "ABOUT": {
+      "hasDropdown": true,
+      "dropdownItems": {
+        "Mission": { "href": "/about/mission", "dataSource": "static-content", "status": "pending" },
+        "Contact": { "href": "/about/contact", "dataSource": "static-content", "status": "pending" },
+        "Advertise": { "href": "/about/advertise", "dataSource": "business-center", "status": "pending" }
+      }
+    }
+  },
+  "dataSources": {
+    "free-apis": [
+      "openweather", "espn", "port-authority", "census-api", "city-open-data",
+      "newsapi", "google-places", "yelp", "eventbrite", "ticketmaster",
+      "foursquare", "indeed", "adzuna"
+    ],
+    "local-database": [
+      "community-posts", "business-directory", "housing-listings", "guides-content",
+      "newsletter-subscribers", "user-submissions"
+    ],
+    "static-content": [
+      "markdown-files", "curated-lists", "editorial-content"
+    ],
+    "external-services": [
+      "brevo-mailchimp", "cloudinary-supabase", "llm-api", "stripe-payments"
+    ]
+  },
+  "implementationTypes": {
+    "api-endpoint": "Server-side API routes with caching",
+    "static-page": "Pre-rendered pages with minimal data",
+    "static-with-data": "Static content enhanced with open data APIs",
+    "business-directory": "Dynamic listings from user submissions + APIs",
+    "post-system": "Community posting system with moderation",
+    "form-submission": "Lead capture and business submission forms",
+    "mdx-pages": "Markdown-based content pages",
+    "gallery": "Media galleries with cloud storage",
+    "ai-chat": "LLM-powered conversational interface",
+    "signup-form": "Email collection and newsletter management"
+  }
+}

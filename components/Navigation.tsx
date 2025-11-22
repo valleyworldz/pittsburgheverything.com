@@ -6,64 +6,241 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Menu, X, Search, Bell, User, ChevronDown, Home, Calendar, Utensils, Wrench, MapPin, DollarSign, Theater, Star } from 'lucide-react'
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'framer-motion'
 
-// Enhanced navigation items with better icons and descriptions
+// Comprehensive navigation structure with dropdowns and API integration
 const navigationItems = [
   {
     href: '/',
-    label: 'Home',
+    label: 'HOME',
     icon: Home,
     description: 'Homepage',
-    shortcut: 'Alt+H'
+    shortcut: 'Alt+H',
+    hasDropdown: false
   },
   {
-    href: '/events',
-    label: 'Events',
+    label: 'LIVE NOW',
+    icon: Bell,
+    description: 'Real-time Pittsburgh updates',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/live/trending', label: 'Trending Today', apiSource: 'trending' },
+      { href: '/live/today', label: 'Today in Pittsburgh', apiSource: 'weather-events' },
+      { href: '/live/deals', label: 'Hot Deals', apiSource: 'deals-api' }
+    ]
+  },
+  {
+    label: 'EVENTS',
     icon: Calendar,
-    description: 'Local events and entertainment',
-    shortcut: 'Alt+E'
+    description: 'Events and entertainment',
+    shortcut: 'Alt+E',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/events/today', label: 'Today', apiSource: 'eventbrite-today' },
+      { href: '/events/weekend', label: 'This Weekend', apiSource: 'eventbrite-weekend' },
+      { href: '/events/concerts', label: 'Concerts', apiSource: 'ticketmaster' },
+      { href: '/events/festivals', label: 'Festivals', apiSource: 'eventbrite-festivals' },
+      { href: '/events/nightlife', label: 'Nightlife', apiSource: 'yelp-nightlife' },
+      { href: '/events/family', label: 'Family-Friendly', apiSource: 'eventbrite-family' }
+    ]
   },
   {
-    href: '/restaurants',
-    label: 'Restaurants',
+    label: 'RESTAURANTS',
     icon: Utensils,
     description: 'Dining and food scene',
-    shortcut: 'Alt+R'
+    shortcut: 'Alt+R',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/restaurants/top-picks', label: 'Top Picks', apiSource: 'yelp-top-rated' },
+      { href: '/restaurants/neighborhoods', label: 'By Neighborhood', apiSource: 'yelp-neighborhoods' },
+      { href: '/restaurants/brunch', label: 'Brunch', apiSource: 'yelp-brunch' },
+      { href: '/restaurants/date-night', label: 'Date Night', apiSource: 'yelp-romantic' },
+      { href: '/restaurants/cheap-eats', label: 'Cheap Eats', apiSource: 'yelp-budget' },
+      { href: '/restaurants/new', label: 'New Openings', apiSource: 'yelp-new' }
+    ]
   },
   {
-    href: '/services',
-    label: 'Services',
-    icon: Wrench,
-    description: 'Local services and businesses',
-    shortcut: 'Alt+S'
-  },
-  {
-    href: '/neighborhoods',
-    label: 'Neighborhoods',
-    icon: MapPin,
-    description: 'Explore Pittsburgh neighborhoods',
-    shortcut: 'Alt+N'
-  },
-  {
-    href: '/deals',
-    label: 'Deals',
-    icon: DollarSign,
-    description: 'Savings and special offers',
-    shortcut: 'Alt+D'
-  },
-  {
-    href: '/things-to-do',
-    label: 'Things to Do',
+    label: 'THINGS TO DO',
     icon: Theater,
     description: 'Activities and attractions',
-    shortcut: 'Alt+T'
+    shortcut: 'Alt+T',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/things-to-do/must-see', label: 'Must-See Spots', apiSource: 'google-places' },
+      { href: '/things-to-do/free', label: 'Free Things to Do', apiSource: 'eventbrite-free' },
+      { href: '/things-to-do/outdoor', label: 'Outdoor & Parks', apiSource: 'google-places-parks' },
+      { href: '/things-to-do/museums', label: 'Museums & Culture', apiSource: 'google-places-museums' },
+      { href: '/things-to-do/family', label: 'Kids & Family', apiSource: 'eventbrite-family' },
+      { href: '/things-to-do/hidden', label: 'Hidden Gems', apiSource: 'foursquare-hidden' }
+    ]
   },
   {
-    href: '/top-100',
-    label: 'Top 100',
+    label: 'NEIGHBORHOODS',
+    icon: MapPin,
+    description: 'Explore Pittsburgh neighborhoods',
+    shortcut: 'Alt+N',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/neighborhoods/lawrenceville', label: 'Lawrenceville', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/shadyside', label: 'Shadyside', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/south-side', label: 'South Side', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/downtown', label: 'Downtown', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods/oakland', label: 'Oakland', apiSource: 'neighborhood-data' },
+      { href: '/neighborhoods', label: 'All Areas', apiSource: 'neighborhood-data' }
+    ]
+  },
+  {
+    label: 'HOUSING',
+    icon: Home,
+    description: 'Housing and real estate',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/housing/apartments', label: 'Apartments', apiSource: 'zillow-apartments' },
+      { href: '/housing/cost-of-living', label: 'Cost of Living', apiSource: 'census-data' },
+      { href: '/housing/best-areas', label: 'Best Areas to Live', apiSource: 'realtor-areas' },
+      { href: '/housing/moving-guide', label: 'Moving Guide', apiSource: 'static-content' },
+      { href: '/housing/agents', label: 'Real Estate Agents', apiSource: 'realtor-agents' }
+    ]
+  },
+  {
+    label: 'JOBS',
+    icon: Wrench,
+    description: 'Local job opportunities',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/jobs/hiring', label: 'Hiring Now', apiSource: 'indeed-jobs' },
+      { href: '/jobs/local', label: 'Local Jobs', apiSource: 'indeed-local' },
+      { href: '/jobs/gigs', label: 'Gigs', apiSource: 'indeed-gigs' },
+      { href: '/jobs/post', label: 'Post a Job', apiSource: 'custom-form' }
+    ]
+  },
+  {
+    label: 'LOCAL SERVICES',
+    icon: Wrench,
+    description: 'Local services and businesses',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/services/home', label: 'Home Services', apiSource: 'yelp-home-services' },
+      { href: '/services/creatives', label: 'Creatives', apiSource: 'yelp-creatives' },
+      { href: '/services/auto', label: 'Auto Repair', apiSource: 'yelp-auto' },
+      { href: '/services/djs-events', label: 'DJs & Events', apiSource: 'yelp-djs' },
+      { href: '/services/submit', label: 'Submit Business', apiSource: 'custom-form' }
+    ]
+  },
+  {
+    label: 'DEALS & SPECIALS',
+    icon: DollarSign,
+    description: 'Savings and special offers',
+    shortcut: 'Alt+D',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/deals/food', label: 'Food Deals', apiSource: 'yelp-deals' },
+      { href: '/deals/happy-hours', label: 'Happy Hours', apiSource: 'yelp-happy-hour' },
+      { href: '/deals/weekly', label: 'Weekly Specials', apiSource: 'local-deals-api' }
+    ]
+  },
+  {
+    label: 'TOP 100',
     icon: Star,
     description: 'Best of Pittsburgh',
-    shortcut: 'Alt+1'
+    shortcut: 'Alt+1',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/top-100/restaurants', label: 'Restaurants', apiSource: 'yelp-top-100' },
+      { href: '/top-100/bars', label: 'Bars & Nightlife', apiSource: 'yelp-top-bars' },
+      { href: '/top-100/experiences', label: 'Experiences', apiSource: 'google-places-top' },
+      { href: '/top-100/businesses', label: 'Local Businesses', apiSource: 'yelp-top-businesses' }
+    ]
   },
+  {
+    label: 'GUIDES',
+    icon: MapPin,
+    description: 'Guides and information',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/guides/ultimate', label: 'Ultimate Guides', apiSource: 'static-content' },
+      { href: '/guides/seasonal', label: 'Seasonal Guides', apiSource: 'static-content' },
+      { href: '/guides/weekend', label: 'Weekend Guides', apiSource: 'static-content' },
+      { href: '/guides/moving', label: 'Moving Guides', apiSource: 'static-content' }
+    ]
+  },
+  {
+    label: 'FOR VISITORS',
+    icon: MapPin,
+    description: 'Visitor information',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/visitors/stay', label: 'Where to Stay', apiSource: 'booking-hotels' },
+      { href: '/visitors/first-time', label: 'First-Time Guide', apiSource: 'static-content' },
+      { href: '/visitors/parking', label: 'Parking & Transit', apiSource: 'google-maps' }
+    ]
+  },
+  {
+    label: 'FAMILY',
+    icon: User,
+    description: 'Family activities and services',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/family/activities', label: 'Kids Activities', apiSource: 'eventbrite-family' },
+      { href: '/family/restaurants', label: 'Family Restaurants', apiSource: 'yelp-family' },
+      { href: '/family/parks', label: 'Parks & Playgrounds', apiSource: 'google-places-parks' }
+    ]
+  },
+  {
+    label: 'PETS',
+    icon: User,
+    description: 'Pet services and information',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/pets/parks', label: 'Dog Parks', apiSource: 'google-places-pet-parks' },
+      { href: '/pets/friendly', label: 'Pet-Friendly Spots', apiSource: 'yelp-pet-friendly' },
+      { href: '/pets/vets', label: 'Vets & Groomers', apiSource: 'yelp-pet-services' }
+    ]
+  },
+  {
+    href: '/ai-guide',
+    label: 'AI GUIDE',
+    icon: Star,
+    description: 'AI-powered recommendations',
+    hasDropdown: false
+  },
+  {
+    href: '/newsletter',
+    label: 'NEWSLETTER',
+    icon: Bell,
+    description: 'Subscribe to updates',
+    hasDropdown: false
+  },
+  {
+    label: 'COMMUNITY',
+    icon: User,
+    description: 'Community features',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/community/questions', label: 'Questions', apiSource: 'custom-forum' },
+      { href: '/community/lost-found', label: 'Lost & Found', apiSource: 'custom-forum' },
+      { href: '/community/volunteer', label: 'Volunteer', apiSource: 'custom-forum' }
+    ]
+  },
+  {
+    label: 'MEDIA',
+    icon: Theater,
+    description: 'Photos and videos',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/media/photos', label: 'Photos', apiSource: 'custom-gallery' },
+      { href: '/media/videos', label: 'Videos', apiSource: 'custom-gallery' }
+    ]
+  },
+  {
+    label: 'ABOUT',
+    icon: User,
+    description: 'About PittsburghEverything',
+    hasDropdown: true,
+    dropdownItems: [
+      { href: '/about/mission', label: 'Mission', apiSource: 'static-content' },
+      { href: '/about/contact', label: 'Contact', apiSource: 'static-content' },
+      { href: '/about/advertise', label: 'Advertise', apiSource: 'static-content' }
+    ]
+  }
 ]
 
 // Skip to main content link component
@@ -83,10 +260,12 @@ export default function Navigation() {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const router = useRouter()
   const searchInputRef = useRef<HTMLInputElement>(null)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
   const { scrollY } = useScroll()
   const lastScrollY = useRef(0)
@@ -120,7 +299,7 @@ export default function Navigation() {
       // Alt + key shortcuts
       if (e.altKey) {
         const item = navigationItems.find(item => item.shortcut === `Alt+${e.key.toUpperCase()}`)
-        if (item) {
+        if (item && item.href) {
           e.preventDefault()
           router.push(item.href)
         }
@@ -216,34 +395,56 @@ export default function Navigation() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-1" role="menubar">
+            <div className="hidden lg:flex items-center space-x-1 relative" role="menubar">
               {navigationItems.map((item, index) => {
                 const Icon = item.icon
-                const isItemActive = isActive(item.href)
+                const isItemActive = item.href ? isActive(item.href) : false
+                const isDropdownOpen = openDropdown === item.label
 
                 return (
                   <motion.div
-                    key={item.href}
+                    key={item.label}
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1, duration: 0.3 }}
+                    className="relative"
                   >
-                    <Link
-                      href={item.href}
-                      className={`relative group px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2 focus:ring-offset-white ${
-                        isItemActive
-                          ? 'text-pittsburgh-gold bg-gradient-to-r from-pittsburgh-gold/10 to-yellow-50 shadow-sm'
-                          : 'text-gray-700 hover:text-pittsburgh-black hover:bg-gray-50/80 hover:shadow-md'
-                      }`}
-                      role="menuitem"
-                      aria-current={isItemActive ? 'page' : undefined}
-                      aria-describedby={`nav-${item.label.toLowerCase().replace(' ', '-')}-description`}
-                      title={`${item.description} (${item.shortcut})`}
-                    >
-                      <motion.span
-                        className="flex items-center space-x-2"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
+                    {item.hasDropdown ? (
+                      <button
+                        onMouseEnter={() => setOpenDropdown(item.label)}
+                        onMouseLeave={() => setOpenDropdown(null)}
+                        className={`relative group px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2 focus:ring-offset-white flex items-center space-x-2 ${
+                          isDropdownOpen
+                            ? 'text-pittsburgh-gold bg-gradient-to-r from-pittsburgh-gold/10 to-yellow-50 shadow-sm'
+                            : 'text-gray-700 hover:text-pittsburgh-black hover:bg-gray-50/80 hover:shadow-md'
+                        }`}
+                        role="menuitem"
+                        aria-expanded={isDropdownOpen}
+                        aria-haspopup="true"
+                        aria-describedby={`nav-${item.label.toLowerCase().replace(' ', '-')}-description`}
+                        title={item.description}
+                      >
+                        <Icon className={`w-4 h-4 transition-colors ${
+                          isDropdownOpen ? 'text-pittsburgh-gold' : 'text-gray-500 group-hover:text-pittsburgh-gold'
+                        }`} />
+                        <span>{item.label}</span>
+                        <ChevronDown className={`w-3 h-3 transition-transform ${
+                          isDropdownOpen ? 'rotate-180' : ''
+                        }`} />
+                      </button>
+                    ) : item.href ? (
+                      <Link
+                        href={item.href}
+                        onMouseEnter={() => setOpenDropdown(null)}
+                        className={`relative group px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2 focus:ring-offset-white flex items-center space-x-2 ${
+                          isItemActive
+                            ? 'text-pittsburgh-gold bg-gradient-to-r from-pittsburgh-gold/10 to-yellow-50 shadow-sm'
+                            : 'text-gray-700 hover:text-pittsburgh-black hover:bg-gray-50/80 hover:shadow-md'
+                        }`}
+                        role="menuitem"
+                        aria-current={isItemActive ? 'page' : undefined}
+                        aria-describedby={`nav-${item.label.toLowerCase().replace(' ', '-')}-description`}
+                        title={`${item.description} (${item.shortcut || ''})`}
                       >
                         <Icon className={`w-4 h-4 transition-colors ${
                           isItemActive ? 'text-pittsburgh-gold' : 'text-gray-500 group-hover:text-pittsburgh-gold'
@@ -258,16 +459,63 @@ export default function Navigation() {
                             />
                           )}
                         </span>
-                      </motion.span>
+                      </Link>
+                    ) : null}
 
-                      {/* Tooltip */}
-                      <div
-                        id={`nav-${item.label.toLowerCase().replace(' ', '-')}-description`}
-                        className="sr-only"
-                      >
-                        {item.description}. Keyboard shortcut: {item.shortcut}
-                      </div>
-                    </Link>
+                    {/* Dropdown Menu */}
+                    {item.hasDropdown && item.dropdownItems && (
+                      <AnimatePresence>
+                        {isDropdownOpen && (
+                          <motion.div
+                            ref={dropdownRef}
+                            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-200/50 backdrop-blur-md z-50"
+                            onMouseEnter={() => setOpenDropdown(item.label)}
+                            onMouseLeave={() => setOpenDropdown(null)}
+                            role="menu"
+                            aria-label={`${item.label} submenu`}
+                          >
+                            <div className="p-2">
+                              {item.dropdownItems.map((dropdownItem, dropdownIndex) => (
+                                <motion.div
+                                  key={dropdownItem.href}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ delay: dropdownIndex * 0.05, duration: 0.2 }}
+                                >
+                                  <Link
+                                    href={dropdownItem.href}
+                                    className="block px-4 py-3 text-sm text-gray-700 hover:text-pittsburgh-gold hover:bg-pittsburgh-gold/5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2"
+                                    role="menuitem"
+                                    onClick={() => setOpenDropdown(null)}
+                                  >
+                                    <div className="flex items-center justify-between">
+                                      <span className="font-medium">{dropdownItem.label}</span>
+                                      {dropdownItem.apiSource && (
+                                        <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                                          Live
+                                        </span>
+                                      )}
+                                    </div>
+                                  </Link>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    )}
+
+                    {/* Tooltip */}
+                    <div
+                      id={`nav-${item.label.toLowerCase().replace(' ', '-')}-description`}
+                      className="sr-only"
+                    >
+                      {item.description}{item.shortcut ? `. Keyboard shortcut: ${item.shortcut}` : ''}
+                    </div>
                   </motion.div>
                 )
               })}
@@ -386,53 +634,123 @@ export default function Navigation() {
                   ease: "easeInOut",
                   opacity: { duration: 0.2 }
                 }}
-                className="lg:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-md shadow-xl rounded-b-2xl overflow-hidden"
+                className="lg:hidden border-t border-gray-200/50 bg-white/95 backdrop-blur-md shadow-xl rounded-b-2xl overflow-hidden max-h-[80vh] overflow-y-auto"
                 role="menu"
                 aria-label="Mobile navigation menu"
               >
                 <div className="px-4 pt-4 pb-6 space-y-2">
                   {navigationItems.map((item, index) => {
                     const Icon = item.icon
-                    const isItemActive = isActive(item.href)
+                    const isItemActive = item.href ? isActive(item.href) : false
 
                     return (
                       <motion.div
-                        key={item.href}
+                        key={item.label}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
                       >
-                        <Link
-                          href={item.href}
-                          className={`group flex items-center space-x-4 w-full px-4 py-4 rounded-xl text-base font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2 ${
-                            isItemActive
-                              ? 'text-pittsburgh-gold bg-gradient-to-r from-pittsburgh-gold/10 to-yellow-50 shadow-sm'
-                              : 'text-gray-700 hover:text-pittsburgh-black hover:bg-gray-50/80 hover:shadow-md'
-                          }`}
-                          role="menuitem"
-                          aria-current={isItemActive ? 'page' : undefined}
-                          onClick={() => setIsOpen(false)}
-                        >
-                          <motion.div
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <Icon className={`w-6 h-6 transition-colors ${
-                              isItemActive ? 'text-pittsburgh-gold' : 'text-gray-500 group-hover:text-pittsburgh-gold'
-                            }`} />
-                          </motion.div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span>{item.label}</span>
-                              <span className="text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                {item.shortcut}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity delay-75">
-                              {item.description}
-                            </p>
+                        {item.hasDropdown ? (
+                          <div className="space-y-1">
+                            <button
+                              onClick={() => setOpenDropdown(openDropdown === item.label ? null : item.label)}
+                              className={`group flex items-center space-x-4 w-full px-4 py-4 rounded-xl text-base font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2 ${
+                                openDropdown === item.label
+                                  ? 'text-pittsburgh-gold bg-gradient-to-r from-pittsburgh-gold/10 to-yellow-50 shadow-sm'
+                                  : 'text-gray-700 hover:text-pittsburgh-black hover:bg-gray-50/80 hover:shadow-md'
+                              }`}
+                              role="menuitem"
+                              aria-expanded={openDropdown === item.label}
+                              aria-haspopup="true"
+                            >
+                              <motion.div
+                                animate={{ rotate: openDropdown === item.label ? 90 : 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
+                                <Icon className={`w-6 h-6 transition-colors ${
+                                  openDropdown === item.label ? 'text-pittsburgh-gold' : 'text-gray-500 group-hover:text-pittsburgh-gold'
+                                }`} />
+                              </motion.div>
+                              <div className="flex-1">
+                                <span>{item.label}</span>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 transition-transform ${
+                                openDropdown === item.label ? 'rotate-180' : ''
+                              }`} />
+                            </button>
+
+                            {/* Mobile Dropdown */}
+                            <AnimatePresence>
+                              {openDropdown === item.label && item.dropdownItems && (
+                                <motion.div
+                                  initial={{ opacity: 0, height: 0 }}
+                                  animate={{ opacity: 1, height: 'auto' }}
+                                  exit={{ opacity: 0, height: 0 }}
+                                  transition={{ duration: 0.2 }}
+                                  className="ml-8 space-y-1 border-l-2 border-pittsburgh-gold/20 pl-4"
+                                >
+                                  {item.dropdownItems.map((dropdownItem, dropdownIndex) => (
+                                    <motion.div
+                                      key={dropdownItem.href}
+                                      initial={{ opacity: 0, x: -10 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: dropdownIndex * 0.05, duration: 0.2 }}
+                                    >
+                                      <Link
+                                        href={dropdownItem.href}
+                                        className="flex items-center justify-between w-full px-4 py-3 text-sm text-gray-600 hover:text-pittsburgh-gold hover:bg-gray-50/50 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2"
+                                        role="menuitem"
+                                        onClick={() => {
+                                          setIsOpen(false)
+                                          setOpenDropdown(null)
+                                        }}
+                                      >
+                                        <span className="font-medium">{dropdownItem.label}</span>
+                                        {dropdownItem.apiSource && (
+                                          <span className="text-xs text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                                            Live
+                                          </span>
+                                        )}
+                                      </Link>
+                                    </motion.div>
+                                  ))}
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
                           </div>
-                        </Link>
+                        ) : item.href ? (
+                          <Link
+                            href={item.href}
+                            className={`group flex items-center space-x-4 w-full px-4 py-4 rounded-xl text-base font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pittsburgh-gold focus:ring-offset-2 ${
+                              isItemActive
+                                ? 'text-pittsburgh-gold bg-gradient-to-r from-pittsburgh-gold/10 to-yellow-50 shadow-sm'
+                                : 'text-gray-700 hover:text-pittsburgh-black hover:bg-gray-50/80 hover:shadow-md'
+                            }`}
+                            role="menuitem"
+                            aria-current={isItemActive ? 'page' : undefined}
+                            onClick={() => setIsOpen(false)}
+                          >
+                            <motion.div
+                              whileHover={{ scale: 1.1, rotate: 5 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Icon className={`w-6 h-6 transition-colors ${
+                                isItemActive ? 'text-pittsburgh-gold' : 'text-gray-500 group-hover:text-pittsburgh-gold'
+                              }`} />
+                            </motion.div>
+                            <div className="flex-1">
+                              <div className="flex items-center justify-between">
+                                <span>{item.label}</span>
+                                <span className="text-xs text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  {item.shortcut}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity delay-75">
+                                {item.description}
+                              </p>
+                            </div>
+                          </Link>
+                        ) : null}
                       </motion.div>
                     )
                   })}
