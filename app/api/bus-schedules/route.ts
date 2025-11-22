@@ -1,45 +1,56 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { 
+  getScheduleForStop, 
+  getStop, 
+  isGtfsAvailable,
+  getStopsWithRoutes 
+} from '@/lib/transit/gtfsService'
 
 /**
- * Port Authority of Allegheny County Bus Schedules API
- * Real-time bus arrival predictions and route information
- * Free public API - no API key required
+ * Bus Schedules API
+ * Combines GTFS static schedules (authoritative) with real-time predictions (when available)
+ * 
+ * Query params:
+ * - stopId: Stop ID (required)
+ * - route: Route ID (optional filter)
+ * - date: Date in YYYY-MM-DD format (default: today)
+ * - includeRealtime: Include real-time predictions (default: true)
  */
 
 interface BusPrediction {
-  rt: string // Route number
-  rtdir: string // Route direction
-  des: string // Destination
-  prdctdn: string // Prediction countdown (minutes)
-  prdtm: string // Predicted arrival time
-  dly?: boolean // Delay flag
-  stpid: string // Stop ID
-  stpnm: string // Stop name
-  vid?: string // Vehicle ID
+  rt: string
+  rtdir: string
+  des: string
+  prdctdn: string
+  prdtm: string
+  dly?: boolean
+  stpid: string
+  stpnm: string
+  vid?: string
 }
 
-interface BusRoute {
-  rt: string // Route number
-  rtnm: string // Route name
-  rtclr?: string // Route color
-}
-
-interface BusStop {
-  stpid: string // Stop ID
-  stpnm: string // Stop name
-  lat: number
-  lon: number
-  routes?: string[] // Routes serving this stop
+interface ScheduleEntry {
+  route: string
+  routeName: string
+  destination: string
+  scheduledTime: string
+  scheduledMinutes?: number
+  realtimeMinutes?: number
+  realtimeArrival?: string
+  isDelayed?: boolean
+  vehicleId?: string | null
+  source: 'schedule' | 'realtime' | 'both'
 }
 
 /**
- * Get real-time bus predictions for a specific stop
- * Uses Port Authority real-time API
+ * Get bus schedules with optional real-time predictions overlay
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const stopId = searchParams.get('stopId')
   const route = searchParams.get('route')
+  const dateParam = searchParams.get('date')
+  const includeRealtime = searchParams.get('includeRealtime') !== 'false'
 
   if (!stopId) {
     return NextResponse.json(
@@ -49,77 +60,260 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-
-    // Port Authority Real-Time API
-    // Documentation: https://realtime.portauthority.org/bustime/api/v3/
-    // Note: The API may require a valid API key for production use
-    // For now, we'll use the demo endpoint
-    const apiUrl = new URL('https://realtime.portauthority.org/bustime/api/v3/getpredictions')
-    
-    // Port Authority API typically requires an API key
-    // Using demo key - in production, this should be an environment variable
-    apiUrl.searchParams.set('key', process.env.PORT_AUTHORITY_API_KEY || 'demo')
-    apiUrl.searchParams.set('stpid', stopId)
-    apiUrl.searchParams.set('format', 'json')
-    
-    if (route) {
-      apiUrl.searchParams.set('rt', route)
+    // Parse date (default to today)
+    let date: Date
+    if (dateParam) {
+      date = new Date(dateParam)
+      if (isNaN(date.getTime())) {
+        return NextResponse.json(
+          { error: 'Invalid date format. Use YYYY-MM-DD' },
+          { status: 400 }
+        )
+      }
+    } else {
+      date = new Date()
     }
 
-    // Create AbortController for timeout
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 second timeout
+    // Check if GTFS is available
+    const gtfsAvailable = isGtfsAvailable()
+    
+    let scheduleEntries: ScheduleEntry[] = []
+    let stopInfo = null
 
+    if (gtfsAvailable) {
+      // Get stop info
+      const stop = getStop(stopId)
+      if (!stop) {
+        return NextResponse.json(
+          { 
+            error: 'Stop not found',
+            stopId,
+            message: 'Please verify the stop ID is correct. You can search for stops at /api/transit/stops?q=searchterm'
+          },
+          { status: 404 }
+        )
+      }
+
+      stopInfo = {
+        id: stop.stop_id,
+        name: stop.stop_name,
+        code: stop.stop_code,
+        lat: stop.stop_lat,
+        lon: stop.stop_lon
+      }
+
+      // Get GTFS schedule
+      const schedule = getScheduleForStop(stopId, date, route || undefined)
+      
+      // Convert to ScheduleEntry format
+      scheduleEntries = schedule.map(s => {
+        // Parse time (HH:MM:SS format)
+        if (!s.arrivalTime) {
+          return {
+            route: s.routeId,
+            routeName: s.routeName,
+            destination: s.headsign || 'Unknown',
+            scheduledTime: '',
+            source: 'schedule' as const
+          }
+        }
+        const timeParts = s.arrivalTime.split(':')
+        if (timeParts.length < 2) {
+          return {
+            route: s.routeId,
+            routeName: s.routeName,
+            destination: s.headsign || 'Unknown',
+            scheduledTime: s.arrivalTime,
+            source: 'schedule' as const
+          }
+        }
+        const [hours, minutes] = timeParts.map(Number)
+        const scheduledDate = new Date(date.getTime())
+        scheduledDate.setHours(hours, minutes, 0, 0)
+        
+        // Calculate minutes until arrival
+        const now = new Date()
+        const minutesUntil = Math.round((scheduledDate.getTime() - now.getTime()) / 60000)
+        
+        return {
+          route: s.routeId,
+          routeName: s.routeName,
+          destination: s.headsign || 'Unknown',
+          scheduledTime: s.arrivalTime,
+          scheduledMinutes: minutesUntil,
+          source: 'schedule' as const
+        }
+      })
+
+      // Filter to upcoming times only (next 2 hours)
+      const twoHoursFromNow = new Date()
+      twoHoursFromNow.setHours(twoHoursFromNow.getHours() + 2)
+      
+      scheduleEntries = scheduleEntries.filter(entry => {
+        const entryTime = new Date(date)
+        const [hours, minutes] = entry.scheduledTime.split(':').map(Number)
+        entryTime.setHours(hours, minutes, 0, 0)
+        return entryTime >= new Date() && entryTime <= twoHoursFromNow
+      })
+
+      // Sort by scheduled time
+      scheduleEntries.sort((a, b) => {
+        const timeA = a.scheduledTime
+        const timeB = b.scheduledTime
+        return timeA.localeCompare(timeB)
+      })
+    }
+
+    // Overlay real-time predictions if requested and available
+    let realtimePredictions: any[] = []
+    let realtimeSource = 'none'
+
+    if (includeRealtime) {
+      try {
+        realtimePredictions = await fetchRealtimePredictions(stopId, route || undefined)
+        realtimeSource = 'api'
+      } catch (error) {
+        console.log('Real-time API unavailable, using schedule only')
+        realtimeSource = 'unavailable'
+      }
+    }
+
+    // Merge real-time with schedule
+    if (realtimePredictions.length > 0 && scheduleEntries.length > 0) {
+      // Create a map of route+destination to merge
+      const scheduleMap = new Map<string, ScheduleEntry>()
+      
+      scheduleEntries.forEach(entry => {
+        const key = `${entry.route}-${entry.destination}`
+        if (!scheduleMap.has(key) || 
+            (entry.scheduledMinutes !== undefined && entry.scheduledMinutes >= 0)) {
+          scheduleMap.set(key, entry)
+        }
+      })
+
+      // Overlay real-time data
+      realtimePredictions.forEach((pred: any) => {
+        const key = `${pred.route}-${pred.destination}`
+        const scheduleEntry = scheduleMap.get(key)
+        
+        if (scheduleEntry) {
+          // Update with real-time data
+          scheduleEntry.realtimeMinutes = pred.minutes
+          scheduleEntry.realtimeArrival = pred.arrivalTime
+          scheduleEntry.isDelayed = pred.isDelayed
+          scheduleEntry.vehicleId = pred.vehicleId
+          scheduleEntry.source = 'both'
+        } else {
+          // Real-time only (not in schedule for today)
+          scheduleMap.set(key, {
+            route: pred.route,
+            routeName: pred.routeName,
+            destination: pred.destination,
+            scheduledTime: '',
+            realtimeMinutes: pred.minutes,
+            realtimeArrival: pred.arrivalTime,
+            isDelayed: pred.isDelayed,
+            vehicleId: pred.vehicleId,
+            source: 'realtime'
+          })
+        }
+      })
+
+      scheduleEntries = Array.from(scheduleMap.values())
+      
+      // Sort by real-time if available, otherwise scheduled
+      scheduleEntries.sort((a, b) => {
+        const timeA = a.realtimeMinutes ?? a.scheduledMinutes ?? 999
+        const timeB = b.realtimeMinutes ?? b.scheduledMinutes ?? 999
+        return timeA - timeB
+      })
+    } else if (realtimePredictions.length > 0 && scheduleEntries.length === 0) {
+      // Real-time only (no GTFS schedule available)
+      scheduleEntries = realtimePredictions.map((pred: any) => ({
+        route: pred.route,
+        routeName: pred.routeName,
+        destination: pred.destination,
+        scheduledTime: '',
+        realtimeMinutes: pred.minutes,
+        realtimeArrival: pred.arrivalTime,
+        isDelayed: pred.isDelayed,
+        vehicleId: pred.vehicleId,
+        source: 'realtime'
+      }))
+    }
+
+    return NextResponse.json({
+      predictions: scheduleEntries,
+      stop: stopInfo,
+      source: gtfsAvailable ? 'gtfs' : 'realtime-only',
+      realtimeSource,
+      date: date.toISOString().slice(0, 10),
+      route: route || null,
+      count: scheduleEntries.length,
+      timestamp: new Date().toISOString(),
+      message: gtfsAvailable 
+        ? 'Schedule data from GTFS (authoritative). Real-time predictions overlaid when available.'
+        : 'GTFS data not available. Using real-time predictions only. Run: npm run transit:import'
+    })
+  } catch (error: any) {
+    console.error('Bus schedules API error:', error)
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch bus schedules',
+        message: error.message,
+        predictions: [],
+        source: 'error'
+      },
+      { status: 500 }
+    )
+  }
+}
+
+/**
+ * Fetch real-time predictions from Port Authority API
+ */
+async function fetchRealtimePredictions(
+  stopId: string,
+  route?: string
+): Promise<any[]> {
+  const apiUrl = new URL('https://realtime.portauthority.org/bustime/api/v3/getpredictions')
+  
+  apiUrl.searchParams.set('key', process.env.PORT_AUTHORITY_API_KEY || 'demo')
+  apiUrl.searchParams.set('stpid', stopId)
+  apiUrl.searchParams.set('format', 'json')
+  
+  if (route) {
+    apiUrl.searchParams.set('rt', route)
+  }
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+
+  try {
     const response = await fetch(apiUrl.toString(), {
       headers: {
         'Accept': 'application/json',
         'User-Agent': 'PittsburghEverything/1.0'
       },
-      next: { revalidate: 30 }, // Cache for 30 seconds
+      next: { revalidate: 30 },
       signal: controller.signal
     })
 
     clearTimeout(timeoutId)
 
     if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error')
-      console.error('Port Authority API error:', response.status, response.statusText, errorText)
-      // Return mock data as fallback
-      return NextResponse.json({
-        predictions: getMockPredictions(stopId, route || undefined),
-        source: 'mock',
-        timestamp: new Date().toISOString(),
-        message: 'Using sample data. API may require authentication or stop ID may be invalid.'
-      })
+      return []
     }
 
     const data = await response.json()
     
-    // Check for API errors
     if (data['bustime-response']?.error) {
-      const error = data['bustime-response'].error[0]
-      console.error('Port Authority API error:', error)
-      return NextResponse.json({
-        predictions: getMockPredictions(stopId, route || undefined),
-        source: 'mock',
-        timestamp: new Date().toISOString(),
-        message: error.msg || 'API returned an error. Using sample data.'
-      })
+      return []
     }
     
     const predictions = data['bustime-response']?.prd || []
 
-    if (predictions.length === 0) {
-      return NextResponse.json({
-        predictions: getMockPredictions(stopId, route || undefined),
-        source: 'mock',
-        timestamp: new Date().toISOString(),
-        message: 'No real-time predictions available. Showing sample data.'
-      })
-    }
-
-    // Format predictions
-    const formattedPredictions = predictions.map((pred: BusPrediction) => ({
+    return predictions.map((pred: BusPrediction) => ({
       route: pred.rt,
       routeName: pred.rtdir || `Route ${pred.rt}`,
       destination: pred.des,
@@ -130,68 +324,10 @@ export async function GET(request: NextRequest) {
       stopName: pred.stpnm,
       vehicleId: pred.vid
     }))
-
-    return NextResponse.json({
-      predictions: formattedPredictions,
-      source: 'api',
-      timestamp: new Date().toISOString()
-    })
   } catch (error: any) {
-    console.error('Bus schedules API error:', error)
-    
-    // Handle timeout or network errors
-    if (error.name === 'AbortError' || error.name === 'TimeoutError') {
-      return NextResponse.json({
-        predictions: getMockPredictions(stopId, route || undefined),
-        source: 'mock',
-        timestamp: new Date().toISOString(),
-        message: 'Request timed out. Using sample data.'
-      })
+    if (error.name === 'AbortError') {
+      console.log('Real-time API timeout')
     }
-    
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch bus schedules',
-        predictions: getMockPredictions(stopId, route || undefined),
-        source: 'mock',
-        timestamp: new Date().toISOString(),
-        message: 'API unavailable. Using sample data.'
-      },
-      { status: 200 } // Return 200 with mock data instead of error
-    )
+    return []
   }
 }
-
-/**
- * Get popular bus stops in Pittsburgh
- */
-function getMockPredictions(stopId: string, route?: string): any[] {
-  const popularRoutes = ['61A', '61B', '61C', '61D', '71A', '71B', '71C', '71D', '28X', 'P1', 'P2', 'P3']
-  const selectedRoute = route || popularRoutes[Math.floor(Math.random() * popularRoutes.length)]
-  
-  return [
-    {
-      route: selectedRoute,
-      routeName: `Route ${selectedRoute}`,
-      destination: 'Downtown',
-      minutes: Math.floor(Math.random() * 15) + 2,
-      arrivalTime: new Date(Date.now() + (Math.floor(Math.random() * 15) + 2) * 60000).toISOString(),
-      isDelayed: Math.random() > 0.8,
-      stopId: stopId,
-      stopName: 'Pittsburgh Stop',
-      vehicleId: null
-    },
-    {
-      route: selectedRoute,
-      routeName: `Route ${selectedRoute}`,
-      destination: 'Downtown',
-      minutes: Math.floor(Math.random() * 20) + 15,
-      arrivalTime: new Date(Date.now() + (Math.floor(Math.random() * 20) + 15) * 60000).toISOString(),
-      isDelayed: false,
-      stopId: stopId,
-      stopName: 'Pittsburgh Stop',
-      vehicleId: null
-    }
-  ]
-}
-

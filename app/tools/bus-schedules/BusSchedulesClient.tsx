@@ -8,17 +8,30 @@ interface BusPrediction {
   route: string
   routeName: string
   destination: string
-  minutes: number | null
-  arrivalTime: string
-  isDelayed: boolean
-  stopId: string
-  stopName: string
-  vehicleId: string | null
+  scheduledTime?: string
+  scheduledMinutes?: number
+  realtimeMinutes?: number
+  realtimeArrival?: string
+  minutes?: number | null // Legacy support
+  arrivalTime?: string // Legacy support
+  isDelayed?: boolean
+  stopId?: string
+  stopName?: string
+  vehicleId?: string | null
+  source: 'schedule' | 'realtime' | 'both'
 }
 
 interface BusSchedulesResponse {
   predictions: BusPrediction[]
-  source: 'api' | 'mock' | 'error'
+  stop?: {
+    id: string
+    name: string
+    code?: string
+    lat?: number
+    lon?: number
+  }
+  source: 'gtfs' | 'realtime-only' | 'api' | 'mock' | 'error'
+  realtimeSource?: 'api' | 'unavailable' | 'none'
   timestamp: string
   message?: string
 }
@@ -46,7 +59,8 @@ export default function BusSchedulesClient() {
   const [loading, setLoading] = useState(false) // Don't load until user selects a stop
   const [error, setError] = useState<string | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-  const [dataSource, setDataSource] = useState<'api' | 'mock' | 'error'>('api')
+  const [dataSource, setDataSource] = useState<'gtfs' | 'realtime-only' | 'api' | 'mock' | 'error'>('api')
+  const [stopInfo, setStopInfo] = useState<{ id: string; name: string; code?: string } | null>(null)
   const [customStopId, setCustomStopId] = useState('')
   const [showCustomStop, setShowCustomStop] = useState(true) // Show custom stop input by default
 
@@ -64,8 +78,18 @@ export default function BusSchedulesClient() {
       const data: BusSchedulesResponse = await response.json()
 
       if (data.predictions) {
-        setPredictions(data.predictions)
+        // Normalize predictions to handle both old and new formats
+        const normalizedPredictions = data.predictions.map((pred: BusPrediction) => ({
+          ...pred,
+          // Use real-time if available, otherwise scheduled, otherwise legacy
+          minutes: pred.realtimeMinutes ?? pred.scheduledMinutes ?? pred.minutes ?? null,
+          arrivalTime: pred.realtimeArrival ?? pred.scheduledTime ?? pred.arrivalTime ?? '',
+        }))
+        setPredictions(normalizedPredictions)
         setDataSource(data.source)
+        if (data.stop) {
+          setStopInfo(data.stop)
+        }
         setLastUpdated(new Date())
       } else {
         setError(data.message || 'No predictions available')
@@ -110,16 +134,16 @@ export default function BusSchedulesClient() {
     }
   }
 
-  const formatTime = (minutes: number | null) => {
-    if (minutes === null) return 'N/A'
+  const formatTime = (minutes: number | null | undefined) => {
+    if (minutes === null || minutes === undefined) return 'N/A'
     if (minutes === 0) return 'Arriving now'
     if (minutes === 1) return '1 minute'
     return `${minutes} minutes`
   }
 
-  const getStatusColor = (isDelayed: boolean, minutes: number | null) => {
+  const getStatusColor = (isDelayed: boolean, minutes: number | null | undefined) => {
     if (isDelayed) return 'text-red-600'
-    if (minutes === null) return 'text-gray-500'
+    if (minutes === null || minutes === undefined) return 'text-gray-500'
     if (minutes <= 2) return 'text-green-600'
     if (minutes <= 5) return 'text-yellow-600'
     return 'text-blue-600'
@@ -147,6 +171,37 @@ export default function BusSchedulesClient() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Data Source Indicator */}
+        {dataSource === 'gtfs' && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              <span className="text-sm text-green-800 font-medium">
+                Authoritative schedule data from GTFS
+                {predictions.some(p => p.source === 'both' || p.source === 'realtime') && ' + Real-time predictions'}
+              </span>
+            </div>
+            {lastUpdated && (
+              <span className="text-xs text-green-600">
+                Updated {lastUpdated.toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+        )}
+
+        {dataSource === 'realtime-only' && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-6 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-blue-800 font-medium">Real-time predictions only (GTFS not available)</span>
+            </div>
+            {lastUpdated && (
+              <span className="text-xs text-blue-600">
+                Updated {lastUpdated.toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+        )}
+
         {dataSource === 'api' && (
           <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -284,19 +339,28 @@ export default function BusSchedulesClient() {
         </div>
 
         {/* Current Stop Info */}
-        {selectedStop && !selectedStop.startsWith('EXAMPLE_') && selectedStop !== '' && (
+        {(stopInfo || (selectedStop && !selectedStop.startsWith('EXAMPLE_') && selectedStop !== '')) && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3">
               <Navigation className="w-5 h-5 text-blue-600" />
               <div>
-                <h3 className="font-semibold text-blue-900">Stop ID: {selectedStop}</h3>
-                {currentStop && currentStop.routes.length > 0 && (
+                <h3 className="font-semibold text-blue-900">
+                  {stopInfo ? stopInfo.name : `Stop ID: ${selectedStop}`}
+                </h3>
+                {stopInfo && (
+                  <p className="text-sm text-blue-700">
+                    Stop ID: {stopInfo.id} {stopInfo.code && `(${stopInfo.code})`}
+                  </p>
+                )}
+                {!stopInfo && currentStop && currentStop.routes.length > 0 && (
                   <p className="text-sm text-blue-700">
                     Example Routes: {currentStop.routes.join(', ')}
                   </p>
                 )}
                 <p className="text-xs text-blue-600 mt-1">
-                  Real-time predictions for this stop ID
+                  {dataSource === 'gtfs' 
+                    ? 'Authoritative schedule data with real-time overlay when available'
+                    : 'Real-time predictions for this stop ID'}
                 </p>
               </div>
             </div>
@@ -375,15 +439,31 @@ export default function BusSchedulesClient() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4 mt-3">
-                      <div className={`text-2xl font-bold ${getStatusColor(prediction.isDelayed, prediction.minutes)}`}>
-                        {formatTime(prediction.minutes)}
+                      <div>
+                        {prediction.source === 'both' && prediction.scheduledMinutes !== undefined && (
+                          <div className="text-xs text-gray-500 mb-1">
+                            Scheduled: {formatTime(prediction.scheduledMinutes)}
+                          </div>
+                        )}
+                        <div className={`text-2xl font-bold ${getStatusColor(prediction.isDelayed ?? false, prediction.minutes ?? null)}`}>
+                          {formatTime(prediction.minutes)}
+                          {prediction.source === 'realtime' && (
+                            <span className="ml-2 text-xs font-normal text-green-600">(Live)</span>
+                          )}
+                          {prediction.source === 'both' && (
+                            <span className="ml-2 text-xs font-normal text-blue-600">(Updated)</span>
+                          )}
+                          {prediction.source === 'schedule' && (
+                            <span className="ml-2 text-xs font-normal text-gray-500">(Scheduled)</span>
+                          )}
+                        </div>
                       </div>
                       {prediction.isDelayed && (
                         <span className="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">
                           Delayed
                         </span>
                       )}
-                      {prediction.minutes !== null && (
+                      {prediction.minutes !== null && prediction.arrivalTime && (
                         <span className="text-sm text-gray-500">
                           Arrives at {new Date(prediction.arrivalTime).toLocaleTimeString()}
                         </span>
