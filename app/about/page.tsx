@@ -25,7 +25,7 @@ export default function AboutPage() {
     { icon: MapPin, label: 'Pittsburgh Neighborhoods', value: '90+', description: 'Complete coverage of all Pittsburgh areas' },
     { icon: Users, label: 'Local Businesses', value: '1000+', description: 'Verified businesses in our directory' },
     { icon: Star, label: 'User Reviews', value: '50,000+', description: 'Authentic reviews from locals' },
-    { icon: TrendingUp, label: 'Monthly Visitors', value: '100K+', description: 'Growing community engagement' }
+    { icon: TrendingUp, label: 'Traffic Analytics', value: 'Vercel Analytics', description: 'Real-time stats powered by Vercel' }
   ]
 
   const values = [

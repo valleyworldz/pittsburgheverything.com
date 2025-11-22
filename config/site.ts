@@ -59,10 +59,14 @@ export const siteConfig = {
   },
 
   // Analytics and tracking
+  // Set these environment variables in Vercel:
+  // - GA_ID: Google Analytics 4 Measurement ID (e.g., G-XXXXXXXXXX)
+  // - MIXPANEL_TOKEN: Mixpanel project token (optional)
+  // - HOTJAR_ID: Hotjar site ID (optional)
   analytics: {
-    googleAnalyticsId: process.env.GA_ID,
-    mixpanelToken: process.env.MIXPANEL_TOKEN,
-    hotjarId: process.env.HOTJAR_ID,
+    googleAnalyticsId: process.env.GA_ID || process.env.NEXT_PUBLIC_GA_ID,
+    mixpanelToken: process.env.MIXPANEL_TOKEN || process.env.NEXT_PUBLIC_MIXPANEL_TOKEN,
+    hotjarId: process.env.HOTJAR_ID || process.env.NEXT_PUBLIC_HOTJAR_ID,
   },
 
   // Email configuration

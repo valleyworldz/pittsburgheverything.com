@@ -104,10 +104,10 @@ export default function AdvertisePage() {
   ]
 
   const stats = [
-    { label: 'Monthly Visitors', value: '100K+' },
-    { label: 'Business Listings', value: '1000+' },
-    { label: 'User Reviews', value: '50K+' },
-    { label: 'Pittsburgh Coverage', value: '90 neighborhoods' }
+    { label: 'Traffic Stats', value: 'Powered by Vercel Analytics', description: 'Real-time analytics tracking' },
+    { label: 'Business Listings', value: '1000+', description: 'Verified businesses in our directory' },
+    { label: 'User Reviews', value: '50K+', description: 'Authentic reviews from locals' },
+    { label: 'Pittsburgh Coverage', value: '90 neighborhoods', description: 'Complete city coverage' }
   ]
 
   return (

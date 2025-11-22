@@ -57,7 +57,7 @@ export default function NewsletterSignup() {
         </h2>
 
         <p className="text-lg mb-8 text-gray-200">
-          Join 10,000+ Pittsburghers getting weekly updates on the best events,
+          Join Pittsburghers getting weekly updates on the best events,
           hottest deals, and hidden gems in our city. Delivered every Friday.
         </p>
 

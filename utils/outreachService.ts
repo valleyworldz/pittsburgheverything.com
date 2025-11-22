@@ -63,7 +63,7 @@ export class OutreachService {
                 <h3 style="margin-top: 0; color: #007bff;">Why Join Now?</h3>
                 <ul style="margin: 10px 0; padding-left: 20px;">
                   <li><strong>50+ Lawrenceville businesses</strong> already active</li>
-                  <li><strong>500+ monthly visitors</strong> looking for local recommendations</li>
+                  <li><strong>Growing community</strong> of Pittsburgh residents looking for local recommendations</li>
                   <li><strong>4.6 average rating</strong> across Lawrenceville businesses</li>
                   <li><strong>Free premium listing</strong> for the first 6 months</li>
                 </ul>
