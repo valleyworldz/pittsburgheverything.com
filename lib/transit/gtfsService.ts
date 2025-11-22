@@ -6,21 +6,41 @@
  * No API keys required - uses official GTFS schedule data
  */
 
-import Database from 'better-sqlite3'
 import path from 'path'
 import fs from 'fs'
+
+// Safely import better-sqlite3 (may not work in all serverless environments)
+let Database: any = null
+let sqliteAvailable = false
+
+try {
+  Database = require('better-sqlite3')
+  sqliteAvailable = true
+} catch (error) {
+  console.warn('better-sqlite3 not available:', error instanceof Error ? error.message : 'Unknown error')
+  sqliteAvailable = false
+}
 
 const GTFS_DB_PATH = path.join(process.cwd(), 'data', 'gtfs', 'prt.sqlite')
 
 // Ensure data directory exists
 const dataDir = path.dirname(GTFS_DB_PATH)
 if (!fs.existsSync(dataDir)) {
-  fs.mkdirSync(dataDir, { recursive: true })
+  try {
+    fs.mkdirSync(dataDir, { recursive: true })
+  } catch (error) {
+    // Directory creation may fail in read-only environments
+    console.warn('Could not create GTFS data directory:', error)
+  }
 }
 
-let db: Database.Database | null = null
+let db: any = null
 
-function getDb(): Database.Database | null {
+function getDb(): any {
+  if (!sqliteAvailable || !Database) {
+    return null
+  }
+  
   try {
     if (!db) {
       if (!fs.existsSync(GTFS_DB_PATH)) {
@@ -30,8 +50,8 @@ function getDb(): Database.Database | null {
       db = new Database(GTFS_DB_PATH, { readonly: true })
     }
     return db
-  } catch (error) {
-    console.error('Error opening GTFS database:', error)
+  } catch (error: any) {
+    console.error('Error opening GTFS database:', error?.message || error)
     return null
   }
 }
@@ -507,6 +527,9 @@ export function getStopsWithRoutes(): Array<Stop & { routes: string[] }> {
  */
 export function isGtfsAvailable(): boolean {
   try {
+    if (!sqliteAvailable || !Database) {
+      return false
+    }
     if (!fs.existsSync(GTFS_DB_PATH)) {
       return false
     }
@@ -515,7 +538,8 @@ export function isGtfsAvailable(): boolean {
     const result = stmt.get()
     database.close()
     return !!result
-  } catch {
+  } catch (error: any) {
+    console.warn('GTFS availability check failed:', error?.message || error)
     return false
   }
 }

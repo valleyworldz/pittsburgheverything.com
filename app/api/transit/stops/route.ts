@@ -13,6 +13,8 @@ import { searchStops, getStopsWithRoutes, getStopsNear, isGtfsAvailable } from '
  * - lon: longitude for nearby stops search
  * - radius: search radius in meters (default: 500)
  */
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -24,13 +26,21 @@ export async function GET(request: NextRequest) {
     const radius = parseInt(searchParams.get('radius') || '500')
 
     // Check if GTFS is available (but don't fail if not - return empty results)
-    if (!isGtfsAvailable()) {
+    let gtfsAvailable = false
+    try {
+      gtfsAvailable = isGtfsAvailable()
+    } catch (error: any) {
+      console.error('Error checking GTFS availability:', error?.message || error)
+      gtfsAvailable = false
+    }
+
+    if (!gtfsAvailable) {
       console.warn('GTFS data not available - returning empty results')
       return NextResponse.json({
         stops: [],
         count: 0,
         error: 'GTFS data not available',
-        message: 'Stop search is temporarily unavailable. Please try again later.',
+        message: 'Stop search is temporarily unavailable. GTFS database may not be imported yet.',
         timestamp: new Date().toISOString()
       }, { status: 200 }) // Return 200 with empty results instead of 503
     }
@@ -79,12 +89,12 @@ export async function GET(request: NextRequest) {
           timestamp: new Date().toISOString()
         })
       } catch (error: any) {
-        console.error('Error searching stops:', error)
+        console.error('Error searching stops:', error?.message || error, error?.stack)
         return NextResponse.json({
           stops: [],
           count: 0,
           error: 'Failed to search stops',
-          message: error.message,
+          message: error?.message || 'Database query failed',
           timestamp: new Date().toISOString()
         }, { status: 200 })
       }
