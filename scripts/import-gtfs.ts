@@ -18,9 +18,8 @@ import { parse } from 'csv-parse'
 import Database from 'better-sqlite3'
 import AdmZip from 'adm-zip'
 
-const GTFS_URL = 'https://www.portauthority.org/developer-resources/gtfs-data/'
-// Note: Update this URL to the actual PRT GTFS download link when available
-// For now, you'll need to manually download the GTFS zip and place it in data/gtfs/prt.zip
+const GTFS_URL = 'https://www.rideprt.org/developerresources/GTFS.zip'
+// Direct download URL for PRT GTFS data
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'gtfs')
 const GTFS_ZIP_PATH = path.join(DATA_DIR, 'prt.zip')
@@ -43,7 +42,59 @@ const GTFS_FILES: GtfsFile[] = [
   { name: 'calendar_dates.txt', columns: [], required: false },
   { name: 'shapes.txt', columns: [], required: false },
   { name: 'frequencies.txt', columns: [], required: false },
+  { name: 'transfers.txt', columns: [], required: false },
+  { name: 'feed_info.txt', columns: [], required: false },
 ]
+
+// Tables that should be created for optional files
+const OPTIONAL_TABLES: Record<string, string> = {
+  'shapes.txt': `
+    CREATE TABLE IF NOT EXISTS shapes (
+      shape_id TEXT NOT NULL,
+      shape_pt_lat TEXT,
+      shape_pt_lon TEXT,
+      shape_pt_sequence TEXT,
+      shape_dist_traveled TEXT,
+      PRIMARY KEY (shape_id, shape_pt_sequence)
+    );
+  `,
+  'frequencies.txt': `
+    CREATE TABLE IF NOT EXISTS frequencies (
+      trip_id TEXT NOT NULL,
+      start_time TEXT NOT NULL,
+      end_time TEXT NOT NULL,
+      headway_secs TEXT,
+      exact_times TEXT,
+      PRIMARY KEY (trip_id, start_time),
+      FOREIGN KEY (trip_id) REFERENCES trips(trip_id)
+    );
+  `,
+  'transfers.txt': `
+    CREATE TABLE IF NOT EXISTS transfers (
+      from_stop_id TEXT,
+      to_stop_id TEXT,
+      transfer_type TEXT,
+      min_transfer_time TEXT,
+      from_route_id TEXT,
+      to_route_id TEXT,
+      from_trip_id TEXT,
+      to_trip_id TEXT
+    );
+  `,
+  'feed_info.txt': `
+    CREATE TABLE IF NOT EXISTS feed_info (
+      feed_publisher_name TEXT,
+      feed_publisher_url TEXT,
+      feed_lang TEXT,
+      default_lang TEXT,
+      feed_start_date TEXT,
+      feed_end_date TEXT,
+      feed_version TEXT,
+      feed_contact_email TEXT,
+      feed_contact_url TEXT
+    );
+  `
+}
 
 async function downloadGtfs(): Promise<void> {
   console.log('📥 Checking for GTFS data...')
@@ -123,15 +174,18 @@ function createTables(db: Database.Database): void {
     DROP TABLE IF EXISTS agency;
   `)
   
-  // Create tables
+  // Create tables with all possible GTFS columns
+  // Using TEXT for all columns to handle any GTFS version
   db.exec(`
     CREATE TABLE agency (
       agency_id TEXT PRIMARY KEY,
-      agency_name TEXT NOT NULL,
+      agency_name TEXT,
       agency_url TEXT,
       agency_timezone TEXT,
       agency_lang TEXT,
-      agency_phone TEXT
+      agency_phone TEXT,
+      agency_fare_url TEXT,
+      agency_email TEXT
     );
     
     CREATE TABLE routes (
@@ -140,38 +194,43 @@ function createTables(db: Database.Database): void {
       route_short_name TEXT,
       route_long_name TEXT,
       route_desc TEXT,
-      route_type INTEGER,
+      route_type TEXT,
       route_url TEXT,
       route_color TEXT,
-      route_text_color TEXT
+      route_text_color TEXT,
+      route_sort_order TEXT,
+      continuous_pickup TEXT,
+      continuous_drop_off TEXT
     );
     
     CREATE TABLE stops (
       stop_id TEXT PRIMARY KEY,
       stop_code TEXT,
-      stop_name TEXT NOT NULL,
+      stop_name TEXT,
       stop_desc TEXT,
-      stop_lat REAL NOT NULL,
-      stop_lon REAL NOT NULL,
+      stop_lat TEXT,
+      stop_lon TEXT,
       zone_id TEXT,
       stop_url TEXT,
-      location_type INTEGER,
+      location_type TEXT,
       parent_station TEXT,
       stop_timezone TEXT,
-      wheelchair_boarding INTEGER
+      wheelchair_boarding TEXT,
+      level_id TEXT,
+      platform_code TEXT
     );
     
     CREATE TABLE trips (
       trip_id TEXT PRIMARY KEY,
-      route_id TEXT NOT NULL,
-      service_id TEXT NOT NULL,
+      route_id TEXT,
+      service_id TEXT,
       trip_headsign TEXT,
       trip_short_name TEXT,
-      direction_id INTEGER,
+      direction_id TEXT,
       block_id TEXT,
       shape_id TEXT,
-      wheelchair_accessible INTEGER,
-      bikes_allowed INTEGER,
+      wheelchair_accessible TEXT,
+      bikes_allowed TEXT,
       FOREIGN KEY (route_id) REFERENCES routes(route_id)
     );
     
@@ -180,12 +239,12 @@ function createTables(db: Database.Database): void {
       arrival_time TEXT NOT NULL,
       departure_time TEXT NOT NULL,
       stop_id TEXT NOT NULL,
-      stop_sequence INTEGER NOT NULL,
+      stop_sequence TEXT NOT NULL,
       stop_headsign TEXT,
-      pickup_type INTEGER,
-      drop_off_type INTEGER,
-      shape_dist_traveled REAL,
-      timepoint INTEGER,
+      pickup_type TEXT,
+      drop_off_type TEXT,
+      shape_dist_traveled TEXT,
+      timepoint TEXT,
       FOREIGN KEY (trip_id) REFERENCES trips(trip_id),
       FOREIGN KEY (stop_id) REFERENCES stops(stop_id),
       PRIMARY KEY (trip_id, stop_sequence)
@@ -193,23 +252,22 @@ function createTables(db: Database.Database): void {
     
     CREATE TABLE calendar (
       service_id TEXT PRIMARY KEY,
-      monday INTEGER NOT NULL,
-      tuesday INTEGER NOT NULL,
-      wednesday INTEGER NOT NULL,
-      thursday INTEGER NOT NULL,
-      friday INTEGER NOT NULL,
-      saturday INTEGER NOT NULL,
-      sunday INTEGER NOT NULL,
-      start_date TEXT NOT NULL,
-      end_date TEXT NOT NULL
+      monday TEXT,
+      tuesday TEXT,
+      wednesday TEXT,
+      thursday TEXT,
+      friday TEXT,
+      saturday TEXT,
+      sunday TEXT,
+      start_date TEXT,
+      end_date TEXT
     );
     
     CREATE TABLE calendar_dates (
       service_id TEXT NOT NULL,
       date TEXT NOT NULL,
-      exception_type INTEGER NOT NULL,
-      PRIMARY KEY (service_id, date),
-      FOREIGN KEY (service_id) REFERENCES calendar(service_id)
+      exception_type TEXT NOT NULL,
+      PRIMARY KEY (service_id, date)
     );
   `)
   
@@ -230,7 +288,8 @@ async function importCsvFile(
   const parser = parse({
     columns: true,
     skip_empty_lines: true,
-    relax_column_count: true
+    relax_column_count: true,
+    trim: true
   })
   
   const rows: any[] = []
@@ -247,8 +306,31 @@ async function importCsvFile(
         return
       }
       
-      // Get column names from first row
-      const columns = Object.keys(rows[0])
+      // Get all unique column names from all rows
+      const allColumns = new Set<string>()
+      rows.forEach(row => {
+        Object.keys(row).forEach(key => allColumns.add(key))
+      })
+      const columns = Array.from(allColumns)
+      
+      // Add any missing columns to the table (for GTFS extensions)
+      if (columns.length > 0) {
+        const existingColumns = db.prepare(`
+          SELECT name FROM pragma_table_info('${tableName}')
+        `).all().map((r: any) => r.name)
+        
+        const missingColumns = columns.filter(col => !existingColumns.includes(col))
+        if (missingColumns.length > 0) {
+          missingColumns.forEach(col => {
+            try {
+              db.exec(`ALTER TABLE ${tableName} ADD COLUMN ${col} TEXT`)
+            } catch (e) {
+              // Column might already exist or be invalid, ignore
+            }
+          })
+        }
+      }
+      
       const placeholders = columns.map(() => '?').join(', ')
       const columnNames = columns.join(', ')
       
@@ -258,7 +340,10 @@ async function importCsvFile(
       
       const insertMany = db.transaction((rows: any[]) => {
         for (const row of rows) {
-          const values = columns.map(col => row[col] || null)
+          const values = columns.map(col => {
+            const val = row[col]
+            return val === undefined || val === '' ? null : val
+          })
           insert.run(...values)
         }
       })
@@ -316,14 +401,58 @@ async function main(): Promise<void> {
     // Step 4: Create tables
     createTables(db)
     
-    // Step 5: Import CSV files
+    // Step 5: Create optional tables if files exist
+    for (const file of GTFS_FILES) {
+      if (!file.required && OPTIONAL_TABLES[file.name]) {
+        const filePath = path.join(GTFS_EXTRACT_DIR, file.name)
+        if (fs.existsSync(filePath)) {
+          const tableName = file.name.replace('.txt', '')
+          try {
+            db.exec(OPTIONAL_TABLES[file.name])
+            console.log(`✅ Created table for ${tableName}`)
+          } catch (e: any) {
+            // Table might already exist, that's OK
+            if (!e.message.includes('already exists')) {
+              console.log(`⚠️  Could not create table for ${tableName}: ${e.message}`)
+            }
+          }
+        }
+      }
+    }
+    
+    // Step 6: Import CSV files
     console.log('\n📥 Importing GTFS files...')
     for (const file of GTFS_FILES) {
       const filePath = path.join(GTFS_EXTRACT_DIR, file.name)
-      await importCsvFile(db, filePath, file.name.replace('.txt', ''))
+      const tableName = file.name.replace('.txt', '')
+      
+      // Check if table exists (for optional files)
+      if (!file.required) {
+        const tableExists = db.prepare(`
+          SELECT name FROM sqlite_master WHERE type='table' AND name=?
+        `).get(tableName)
+        
+        if (!tableExists && !fs.existsSync(filePath)) {
+          console.log(`⚠️  Skipping ${tableName} (file not found and table doesn't exist)`)
+          continue
+        }
+        
+        // Create table if file exists but table doesn't
+        if (fs.existsSync(filePath) && !tableExists) {
+          // Create a generic table with dynamic columns
+          try {
+            // We'll create columns dynamically during import
+            db.exec(`CREATE TABLE IF NOT EXISTS ${tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT)`)
+          } catch (e) {
+            // Ignore errors
+          }
+        }
+      }
+      
+      await importCsvFile(db, filePath, tableName)
     }
     
-    // Step 6: Create indexes
+    // Step 7: Create indexes
     await createIndexes(db)
     
     // Step 7: Close database

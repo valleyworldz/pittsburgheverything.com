@@ -36,7 +36,7 @@ export interface Route {
   route_id: string
   route_short_name: string
   route_long_name: string
-  route_type: number
+  route_type: number | string
   route_color?: string
   route_text_color?: string
 }
@@ -44,10 +44,10 @@ export interface Route {
 export interface Stop {
   stop_id: string
   stop_name: string
-  stop_lat: number
-  stop_lon: number
+  stop_lat: number | string
+  stop_lon: number | string
   stop_code?: string
-  location_type?: number
+  location_type?: number | string
   parent_station?: string
 }
 
@@ -91,11 +91,12 @@ export function getRoutes(): Route[] {
       route_id,
       route_short_name,
       route_long_name,
-      route_type,
+      CAST(route_type AS INTEGER) as route_type,
       route_color,
       route_text_color
     FROM routes
-    ORDER BY route_short_name, route_long_name
+    WHERE route_short_name IS NOT NULL AND route_short_name != ''
+    ORDER BY CAST(route_short_name AS INTEGER), route_short_name, route_long_name
   `)
   return stmt.all() as Route[]
 }
@@ -132,8 +133,8 @@ export function getStopsForRoute(
     SELECT DISTINCT 
       s.stop_id,
       s.stop_name,
-      s.stop_lat,
-      s.stop_lon,
+      CAST(s.stop_lat AS REAL) as stop_lat,
+      CAST(s.stop_lon AS REAL) as stop_lon,
       s.stop_code,
       s.location_type,
       s.parent_station
@@ -146,14 +147,19 @@ export function getStopsForRoute(
   const params: any[] = [routeId]
   
   if (directionId !== undefined) {
-    query += ' AND t.direction_id = ?'
+    query += ' AND CAST(t.direction_id AS INTEGER) = ?'
     params.push(directionId)
   }
   
   query += ' ORDER BY s.stop_name'
   
   const stmt = database.prepare(query)
-  return stmt.all(...params) as Stop[]
+  const results = stmt.all(...params) as Stop[]
+  return results.map(r => ({
+    ...r,
+    stop_lat: typeof r.stop_lat === 'string' ? parseFloat(r.stop_lat) : r.stop_lat,
+    stop_lon: typeof r.stop_lon === 'string' ? parseFloat(r.stop_lon) : r.stop_lon
+  }))
 }
 
 /**
@@ -178,7 +184,7 @@ export function getScheduleForStop(
   const calendarStmt = database.prepare(`
     SELECT service_id
     FROM calendar
-    WHERE ${dayColumn} = 1
+    WHERE CAST(${dayColumn} AS INTEGER) = 1
       AND start_date <= ?
       AND end_date >= ?
   `)
@@ -187,7 +193,7 @@ export function getScheduleForStop(
   
   // Check calendar_dates.txt for exceptions
   const exceptionsStmt = database.prepare(`
-    SELECT service_id, exception_type
+    SELECT service_id, CAST(exception_type AS INTEGER) as exception_type
     FROM calendar_dates
     WHERE date = ?
   `)
@@ -225,8 +231,8 @@ export function getScheduleForStop(
       COALESCE(t.trip_headsign, '') as headsign,
       st.arrival_time,
       st.departure_time,
-      st.stop_sequence,
-      t.direction_id
+      CAST(st.stop_sequence AS INTEGER) as stop_sequence,
+      CAST(t.direction_id AS INTEGER) as direction_id
     FROM stop_times st
     JOIN trips t ON t.trip_id = st.trip_id
     JOIN routes r ON r.route_id = t.route_id
@@ -274,15 +280,20 @@ export function getStop(stopId: string): Stop | null {
     SELECT 
       stop_id,
       stop_name,
-      stop_lat,
-      stop_lon,
+      CAST(stop_lat AS REAL) as stop_lat,
+      CAST(stop_lon AS REAL) as stop_lon,
       stop_code,
       location_type,
       parent_station
     FROM stops
     WHERE stop_id = ?
   `)
-  return (stmt.get(stopId) as Stop) || null
+  const result = stmt.get(stopId) as Stop | undefined
+  if (result && typeof result.stop_lat === 'string') {
+    result.stop_lat = parseFloat(result.stop_lat)
+    result.stop_lon = parseFloat(result.stop_lon as string)
+  }
+  return result || null
 }
 
 /**
@@ -327,32 +338,38 @@ export function getStopsNear(
     SELECT 
       stop_id,
       stop_name,
-      stop_lat,
-      stop_lon,
+      CAST(stop_lat AS REAL) as stop_lat,
+      CAST(stop_lon AS REAL) as stop_lon,
       stop_code,
       location_type,
       parent_station,
       (
         6371000 * acos(
-          cos(radians(?)) * cos(radians(stop_lat)) *
-          cos(radians(stop_lon) - radians(?)) +
-          sin(radians(?)) * sin(radians(stop_lat))
+          cos(radians(?)) * cos(radians(CAST(stop_lat AS REAL))) *
+          cos(radians(CAST(stop_lon AS REAL)) - radians(?)) +
+          sin(radians(?)) * sin(radians(CAST(stop_lat AS REAL)))
         )
       ) as distance
     FROM stops
-    WHERE stop_lat BETWEEN ? AND ?
-      AND stop_lon BETWEEN ? AND ?
+    WHERE CAST(stop_lat AS REAL) BETWEEN ? AND ?
+      AND CAST(stop_lon AS REAL) BETWEEN ? AND ?
     HAVING distance <= ?
     ORDER BY distance
     LIMIT 50
   `)
   
-  return stmt.all(
+  const results = stmt.all(
     lat, lon, lat, // for acos
     lat - latDelta, lat + latDelta,
     lon - lonDelta, lon + lonDelta,
     radiusMeters
   ) as Array<Stop & { distance: number }>
+  
+  return results.map(r => ({
+    ...r,
+    stop_lat: typeof r.stop_lat === 'string' ? parseFloat(r.stop_lat) : r.stop_lat,
+    stop_lon: typeof r.stop_lon === 'string' ? parseFloat(r.stop_lon) : r.stop_lon
+  }))
 }
 
 /**

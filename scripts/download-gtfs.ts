@@ -12,9 +12,8 @@ import path from 'path'
 import https from 'https'
 import http from 'http'
 
-const GTFS_URL = process.env.PRT_GTFS_URL || 'https://www.portauthority.org/developer-resources/gtfs-data/'
-// TODO: Update with actual direct download URL when available
-// PRT may require manual download from their developer resources page
+const GTFS_URL = process.env.PRT_GTFS_URL || 'https://www.rideprt.org/developerresources/GTFS.zip'
+// Direct download URL for PRT GTFS data
 
 const DATA_DIR = path.join(process.cwd(), 'data', 'gtfs')
 const GTFS_ZIP_PATH = path.join(DATA_DIR, 'prt.zip')
