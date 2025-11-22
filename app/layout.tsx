@@ -11,6 +11,9 @@ import SkipToContent from '@/components/SkipToContent'
 import LoadingProvider from '@/components/LoadingProvider'
 import ErrorBoundary from '@/components/ErrorBoundary'
 import MonitoringInitializer from '@/components/MonitoringInitializer'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
+import GoogleSearchConsole from '@/components/GoogleSearchConsole'
+import StructuredData from '@/components/StructuredData'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -69,7 +72,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'your-google-site-verification',
+    google: 'hPFeJhF-yg2ZIX_YHJ95h0ZkxtVn1IlUeUssncEcXXI',
   },
 }
 
@@ -109,6 +112,8 @@ export default function RootLayout({
         <link rel="icon" href="/images/og-image.svg" sizes="any" />
         <link rel="apple-touch-icon" href="/images/og-image.svg" />
 
+        {/* Google Search Console Verification - Handled by metadata API above */}
+
         {/* Canonical URL will be handled by individual pages */}
       </head>
       <body className={`${inter.className} antialiased min-h-screen flex flex-col`}>
@@ -142,30 +147,12 @@ export default function RootLayout({
         {/* Analytics and performance monitoring */}
         <Analytics />
         <SpeedInsights />
+        <GoogleAnalytics />
 
-        {/* Structured data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'WebSite',
-              name: siteConfig.name,
-              url: siteConfig.url,
-              description: siteConfig.description,
-              publisher: {
-                '@type': 'Organization',
-                name: 'PittsburghEverything',
-                url: siteConfig.url,
-              },
-              potentialAction: {
-                '@type': 'SearchAction',
-                target: `${siteConfig.url}/search?q={search_term_string}`,
-                'query-input': 'required name=search_term_string',
-              },
-            }),
-          }}
-        />
+        {/* Enhanced Structured Data for SEO */}
+        <StructuredData type="WebSite" />
+        <StructuredData type="Organization" />
+        <StructuredData type="LocalBusiness" />
       </body>
     </html>
   )
